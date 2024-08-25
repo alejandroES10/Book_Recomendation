@@ -5,6 +5,6 @@ app = FastAPI()
 
 @app.get("/")
 async def read_root():
-    return "Hello world"
+    return "Book Recomendation API"
 
 app.include_router(search_controller.router, prefix="/search")

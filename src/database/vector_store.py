@@ -50,3 +50,9 @@ vectorstore_of_books = Chroma.from_documents(
     embedding= embedding_function
 )
 
+vectorstore_of_thesis = Chroma.from_documents(
+    documents= [],
+    # ids=["1","2","3","4","5"],
+    embedding= embedding_function
+)
+
