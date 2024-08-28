@@ -11,7 +11,7 @@ router = APIRouter()
 @router.post("/documents/")
 async def create_documents(documents: List[Document]):
     try:
-        return DocumentService.add_document(documents)
+        return DocumentService.add_documents(documents)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
@@ -37,6 +37,17 @@ async def update_documents(documents: List[Document]):
         return DocumentService.update_documents(ids=ids, documents=documents)
     except HTTPException as e:
         raise e
+    
+@router.get("/documents/{ids}")
+async def find_documents(ids: List[str]):
+     try:
+        return DocumentService.get_documents_by_ids(ids)
+     except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    
+@router.get("/{contentToSearch}")
+async def search_results(contentToSearch: str):
+    return DocumentService.get_results(contentToSearch)
     
 
 

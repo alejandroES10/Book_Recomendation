@@ -7,7 +7,7 @@ from models.document_model import DocumentModel
 
 class DocumentService:
     
-    def add_document(documents: List[Document]):
+    def add_documents(documents: List[Document]):
         try:
             ids = [doc.id for doc in documents]
             vectorstore_of_books.add_documents(documents=documents, ids=ids)
@@ -38,6 +38,25 @@ class DocumentService:
             return {"status": "Documents updated successfully"}
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
+        
+    def get_documents_by_ids(ids: List[str]):
+        try:
+            return  vectorstore_of_books.get_by_ids(ids)
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+        
+    def get_results(contentToSearch: str ):
+        try:
+            retriever = vectorstore_of_books.as_retriever(
+                search_type="similarity",
+                #  search_kwargs={"k": 2},
+            ) 
+            return retriever.batch([contentToSearch])
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
+            
+            
+            
 
 
     # def add_document(document_model: DocumentModel):
