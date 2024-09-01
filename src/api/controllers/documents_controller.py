@@ -1,4 +1,5 @@
 from api.models.document_model import DocumentModel
+from api.models.search_model import SearchModel
 from fastapi import APIRouter, HTTPException
 from fastapi import APIRouter
 from api.services.document_service import DocumentService
@@ -46,9 +47,9 @@ async def update_documents(documents: List[DocumentModel]):
 #      except Exception as e:
 #         raise HTTPException(status_code=400, detail=str(e))
     
-@router.get("/search/{contentToSearch}")
-async def search_results(contentToSearch: str):
-    return DocumentService.get_results(contentToSearch)
+@router.get("/search/")
+async def search_results(to_search: SearchModel):
+    return DocumentService.get_results(to_search.content)
  
 @router.get("/{id}") 
 async def get_document(id: str):
