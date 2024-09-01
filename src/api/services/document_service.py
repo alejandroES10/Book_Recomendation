@@ -77,6 +77,12 @@ class DocumentService:
             return collection__of__books.get(id)
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
+        
+    def find_all( ):
+        try:
+            return collection__of__books.get()
+        except Exception as e:
+            raise HTTPException(status_code=400, detail=str(e))
             
             
             

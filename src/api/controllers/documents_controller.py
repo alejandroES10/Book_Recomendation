@@ -51,8 +51,12 @@ async def search_results(contentToSearch: str):
     return DocumentService.get_results(contentToSearch)
  
 @router.get("/{id}") 
-async def find_document(id: str):
+async def get_document(id: str):
     return DocumentService.find_one(id)
+
+@router.get("/") 
+async def get_documents():
+    return DocumentService.find_all()
 
 
     
