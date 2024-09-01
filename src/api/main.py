@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.controllers import search_controller, documents_controller
+from api.controllers import documents_controller
 from database.vector_store import collection__of__books
 
 app = FastAPI()
