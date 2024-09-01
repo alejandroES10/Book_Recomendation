@@ -1,10 +1,12 @@
 from fastapi import FastAPI
-from api.controllers import search_controller
+from api.controllers import search_controller, documents_controller
+from database.vector_store import collection__of__books
 
 app = FastAPI()
 
 @app.get("/")
 async def read_root():
-    return "Book Recomendation API"
+    return "Books Recomendation"
 
-app.include_router(search_controller.router, prefix="/search")
+
+app.include_router(documents_controller.router, prefix="/documents")

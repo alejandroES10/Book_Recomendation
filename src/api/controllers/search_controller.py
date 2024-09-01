@@ -1,12 +1,12 @@
-# api/controllers/search_controller.py
+# # api/controllers/search_controller.py
 
-from fastapi import APIRouter
-from api.services.search_services import SearchService
+# from fastapi import APIRouter
+# from api.services.search_services import SearchService
 
-router = APIRouter()
+# router = APIRouter()
 
 
 
-@router.get("/{contentToSearch}")
-async def search_results(contentToSearch: str):
-    return SearchService.get_results(contentToSearch)
+# @router.get("/{contentToSearch}")
+# async def search_results(contentToSearch: str):
+#     return SearchService.get_results(contentToSearch)
