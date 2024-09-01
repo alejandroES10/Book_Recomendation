@@ -6,7 +6,7 @@ app = FastAPI()
 
 @app.get("/")
 async def read_root():
-    return collection__of__books.get()
+    return "Book Recomendation"
 
 
 app.include_router(documents_controller.router, prefix="/documents")
