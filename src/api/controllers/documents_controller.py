@@ -49,7 +49,7 @@ async def update_documents(documents: List[DocumentModel]):
     
 @router.get("/search/")
 async def search_results(to_search: SearchModel):
-    return DocumentService.get_results(to_search.content)
+    return DocumentService.get_results(to_search.content, to_search.k_results)
  
 @router.get("/{id}") 
 async def get_document(id: str):

@@ -60,11 +60,11 @@ class DocumentService:
         except Exception as e:
             raise HTTPException(status_code=400, detail=str(e))
         
-    def get_results(contentToSearch: str ):
+    def get_results(contentToSearch: str, k_results: int):
         try:
             retriever = collection__of__books.as_retriever(
                 search_type="similarity",
-                #  search_kwargs={"k": 2},
+                search_kwargs={"k": k_results},
             ) 
             
             return retriever.batch([contentToSearch])
