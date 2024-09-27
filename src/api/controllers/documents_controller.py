@@ -1,10 +1,12 @@
 from api.models.document_model import DocumentModel
 from api.models.search_model import SearchModel
-from fastapi import APIRouter, HTTPException
-from fastapi import APIRouter
+from fastapi import APIRouter, HTTPException, Query
+
+# from fastapi import APIRouter
 from api.services.document_service import DocumentService
 from langchain_core.documents import Document
-from typing import List
+from typing import List,Optional
+
 
 router = APIRouter()
 
@@ -48,8 +50,8 @@ async def update_documents(documents: List[DocumentModel]):
 #         raise HTTPException(status_code=400, detail=str(e))
     
 @router.get("/search/")
-async def search_results(to_search: SearchModel):
-    return DocumentService.get_results(to_search.content, to_search.k_results)
+async def search_results(content: str = Query(...), k_results: Optional[int] = Query(10)):
+    return DocumentService.get_results(content, k_results)
  
 @router.get("/{id}") 
 async def get_document(id: str):
