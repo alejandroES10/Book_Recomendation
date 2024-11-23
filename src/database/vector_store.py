@@ -1,7 +1,7 @@
 from langchain_core.documents import Document
 from langchain_chroma import Chroma
 from langchain_community.embeddings import OllamaEmbeddings
-from ollama.ollama_embeddings import embedding_function
+from src.ollama.ollama_embeddings import embedding_function
 import chromadb
 # from langchain_ollama import OllamaEmbeddings
 # from langchain_community.chat_models import ChatOllama

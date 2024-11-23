@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from api.controllers import documents_controller
+from api.controllers import documents_controller, chat_controller
 from database.vector_store import collection__of__books
 from fastapi.middleware.cors import CORSMiddleware
 
@@ -19,3 +19,4 @@ async def read_root():
 
 
 app.include_router(documents_controller.router, prefix="/documents")
+app.include_router(chat_controller.router, prefix="/chat")
