@@ -5,6 +5,7 @@ from langgraph.checkpoint.memory import MemorySaver
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
 from src.ollama.ollama_llm import llm
+from src.database.vector_store import collection__of__books
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../..')))
 from src.chatbot.tools_for_agent import tool_for_search_book
 from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
@@ -30,7 +31,25 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 #     print("----")
 
 from langchain.agents import AgentExecutor, create_tool_calling_agent
-tools = [tool_for_search_book]
+from langchain.agents import tool
+
+@tool
+def get_results(contentToSearch: str, k_results: int):
+        """Herramienta para buscar libros en el contexto de la biblioteca universitaria.
+           Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto. 
+        Args:
+            contentToSearch: El input del usuario
+            k_results: la cantidad de resultados que se quiere, por defecto 4 siempre
+        """
+        retriever = collection__of__books.as_retriever(
+            search_type="similarity",
+            search_kwargs={"k": k_results},
+        ) 
+        
+        return retriever.batch([contentToSearch])
+    
+
+tools = [get_results]
 
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -61,7 +80,9 @@ prompt = ChatPromptTemplate.from_messages(
         Eres un asistente virtual llamado Alejandro para información acerca de los libros existentes en una biblioteca universitaria.
         Responde las preguntas del usuario solo basado en el contexto. 
         Si un usuario se presenta con su nombre y te saluda puedes responderle.
-        Si el contexto no contiene información relevante de las preguntas, no hagas nada y solo di "Solo puedo ayudarte con temas relacionados a la biblioteca"
+        Si el contexto no contiene información relevante de las preguntas, no hagas nada y solo di "Solo puedo ayudarte con temas relacionados a la biblioteca.
+        No uses ningún conocimiento que no provenga directamente de la base de datos.
+        
 
 """,
         ),
@@ -71,7 +92,7 @@ prompt = ChatPromptTemplate.from_messages(
     ]
 )
 
-message_history = ChatMessageHistory()
+
 
 agent = create_tool_calling_agent(llm, tools, prompt )
 
@@ -85,7 +106,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 #     if session_id not in store:
 #         store[session_id] = ChatMessageHistory()
 #     return store[session_id]
-
+message_history = ChatMessageHistory()
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
     # This is needed because in most real world scenarios, a session id is needed
