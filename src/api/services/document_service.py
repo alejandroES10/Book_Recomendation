@@ -1,9 +1,9 @@
-from database.vector_store import  collection__of__books
+from src.database.vector_store import  collection__of__books
 # from database.vector_store import vectorstore_of_thesis
 from langchain_core.documents import Document
 from fastapi import HTTPException
 from typing import List
-from api.models.document_model import DocumentModel
+from src.api.models.document_model import DocumentModel
 from uuid import uuid4
 
 

@@ -4,4 +4,4 @@ from src.database.vector_store import  collection__of__books
 
 retriever_of_books = collection__of__books.as_retriever()
 
-tool_for_search_book = create_retriever_tool(retriever_of_books,"herramienta para buscar libros de la biblioteca","herramienta para buscar libros de la biblioteca así como hacer recomendaciones, si no aparece el libro que se busca devolver temas relacionados a la búsqueda")
+tool_for_search_book = create_retriever_tool(retriever_of_books,"herramienta para buscar libros de la biblioteca universitaria","herramienta para buscar libros de la biblioteca universitaria así como hacer recomendaciones, el title es el título, el page content es la descripción")

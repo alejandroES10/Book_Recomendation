@@ -1,9 +1,9 @@
-from api.models.document_model import DocumentModel
-from api.models.search_model import SearchModel
+from src.api.models.document_model import DocumentModel
+from src.api.models.search_model import SearchModel
 from fastapi import APIRouter, HTTPException, Query
 
 # from fastapi import APIRouter
-from api.services.document_service import DocumentService
+from src.api.services.document_service import DocumentService
 from langchain_core.documents import Document
 from typing import List,Optional
 

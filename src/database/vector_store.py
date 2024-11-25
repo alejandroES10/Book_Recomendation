@@ -15,6 +15,7 @@ collection__of__books = Chroma(
     client=persistent_client,
     collection_name="collection__of__books",
     embedding_function=embedding_function,
+    
 )
 
 # documents = [

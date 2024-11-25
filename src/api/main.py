@@ -1,6 +1,5 @@
 from fastapi import FastAPI
-from api.controllers import documents_controller, chat_controller
-from database.vector_store import collection__of__books
+from src.api.controllers import documents_controller, chat_controller
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
