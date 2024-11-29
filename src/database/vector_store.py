@@ -18,6 +18,37 @@ collection__of__books = Chroma(
     
 )
 
+# file_path = "./files/Procesos-realizados-en-la-biblioteca-universitaria.pdf"
+
+
+from langchain_community.document_loaders import PyPDFLoader
+
+
+# async def load():
+#         loader = PyPDFLoader("/Users/alejandroestrada/Documents/Procesos realizados en la biblioteca universitaria.pdf")
+#         pages = loader.load()
+    
+        # async for page in loader.alazy_load():
+        #   pages.append(page)
+          
+        # return pages
+
+loader = PyPDFLoader("/Users/alejandroestrada/Documents/Procesos realizados en la Biblioteca Universitaria .pdf")
+pages = loader.load()
+
+
+library_information = Chroma.from_documents(
+    documents=pages,
+    embedding=embedding_function,
+    persist_directory="./files"
+    )
+
+# library_information = Chroma(
+#     client= persistent_client,
+#     collection_name= "library_information",
+#     embedding_function=embedding_function
+# )
+
 # documents = [
 #     Document(
 #         page_content="Los perros son excelentes compañeros, conocidos por su lealtad y amabilidad.",

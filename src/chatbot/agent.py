@@ -12,7 +12,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-
+from src.database.vector_store import library_information
 
 # memory = MemorySaver()
 # # message = SystemMessage(content=              """
@@ -32,6 +32,7 @@ from langchain_core.runnables.history import RunnableWithMessageHistory
 
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.agents import tool
+from langchain.tools.retriever import create_retriever_tool
 
 @tool
 def get_results(contentToSearch: str, k_results: int):
@@ -47,9 +48,25 @@ def get_results(contentToSearch: str, k_results: int):
         ) 
         
         return retriever.batch([contentToSearch])
-    
 
-tools = [get_results]
+# @tool
+# def get_library_information(contentToSearch: str):
+#         """Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria por ejemplo los préstamos de libros.
+            
+#         Args:
+#             contentToSearch: El input del usuario que quiere saber
+#         """
+#         retriever = library_information.as_retriever(
+#             search_type="similarity",
+#         ) 
+        
+#         return retriever.batch([contentToSearch])
+    
+get_library_information = create_retriever_tool(library_information.as_retriever(),"Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
+                                             "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
+
+
+tools = [get_results,get_library_information]
 
 from langchain_core.prompts import ChatPromptTemplate
 
@@ -86,8 +103,8 @@ prompt = ChatPromptTemplate.from_messages(
 
 """,
         ),
-        MessagesPlaceholder("chat_history"),
-        ("human", "{input}"),
+        MessagesPlaceholder(variable_name="history"), #chat_history de la otra forma
+        ("human", "{question}"),
         ("placeholder", "{agent_scratchpad}"),
     ]
 )
@@ -101,20 +118,42 @@ agent_executor = AgentExecutor(agent=agent, tools = tools, verbose=True)
 # store = {}
 
 from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
+chat_message_history = MongoDBChatMessageHistory(
+    session_id="test_session",
+    connection_string="mongodb://localhost:27017",
+    database_name="my_db",
+    collection_name="chat_histories",
+)
+
+chat_message_history.add_user_message("Hello")
+chat_message_history.add_ai_message("Hi")
 # def get_session_history(session_id: str) -> BaseChatMessageHistory:
 #     if session_id not in store:
 #         store[session_id] = ChatMessageHistory()
 #     return store[session_id]
-message_history = ChatMessageHistory()
+# message_history = ChatMessageHistory()
+# agent_with_chat_history = RunnableWithMessageHistory(
+#     agent_executor,
+#     # This is needed because in most real world scenarios, a session id is needed
+#     # It isn't really used here because we are using a simple in memory ChatMessageHistory
+#     # get_session_history,
+#     lambda session_id: message_history,
+#     input_messages_key="input",
+#     history_messages_key="chat_history",
+# )
+
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
-    # This is needed because in most real world scenarios, a session id is needed
-    # It isn't really used here because we are using a simple in memory ChatMessageHistory
-    # get_session_history,
-    lambda session_id: message_history,
-    input_messages_key="input",
-    history_messages_key="chat_history",
+    lambda session_id: MongoDBChatMessageHistory(
+        session_id=session_id,
+        connection_string="mongodb://localhost:27017",
+        database_name="my_db",
+        collection_name="chat_histories",
+    ),
+    input_messages_key="question",
+    history_messages_key="history",
 )
 
 # agent_with_chat_history.invoke(
