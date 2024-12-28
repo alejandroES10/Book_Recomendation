@@ -34,6 +34,12 @@ collection__of__books = Chroma(
     
 )
 
+collection__of__general_information = Chroma(
+    client=persistent_client,
+    collection_name="collection_of_general_information",
+    embedding_function=embedding_function,
+    persist_directory="./general_info"
+)
 
 
 
@@ -60,6 +66,6 @@ splits = text_splitter.split_documents(pages)
 library_information = Chroma.from_documents(
     documents=splits,
     embedding=embedding_function,
-    persist_directory="./files"
+    persist_directory="./filess"
     )
 

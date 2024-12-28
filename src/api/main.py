@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from src.api.controllers import documents_controller, chat_controller
+from src.api.controllers import documents_controller, chat_controller, general_information_controller
 from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI()
@@ -19,3 +19,4 @@ async def read_root():
 
 app.include_router(documents_controller.router, prefix="/documents")
 app.include_router(chat_controller.router, prefix="/chat")
+app.include_router(general_information_controller.router, prefix="/general_information")
