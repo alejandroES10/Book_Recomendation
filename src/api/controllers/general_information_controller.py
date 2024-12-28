@@ -17,7 +17,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 router = APIRouter()
 
 colection = collection__of__general_information
-chroma_service =  ChromaDBService(collection= colection)
+chroma_service =  ChromaDBService(vectore_store = colection)
 
 @router.post("/")
 async def create_documents_of_general_information(file: UploadFile = File(...)):
@@ -33,8 +33,8 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
         with open(temp_file_path, "wb") as buffer:
             shutil.copyfileobj(file.file, buffer)
 
-        # file_id = str(uuid.uuid4())
-        file_id = uuid.uuid4()
+        file_id = str(uuid.uuid4())
+        # file_id = uuid.uuid4().int
         
         loader = PyPDFLoader(temp_file_path)
         
@@ -49,11 +49,10 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
         splits = text_splitter.split_documents(documents)
         
         for split in splits:
-            split.metadata['file_id'] = file_id.int
+            split.metadata['file_id'] = file_id
             
         return  chroma_service.add_document( documents= splits)      
 
-     
     finally:
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
@@ -66,8 +65,9 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
     #     raise HTTPException(status_code=400, detail=str(e))
     
 @router.delete("/{id}")
-async def delete_document(id: str):
+async def delete_document_by_file_id(id: str):
      try:
+        print("Este es el id:" + id) 
         return chroma_service.delete_document(id)
      except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))

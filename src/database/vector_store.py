@@ -36,9 +36,9 @@ collection__of__books = Chroma(
 
 collection__of__general_information = Chroma(
     client=persistent_client,
-    collection_name="collection_of_general_information",
+    collection_name="collection_of_general__information",
     embedding_function=embedding_function,
-    persist_directory="./general_info"
+    persist_directory="./chroma-general-information"
 )
 
 
