@@ -7,9 +7,12 @@ from src.api.models.document_model import DocumentModel
 from uuid import uuid4
 
 
-class DocumentService:
+class DocumentService :
     
-    def add_documents(documents: List[DocumentModel]):
+    def __init__(self, colection):
+        self._colection = colection
+    
+    def add_documents(self,documents: List[DocumentModel]):
         try:
             document_objects = [
                 Document(
