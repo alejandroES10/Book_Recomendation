@@ -12,7 +12,7 @@ from langchain_core.messages import AIMessage, HumanMessage, SystemMessage
 from langchain_ollama import ChatOllama
 from langchain_community.chat_message_histories import ChatMessageHistory
 from langchain_core.runnables.history import RunnableWithMessageHistory
-from src.database.vector_store import library_information
+from src.database.vector_store import collection__of__general_information
 
 
 
@@ -37,7 +37,7 @@ def get_results(contentToSearch: str, k_results: int):
 
 
     
-get_library_information = create_retriever_tool(library_information.as_retriever(),"Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
+get_library_information = create_retriever_tool(collection__of__general_information.as_retriever(),"Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
                                              "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
 
 
@@ -100,4 +100,5 @@ agent_with_chat_history = RunnableWithMessageHistory(
     input_messages_key="question",
     history_messages_key="history",
 )
+
 

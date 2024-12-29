@@ -13,3 +13,11 @@ router = APIRouter()
 @router.get("/")
 async def search_results(session_id: str = Query(...), input: str = Query(...)):
     return ChatService.get_chat_bot_answer(session_id, input)
+
+@router.get("/{id}")
+async def get_chat_history(id):
+    return ChatService.get_chat_history(id)
+
+@router.delete("/{id}")
+async def delete_chat(id: str):
+    return ChatService.delete_chat_history(id)
