@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+from fastapi import HTTPException
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
@@ -10,11 +11,17 @@ class ChromaDBService:
     # def add_document(self, ids: List[str],documents: List[Document]):
     #     return self._collection.add_documents(documents=documents,ids = ids)
     
-    def add_document(self,documents: List[Document]):
+    def add_documents(self,documents: List[Document]):
         return self._vectore_store.add_documents(documents=documents)
     
+    def add_documents_with_ids(self,documents: List[Document],ids: List[str]):
+        if len(documents) != len(ids):
+            raise HTTPException(status_code=400, detail="IDs and documents count mismatch")
 
-    def update_document(self, ids: List[str],documents: List[Document]):
+        return self._vectore_store.add_documents(documents=documents, ids=ids)
+    
+
+    def update_documents(self, ids: List[str],documents: List[Document]):
         return self._vectore_store.update_documents(ids=ids, documents=documents)
 
 

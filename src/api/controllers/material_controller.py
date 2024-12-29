@@ -18,7 +18,16 @@ chroma_service =  ChromaDBService(vectore_store = colection)
 async def create_documents(documents: List[DocumentModel]):
     
     try:
-        return chroma_service.add_document(documents)
+        document_objects = [
+                Document(
+                    page_content=doc.page_content, 
+                    metadata=doc.metadata, 
+                    id=str(doc.id) 
+                ) 
+                for doc in documents
+            ]
+        ids = [str(doc.id) for doc in documents]
+        return chroma_service.add_documents(document_objects, ids)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
