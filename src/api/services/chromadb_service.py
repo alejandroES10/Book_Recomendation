@@ -1,3 +1,4 @@
+from ctypes import Array
 from typing import Any, Dict, List
 from fastapi import HTTPException
 from langchain_chroma import Chroma
@@ -15,13 +16,19 @@ class ChromaDBService:
         return self._vectore_store.add_documents(documents=documents)
     
     def add_documents_with_ids(self,documents: List[Document],ids: List[str]):
+        
         if len(documents) != len(ids):
             raise HTTPException(status_code=400, detail="IDs and documents count mismatch")
-
+        
+        elif len(list(self._vectore_store._collection.get(ids).values())[0]) == len(ids):
+            raise HTTPException(status_code=400, detail="There is a book with this ID")
+        
         return self._vectore_store.add_documents(documents=documents, ids=ids)
     
 
     def update_documents(self, ids: List[str],documents: List[Document]):
+        if len(documents) != len(ids):
+            raise HTTPException(status_code=400, detail="IDs and documents count mismatch")
         return self._vectore_store.update_documents(ids=ids, documents=documents)
 
 

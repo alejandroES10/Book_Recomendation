@@ -17,6 +17,6 @@ async def read_root():
     return "Book Recomendation"
 
 
-app.include_router(material_controller.router, prefix="/documents")
+app.include_router(material_controller.router, prefix="/materials")
 app.include_router(chat_controller.router, prefix="/chat")
 app.include_router(general_information_controller.router, prefix="/general_information")

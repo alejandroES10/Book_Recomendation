@@ -20,4 +20,9 @@ async def get_chat_history(id):
 
 @router.delete("/{id}")
 async def delete_chat(id: str):
-    return ChatService.delete_chat_history(id)
+    try:
+        ChatService.delete_chat_history(id)
+        response = {"message": "chat history deleted successfully"}
+        return response
+    except Exception as e:
+        raise HTTPException(status_code=400, detail=str(e))

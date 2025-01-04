@@ -27,14 +27,16 @@ async def create_documents(documents: List[DocumentModel]):
                 for doc in documents
             ]
         ids = [str(doc.id) for doc in documents]
-        return chroma_service.add_documents(document_objects, ids)
+        return chroma_service.add_documents_with_ids(document_objects, ids)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
 @router.delete("/{id}")
 async def delete_document(id: str):
      try:
-        return chroma_service.delete_document_by_id(id)
+        chroma_service.delete_document_by_id(id)
+        response = {"message": "metadata deleted successfully"}
+        return response
      except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     

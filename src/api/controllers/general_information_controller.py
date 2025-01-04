@@ -50,8 +50,12 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
         
         for split in splits:
             split.metadata['file_id'] = file_id
+        
+        chroma_service.add_documents( documents= splits) 
             
-        return  chroma_service.add_document( documents= splits)      
+        response = {"file_id": file_id}
+        
+        return  response
 
     finally:
         if os.path.exists(temp_file_path):
@@ -67,8 +71,9 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
 @router.delete("/{id}")
 async def delete_document_by_file_id(id: str):
      try:
-        print("Este es el id:" + id) 
-        return chroma_service.delete_document(id)
+        chroma_service.delete_document_by_file_id(id)
+        response = {"message": "document deleted successfully"}
+        return  response
      except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
     
