@@ -19,6 +19,11 @@ from src.database.vector_store import collection__of__general_information
 from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.agents import tool
 from langchain.tools.retriever import create_retriever_tool
+from langchain_core.prompts import ChatPromptTemplate
+
+from langchain_core.prompts import MessagesPlaceholder
+from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 @tool
 def get_results(contentToSearch: str, k_results: int):
@@ -44,17 +49,13 @@ get_library_information = create_retriever_tool(collection__of__general_informat
 
 tools = [get_results,get_library_information]
 
-from langchain_core.prompts import ChatPromptTemplate
-
-from langchain_core.prompts import MessagesPlaceholder
-
 
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
             """
-        Eres un asistente virtual llamado Alejandro para información acerca de los libros existentes en una biblioteca universitaria.
+        Eres un asistente virtual llamado BibCUJAE para información acerca de los libros existentes en una biblioteca universitaria.
         Responde las preguntas del usuario solo basado en el contexto. 
         Si un usuario te saluda le respondes el saludo.
         Si un usuario se presenta con su nombre y te saluda puedes responderle.
@@ -77,10 +78,6 @@ agent = create_tool_calling_agent(llm, tools, prompt )
 
 agent_executor = AgentExecutor(agent=agent, tools = tools, verbose=True)
 
-
-
-from langchain_core.chat_history import BaseChatMessageHistory
-from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 # chat_message_history = MongoDBChatMessageHistory(
 #     session_id="test_session",
