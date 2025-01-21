@@ -30,7 +30,8 @@ def get_results(contentToSearch: str, k_results: int):
         """Herramienta para buscar libros en el contexto de la biblioteca universitaria.
            Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto.
            Si te preguntan si en la biblioteca hay un libro, y cuando hagas la búsqueda no se encuentra dentro de los resultados, solo di que "no disponen de el libro en la biblioteca, quieres ayuda con otro libro ". 
-           Si te pregunta el usuario por libros que le interesen revisa su historial de chat a ver qué temas a buscado y con ellos haz la búsqueda
+           Si te preguntan: "Recomiéndame libros que me interesen" revisa su historial de chat a ver qué categorías de libros  ha buscado y recomiéndale libros de esa categoría.
+           
             contentToSearch: El input del usuario
             k_results: la cantidad de resultados que se quiere, por defecto 4 siempre
         """
@@ -59,7 +60,7 @@ prompt = ChatPromptTemplate.from_messages(
         Responde las preguntas del usuario solo basado en el contexto. 
         Si un usuario te saluda le respondes el saludo.
         Si un usuario se presenta con su nombre y te saluda puedes responderle.
-        Si el contexto no contiene información relevante de las preguntas, no hagas nada y solo di "Solo puedo ayudarte con temas relacionados a la biblioteca.
+        Si el contexto no contiene información relevante de las preguntas, no hagas nada y solo di "Solo puedo ayudarte con temas relacionados a la biblioteca".
         No uses ningún conocimiento que no provenga directamente de la base de datos.
         
 
