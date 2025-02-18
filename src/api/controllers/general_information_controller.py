@@ -34,7 +34,6 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
             shutil.copyfileobj(file.file, buffer)
 
         file_id = str(uuid.uuid4())
-        # file_id = uuid.uuid4().int
         
         loader = PyPDFLoader(temp_file_path)
         
@@ -42,9 +41,7 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
         
         text_splitter = RecursiveCharacterTextSplitter(
             chunk_size=1500, 
-            chunk_overlap=150 
-
-            )
+            chunk_overlap=150 )
         
         splits = text_splitter.split_documents(documents)
         

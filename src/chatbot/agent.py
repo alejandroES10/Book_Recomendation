@@ -1,5 +1,5 @@
-from langgraph.prebuilt import create_react_agent
-from langgraph.checkpoint.memory import MemorySaver
+# from langgraph.prebuilt import create_react_agent
+# from langgraph.checkpoint.memory import MemorySaver
 # import sys
 # import os
 # sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -28,7 +28,7 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 @tool
 def get_results(contentToSearch: str, k_results: int):
         """Herramienta para buscar libros en el contexto de la biblioteca universitaria.
-           Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto.
+           Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto, si no son del tema específico que busca el usuario dale los libros similares que aparezcan solo en este contexto.
            Si te preguntan si en la biblioteca hay un libro, y cuando hagas la búsqueda no se encuentra dentro de los resultados, solo di que "no disponen de el libro en la biblioteca, quieres ayuda con otro libro ". 
            Si te preguntan: "Recomiéndame libros que me interesen" revisa su historial de chat a ver qué categorías de libros  ha buscado y recomiéndale libros de esa categoría.
            
