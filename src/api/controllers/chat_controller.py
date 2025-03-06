@@ -14,9 +14,21 @@ router = APIRouter()
 async def search_results(session_id: str = Query(...), input: str = Query(...)):
     return ChatService.get_chat_bot_answer(session_id, input)
 
+from fastapi import HTTPException, Query
+
+@router.get("/")
+async def search_results(session_id: str = Query(...), input: str = Query(...)):
+    try:
+        return ChatService.get_chat_bot_answer(session_id, input)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
+
+
 @router.get("/{id}")
 async def get_chat_history(id):
     return ChatService.get_chat_history(id)
+
+
 
 @router.delete("/{id}")
 async def delete_chat(id: str):

@@ -28,7 +28,6 @@ class ChatService :
         return chat_history.messages
     
     
-    def get_chat_bot_answer(session_id, input):
-        
+    def get_chat_bot_answer(session_id, input):  
         return get_answer(session_id, input)
 
