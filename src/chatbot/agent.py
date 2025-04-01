@@ -13,6 +13,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 
+
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.ollama.ollama_llm import llm
 from src.database.vector_store import collection__of__books, collection__of__general_information    
@@ -20,7 +21,7 @@ from src.database.vector_store import collection__of__books, collection__of__gen
 
 
 @tool
-def get_results(content_to_search: str, k_results: int):
+async def get_results(content_to_search: str, k_results: int):
     """Herramienta para buscar libros en la biblioteca universitaria.
 
     Solo puedes recomendar libros o indicar si están disponibles.
@@ -37,7 +38,7 @@ def get_results(content_to_search: str, k_results: int):
         search_type="similarity",
         search_kwargs={"k": k_results},
     )
-    return retriever.batch([content_to_search])
+    return await retriever.abatch([content_to_search])
 
 
 get_library_information = create_retriever_tool(
@@ -62,7 +63,7 @@ prompt = ChatPromptTemplate.from_messages(
                 """Eres un asistente virtual llamado BibCUJAE para información sobre
                 los libros en una biblioteca universitaria.
                 Responde solo con información basada en la base de datos.
-                Si un usuario te saluda, responde el saludo.
+                Si un usuario te saluda, responde el saludo sin usar herramientas.
                 Si un usuario se presenta y saluda, puedes responderle.
                 Si la pregunta no tiene contexto en la base de datos, responde:
                 Solo puedo ayudarte con temas relacionados a la biblioteca.
@@ -76,7 +77,8 @@ prompt = ChatPromptTemplate.from_messages(
 )
 
 agent = create_tool_calling_agent(llm, tools, prompt)
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=True)
+
+agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
 
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
@@ -101,8 +103,9 @@ async def get_answer(session_id: str, user_input: str):
     Returns:
         dict: Respuesta del agente.
     """
-    print("Holaalalalasss")
-    return agent_with_chat_history.invoke(
+    
+    return await agent_with_chat_history.ainvoke(
         {"question": user_input},
         config={"configurable": {"session_id": session_id}},
     )
+
