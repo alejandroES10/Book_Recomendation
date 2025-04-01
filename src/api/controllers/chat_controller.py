@@ -1,40 +1,40 @@
-
 from fastapi import APIRouter, HTTPException, Query
-
-
-# from fastapi import APIRouter
 from src.api.services.chat_service import ChatService
-from langchain_core.documents import Document
-from typing import List,Optional
-from langchain_core.messages import AIMessage, HumanMessage
+
 router = APIRouter()
 
 
 @router.get("/")
-async def search_results(session_id: str = Query(...), input: str = Query(...)):
-    return ChatService.get_chat_bot_answer(session_id, input)
-
-from fastapi import HTTPException, Query
-
-@router.get("/")
-async def search_results(session_id: str = Query(...), input: str = Query(...)):
+async def chat(
+    session_id: str = Query(...),
+    input: str = Query(...)
+):
     try:
-        return ChatService.get_chat_bot_answer(session_id, input)
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error interno del servidor: {str(e)}")
-
-
-@router.get("/{id}")
-async def get_chat_history(id):
-    return ChatService.get_chat_history(id)
-
-
-
-@router.delete("/{id}")
-async def delete_chat(id: str):
-    try:
-        ChatService.delete_chat_history(id)
-        response = {"message": "chat history deleted successfully"}
-        return response
-    except Exception as e:
+        
+        return await ChatService.get_chat_bot_answer(session_id, input)
+    except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/history/{session_id}")
+async def get_chat_history(session_id: str):
+    try:
+        history = await ChatService.get_chat_history(session_id)
+        return {"history": history}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.delete("/history/{session_id}")
+async def delete_chat_history(session_id: str):
+    try:
+        await ChatService.delete_chat_history(session_id)
+        return {"message": "Chat history deleted successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")

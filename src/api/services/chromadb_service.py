@@ -1,53 +1,133 @@
-from ctypes import Array
-from typing import Any, Dict, List
+from typing import List, Optional
 from fastapi import HTTPException
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 
 class ChromaDBService:
-    
-    def __init__(self, vectore_store: Chroma):
-        self._vectore_store = vectore_store
+    def __init__(self, vector_store: Chroma):
+        self._vector_store = vector_store
 
-    # def add_document(self, ids: List[str],documents: List[Document]):
-    #     return self._collection.add_documents(documents=documents,ids = ids)
-    
-    def add_documents(self,documents: List[Document]):
-        return self._vectore_store.add_documents(documents=documents)
-    
-    def add_documents_with_ids(self,documents: List[Document],ids: List[str]):
-        
+    async def add_documents(self, documents: List[Document]) -> List[str]:
+        """Add documents to the vector store without specific IDs"""
+        try:
+            return await self._vector_store.aadd_documents(documents)
+        except Exception as e:
+            raise ValueError(f"Failed to add documents: {str(e)}")
+
+    async def add_documents_with_ids(self, documents: List[Document], ids: List[str]) -> None:
+        """Add documents with specific IDs"""
         if len(documents) != len(ids):
-            raise HTTPException(status_code=400, detail="IDs and documents count mismatch")
+            raise ValueError("IDs and documents count mismatch")
         
-        elif len(list(self._vectore_store._collection.get(ids).values())[0]) == len(ids):
-            raise HTTPException(status_code=400, detail="There is a book with this ID")
+        existing = self._vector_store._collection.get(ids=ids)
+        if existing and len(existing['ids']) > 0:
+            raise ValueError("Duplicate ID found in the database")
         
-        return self._vectore_store.add_documents(documents=documents, ids=ids)
-    
+        try:
+            await self._vector_store.aadd_documents(documents=documents, ids=ids)
+        except Exception as e:
+            raise ValueError(f"Failed to add documents: {str(e)}")
 
-    def update_documents(self, ids: List[str],documents: List[Document]):
+    async def update_documents(self, ids: List[str], documents: List[Document]) -> None:
+        """Update existing documents"""
         if len(documents) != len(ids):
-            raise HTTPException(status_code=400, detail="IDs and documents count mismatch")
-        return self._vectore_store.update_documents(ids=ids, documents=documents)
+            raise ValueError("IDs and documents count mismatch")
+        
+        try:
+            await self._vector_store.aupdate_documents(ids=ids, documents=documents)
+        except Exception as e:
+            raise ValueError(f"Failed to update documents: {str(e)}")
+
+    async def delete_document_by_file_id(self, file_id: str) -> None:
+        """Delete documents by file_id metadata"""
+        result = self._vector_store._collection.delete(where={"file_id": file_id})
+        if not result:
+            raise ValueError(f"No documents found with file_id: {file_id}")
+
+    async def delete_document_by_id(self, id: str) -> None:
+        """Delete document by ID"""
+        try:
+            self._vector_store.delete(ids=[id])
+        except Exception as e:
+            raise ValueError(f"Failed to delete document: {str(e)}")
+
+    async def find_one(self, id: str) -> Optional[Document]:
+        """Find a single document by ID"""
+        result = self._vector_store.get(ids=[id])
+        if not result or not result['documents']:
+            return None
+        return Document(
+            page_content=result['documents'][0],
+            metadata=result['metadatas'][0],
+            id=result['ids'][0]
+        )
+
+    async def find_all(self) -> List[Document]:
+        """Get all documents from the collection"""
+        result = self._vector_store.get()
+        return [
+            Document(
+                page_content=doc,
+                metadata=meta,
+                id=id_
+            ) for doc, meta, id_ in zip(
+                result['documents'],
+                result['metadatas'],
+                result['ids']
+            )
+        ]
 
 
-    def delete_document_by_file_id(self, id: str):
-        return self._vectore_store._collection.delete(where={"file_id": id})
+# from ctypes import Array
+# from typing import Any, Dict, List
+# from fastapi import HTTPException
+# from langchain_chroma import Chroma
+# from langchain_core.documents import Document
+
+# class ChromaDBService:
     
-    def delete_document_by_id(self,id: str):
-        self._vectore_store.delete(ids=[id])
+#     def __init__(self, vectore_store: Chroma):
+#         self._vectore_store = vectore_store
+
+#     # def add_document(self, ids: List[str],documents: List[Document]):
+#     #     return self._collection.add_documents(documents=documents,ids = ids)
+    
+#     def add_documents(self,documents: List[Document]):
+#         return self._vectore_store.add_documents(documents=documents)
+    
+#     def add_documents_with_ids(self,documents: List[Document],ids: List[str]):
+        
+#         if len(documents) != len(ids):
+#             raise HTTPException(status_code=400, detail="IDs and documents count mismatch")
+        
+#         elif len(list(self._vectore_store._collection.get(ids).values())[0]) == len(ids):
+#             raise HTTPException(status_code=400, detail="There is a book with this ID")
+        
+#         return self._vectore_store.add_documents(documents=documents, ids=ids)
+    
+
+#     def update_documents(self, ids: List[str],documents: List[Document]):
+#         if len(documents) != len(ids):
+#             raise HTTPException(status_code=400, detail="IDs and documents count mismatch")
+#         return self._vectore_store.update_documents(ids=ids, documents=documents)
+
+
+#     def delete_document_by_file_id(self, id: str):
+#         return self._vectore_store._collection.delete(where={"file_id": id})
+    
+#     def delete_document_by_id(self,id: str):
+#         self._vectore_store.delete(ids=[id])
 
     
-    def get_documents_by_id(self, ids: List[str]):
-        return self._vectore_store.get_by_ids(ids = ids)
+#     def get_documents_by_id(self, ids: List[str]):
+#         return self._vectore_store.get_by_ids(ids = ids)
     
-    def find_one(self,id: str ):
-            return self._vectore_store.get(id)
+#     def find_one(self,id: str ):
+#             return self._vectore_store.get(id)
            
         
-    def find_all( self):
-            return self._vectore_store.get()
+#     def find_all( self):
+#             return self._vectore_store.get()
         
         
 

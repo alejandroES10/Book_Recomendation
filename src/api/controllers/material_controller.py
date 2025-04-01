@@ -1,79 +1,71 @@
-from src.api.models.document_model import DocumentModel
-from src.api.models.search_model import SearchModel
-from fastapi import APIRouter, HTTPException, Query
-
-# from fastapi import APIRouter
-from src.api.services.chromadb_service import ChromaDBService
-from src.api.services.document_service import DocumentService
+from fastapi import APIRouter, HTTPException
 from langchain_core.documents import Document
-from typing import List,Optional
-from src.database.vector_store import  collection__of__books
+from typing import List
+from src.api.models.document_model import DocumentModel
+from src.api.services.chromadb_service import ChromaDBService
+from src.database.vector_store import collection__of__books
 
-router = APIRouter()
+router = APIRouter(prefix="/materials", tags=["materials"])
 
-colection = collection__of__books
-chroma_service =  ChromaDBService(vectore_store = colection)
+chroma_service = ChromaDBService(vector_store=collection__of__books)
 
-@router.post("/")
+
+@router.post("/", status_code=201)
 async def create_documents(documents: List[DocumentModel]):
-    
     try:
         document_objects = [
-                Document(
-                    page_content=doc.page_content, 
-                    metadata=doc.metadata, 
-                    id=str(doc.id) 
-                ) 
-                for doc in documents
-            ]
+            Document(
+                page_content=doc.page_content,
+                metadata=doc.metadata,
+                id=str(doc.id))
+            for doc in documents
+        ]
         ids = [str(doc.id) for doc in documents]
-        return chroma_service.add_documents_with_ids(document_objects, ids)
-    except Exception as e:
+        await chroma_service.add_documents_with_ids(document_objects, ids)
+        return {"message": "Documents created successfully"}
+    except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
-    
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
 @router.delete("/{id}")
 async def delete_document(id: str):
-     try:
-        chroma_service.delete_document_by_id(id)
-        response = {"message": "metadata deleted successfully"}
-        return response
-     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    
-# @router.put("/documents/{id}")
-# async def update_document(document: Document):
-#     try:
-#         return DocumentService.update_document(document_id=document.id, document=document)
-#     except HTTPException as e:
-#         raise e
+    try:
+        await chroma_service.delete_document_by_id(id)
+        return {"message": "Document deleted successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
 
 @router.put("/")
 async def update_documents(documents: List[DocumentModel]):
-    ids = [doc.id for doc in documents]
-    
     try:
-        return chroma_service.update_documents(ids=ids, documents=documents)
-    except HTTPException as e:
-        raise e
-    
-# @router.get("/documents/{ids}")
-# async def find_documents(ids: List[str]):
-#      try:
-#         return DocumentService.get_documents_by_ids(ids)
-#      except Exception as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-    
-# @router.get("/search/")
-# async def search_results(content: str = Query(...), k_results: Optional[int] = Query(10)):
-#     return DocumentService.get_results(content, k_results)
- 
-@router.get("/{id}") 
+        ids = [doc.id for doc in documents]
+        await chroma_service.update_documents(ids=ids, documents=documents)
+        return {"message": "Documents updated successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
+
+
+@router.get("/{id}")
 async def get_document(id: str):
-    return chroma_service.find_one(id)
+    try:
+        document = await chroma_service.find_one(id)
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return document
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.get("/") 
+
+@router.get("/")
 async def get_documents():
-    return chroma_service.find_all()
-
-
-    
+    try:
+        return await chroma_service.find_all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")

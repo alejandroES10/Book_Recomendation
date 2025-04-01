@@ -1,33 +1,25 @@
 import os
 import shutil
 import uuid
-from src.api.models.document_model import DocumentModel
-from src.api.models.search_model import SearchModel
-from fastapi import APIRouter, File, HTTPException, Query, UploadFile
-
-# from fastapi import APIRouter
-from src.api.services.document_service import DocumentService
-from src.api.services.chromadb_service import ChromaDBService
+from fastapi import APIRouter, File, HTTPException, UploadFile
 from langchain_core.documents import Document
-from typing import List,Optional
-from src.database.vector_store import  collection__of__general_information
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
+from src.api.services.chromadb_service import ChromaDBService
+from src.database.vector_store import collection__of__general_information
 
-router = APIRouter()
+router = APIRouter(prefix="/general-information", tags=["general information"])
 
-colection = collection__of__general_information
-chroma_service =  ChromaDBService(vectore_store = colection)
+chroma_service = ChromaDBService(vector_store=collection__of__general_information)
 
-@router.post("/")
-async def create_documents_of_general_information(file: UploadFile = File(...)):
-    file_extension = os.path.splitext(file.filename)[1].lower()
+
+@router.post("/", status_code=201)
+async def create_documents_from_pdf(file: UploadFile = File(...)):
+    if not file.filename.lower().endswith('.pdf'):
+        raise HTTPException(status_code=400, detail="Only PDF files are accepted")
+
+    temp_file_path = f"temp_{uuid.uuid4()}.pdf"
     
-    if file_extension != '.pdf':
-        raise HTTPException(status_code=400, detail=f"Unsupported file type.")
-    
-    temp_file_path = f"temp_{file.filename}"
-
     try:
         # Save the uploaded file to a temporary file
         with open(temp_file_path, "wb") as buffer:
@@ -36,68 +28,54 @@ async def create_documents_of_general_information(file: UploadFile = File(...)):
         file_id = str(uuid.uuid4())
         
         loader = PyPDFLoader(temp_file_path)
-        
         documents = loader.load()
         
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1500, 
-            chunk_overlap=150 )
+            chunk_size=1500,
+            chunk_overlap=150
+        )
         
         splits = text_splitter.split_documents(documents)
         
         for split in splits:
             split.metadata['file_id'] = file_id
         
-        chroma_service.add_documents( documents= splits) 
-            
-        response = {"file_id": file_id}
+        await chroma_service.add_documents(documents=splits)
         
-        return  response
+        return {"file_id": file_id}
 
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
     finally:
         if os.path.exists(temp_file_path):
             os.remove(temp_file_path)
 
 
-    
-    # try:
-    #     return chroma_service.add_document()
-    # except Exception as e:
-    #     raise HTTPException(status_code=400, detail=str(e))
-    
-@router.delete("/{id}")
-async def delete_document_by_file_id(id: str):
-     try:
-        chroma_service.delete_document_by_file_id(id)
-        response = {"message": "document deleted successfully"}
-        return  response
-     except Exception as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    
+@router.delete("/{file_id}")
+async def delete_document_by_file_id(file_id: str):
+    try:
+        await chroma_service.delete_document_by_file_id(file_id)
+        return {"message": "Documents deleted successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=404, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
 
-# @router.put("/")
-# async def update_documents(documents: List[DocumentModel]):
-#     ids = [doc.id for doc in documents]
-    
-#     try:
-#         return DocumentService.update_documents(ids=ids, documents=documents)
-#     except HTTPException as e:
-#         raise e
-    
-
-    
-# @router.get("/search/")
-# async def search_results(content: str = Query(...), k_results: Optional[int] = Query(10)):
-#     return DocumentService.get_results(content, k_results)
- 
-@router.get("/{id}") 
+@router.get("/{id}")
 async def get_document(id: str):
-    return chroma_service.find_one(id)
+    try:
+        document = await chroma_service.find_one(id)
+        if not document:
+            raise HTTPException(status_code=404, detail="Document not found")
+        return document
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
-@router.get("/") 
+
+@router.get("/")
 async def get_documents():
-    return chroma_service.find_all()
-
-
-    
+    try:
+        return await chroma_service.find_all()
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")

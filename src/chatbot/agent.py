@@ -91,7 +91,7 @@ agent_with_chat_history = RunnableWithMessageHistory(
 )
 
 
-def get_answer(session_id: str, user_input: str):
+async def get_answer(session_id: str, user_input: str):
     """Obtiene la respuesta del agente basado en el historial de chat.
 
     Args:
@@ -101,6 +101,7 @@ def get_answer(session_id: str, user_input: str):
     Returns:
         dict: Respuesta del agente.
     """
+    print("Holaalalalasss")
     return agent_with_chat_history.invoke(
         {"question": user_input},
         config={"configurable": {"session_id": session_id}},
