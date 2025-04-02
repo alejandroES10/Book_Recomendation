@@ -8,7 +8,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.api.services.chromadb_service import ChromaDBService
 from src.database.vector_store import collection__of__general_information
 
-router = APIRouter(prefix="/general-information", tags=["general information"])
+router = APIRouter()
 
 chroma_service = ChromaDBService(vector_store=collection__of__general_information)
 

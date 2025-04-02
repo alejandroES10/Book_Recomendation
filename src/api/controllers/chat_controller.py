@@ -1,17 +1,12 @@
-from fastapi import APIRouter, HTTPException, Query
+from fastapi import APIRouter, HTTPException
 from src.api.services.chat_service import ChatService
+from src.api.models.chat_request_model import ChatRequestModel
 
 router = APIRouter()
 
 
-from pydantic import BaseModel
-
-class ChatRequest(BaseModel):
-    session_id: str
-    input: str
-
 @router.post("/")
-async def chat(request: ChatRequest):
+async def chat(request: ChatRequestModel):
     try:
         return await ChatService.get_chat_bot_answer(request.session_id, request.input)
     except ValueError as e:

@@ -5,7 +5,7 @@ from src.api.models.document_model import DocumentModel
 from src.api.services.chromadb_service import ChromaDBService
 from src.database.vector_store import collection__of__books
 
-router = APIRouter(prefix="/materials", tags=["materials"])
+router = APIRouter()
 
 chroma_service = ChromaDBService(vector_store=collection__of__books)
 
