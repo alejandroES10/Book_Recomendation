@@ -83,7 +83,7 @@ from typing import List
 from langchain_core.messages import BaseMessage
 
 class LimitedMongoDBChatMessageHistory(MongoDBChatMessageHistory):
-    def __init__(self, *args, max_history: int = 6, **kwargs):
+    def __init__(self, *args, max_history: int = 10, **kwargs):
         super().__init__(*args, **kwargs)
         self.max_history = max_history
     
@@ -104,7 +104,7 @@ agent_with_chat_history = RunnableWithMessageHistory(
         connection_string="mongodb://localhost:27017",
         database_name="chats_db",
         collection_name="chat_histories",
-        max_history=6  # Físicamente limita a 6 mensajes en MongoDB
+        max_history=10  # Físicamente limita a 6 mensajes en MongoDB
     ),
     input_messages_key="question",
     history_messages_key="history",
