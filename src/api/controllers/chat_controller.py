@@ -10,7 +10,6 @@ async def chat(
     input: str = Query(...)
 ):
     try:
-        
         return await ChatService.get_chat_bot_answer(session_id, input)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
