@@ -4,13 +4,16 @@ from src.api.services.chat_service import ChatService
 router = APIRouter()
 
 
-@router.get("/")
-async def chat(
-    session_id: str = Query(...),
-    input: str = Query(...)
-):
+from pydantic import BaseModel
+
+class ChatRequest(BaseModel):
+    session_id: str
+    input: str
+
+@router.post("/")
+async def chat(request: ChatRequest):
     try:
-        return await ChatService.get_chat_bot_answer(session_id, input)
+        return await ChatService.get_chat_bot_answer(request.session_id, request.input)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:

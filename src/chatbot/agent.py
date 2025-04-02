@@ -135,7 +135,7 @@ async def get_answer(session_id: str, user_input: str):
         dict: Respuesta del agente.
     """
     
-    
+
     return await agent_with_chat_history.ainvoke(
         {"question": user_input} or {},
         config={"configurable": {"session_id": session_id}},
