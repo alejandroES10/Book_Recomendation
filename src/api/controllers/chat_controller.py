@@ -5,7 +5,7 @@ from src.api.models.chat_request_model import ChatRequestModel
 router = APIRouter()
 
 
-@router.post("/", status_code=201)
+@router.post("/")
 async def chat(request: ChatRequestModel):
     try:
         return await ChatService.get_chat_bot_answer(request.session_id, request.input)
