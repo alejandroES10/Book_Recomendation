@@ -82,19 +82,42 @@ agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
 from typing import List
 from langchain_core.messages import BaseMessage
 
+# class LimitedMongoDBChatMessageHistory(MongoDBChatMessageHistory):
+#     def __init__(self, *args, max_history: int = 10, **kwargs):
+#         super().__init__(*args, **kwargs)
+#         self.max_history = max_history
+    
+#     def add_messages(self, messages: List[BaseMessage]) -> None:
+#         super().add_messages(messages)
+#         all_messages = super().messages  # Obtener todos los mensajes
+#         if len(all_messages) > self.max_history:
+#             # Mantener solo los últimos `max_history` mensajes
+#             last_messages = all_messages[-self.max_history:]
+#             self.clear()  # Borrar todo el historial
+#             super().add_messages(last_messages)  # Guardar solo los últimos N
+
+from datetime import datetime
+
+
 class LimitedMongoDBChatMessageHistory(MongoDBChatMessageHistory):
     def __init__(self, *args, max_history: int = 10, **kwargs):
         super().__init__(*args, **kwargs)
         self.max_history = max_history
     
     def add_messages(self, messages: List[BaseMessage]) -> None:
+        # Agregar timestamp a cada mensaje
+        for message in messages:
+            if not hasattr(message, 'additional_kwargs'):
+                message.additional_kwargs = {}
+            message.additional_kwargs['timestamp'] = datetime.utcnow().isoformat()  # Fecha en formato ISO
+        
         super().add_messages(messages)
-        all_messages = super().messages  # Obtener todos los mensajes
+        all_messages = super().messages
+        
         if len(all_messages) > self.max_history:
-            # Mantener solo los últimos `max_history` mensajes
             last_messages = all_messages[-self.max_history:]
-            self.clear()  # Borrar todo el historial
-            super().add_messages(last_messages)  # Guardar solo los últimos N
+            self.clear()
+            super().add_messages(last_messages)
 
 # Configuración del agente con historial limitado
 agent_with_chat_history = RunnableWithMessageHistory(
