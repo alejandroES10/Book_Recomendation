@@ -1,11 +1,12 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException,Depends
 from src.api.services.chat_service import ChatService
 from src.api.models.chat_request_model import ChatRequestModel
+from src.api.security.auth import validate_api_key
 
 router = APIRouter()
 
 
-@router.post("/")
+@router.post("/",dependencies=[Depends(validate_api_key)])
 async def chat(request: ChatRequestModel):
     try:
         return await ChatService.get_chat_bot_answer(request.session_id, request.input)
@@ -15,7 +16,7 @@ async def chat(request: ChatRequestModel):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/history/{session_id}")
+@router.get("/{session_id}",dependencies=[Depends(validate_api_key)])
 async def get_chat_history(session_id: str):
     try:
         history = await ChatService.get_chat_history(session_id)
@@ -26,7 +27,7 @@ async def get_chat_history(session_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.delete("/history/{session_id}")
+@router.delete("/{session_id}",dependencies=[Depends(validate_api_key)])
 async def delete_chat_history(session_id: str):
     try:
         await ChatService.delete_chat_history(session_id)

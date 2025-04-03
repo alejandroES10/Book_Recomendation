@@ -1,16 +1,17 @@
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException,Depends
 from langchain_core.documents import Document
 from typing import List
 from src.api.models.document_model import DocumentModel
 from src.api.services.chromadb_service import ChromaDBService
 from src.database.vector_store import collection__of__books
+from src.api.security.auth import validate_api_key
 
 router = APIRouter()
 
 chroma_service = ChromaDBService(vector_store=collection__of__books)
 
 
-@router.post("/", status_code=201)
+@router.post("/", status_code=201,dependencies=[Depends(validate_api_key)])
 async def create_documents(documents: List[DocumentModel]):
     try:
         document_objects = [
@@ -29,7 +30,7 @@ async def create_documents(documents: List[DocumentModel]):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.delete("/{id}")
+@router.delete("/{id}",dependencies=[Depends(validate_api_key)])
 async def delete_document(id: str):
     try:
         await chroma_service.delete_document_by_id(id)
@@ -40,7 +41,7 @@ async def delete_document(id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.put("/")
+@router.put("/",dependencies=[Depends(validate_api_key)])
 async def update_documents(documents: List[DocumentModel]):
     try:
         ids = [doc.id for doc in documents]
@@ -52,7 +53,7 @@ async def update_documents(documents: List[DocumentModel]):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/{id}")
+@router.get("/{id}",dependencies=[Depends(validate_api_key)])
 async def get_document(id: str):
     try:
         document = await chroma_service.find_one(id)
@@ -63,7 +64,7 @@ async def get_document(id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/")
+@router.get("/",dependencies=[Depends(validate_api_key)])
 async def get_documents():
     try:
         return await chroma_service.find_all()
