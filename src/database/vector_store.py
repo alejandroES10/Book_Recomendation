@@ -43,19 +43,19 @@ collection__of__general_information = Chroma(
 
 
 
-from langchain_community.document_loaders import PyPDFLoader
+# from langchain_community.document_loaders import PyPDFLoader
 
 
-loader = PyPDFLoader("/Users/alejandroestrada/Documents/Procesos realizados en la Biblioteca Universitaria .pdf")
-pages = loader.load()
+# loader = PyPDFLoader("/Users/alejandroestrada/Documents/Procesos realizados en la Biblioteca Universitaria .pdf")
+# pages = loader.load()
 
-text_splitter = RecursiveCharacterTextSplitter(
- chunk_size=1500, 
- chunk_overlap=150 
+# text_splitter = RecursiveCharacterTextSplitter(
+#  chunk_size=1500, 
+#  chunk_overlap=150 
 
-)
+# )
 
-splits = text_splitter.split_documents(pages)
+# splits = text_splitter.split_documents(pages)
 
 # for split in splits:
 #     split.metadata = DM.metadatas
@@ -63,9 +63,9 @@ splits = text_splitter.split_documents(pages)
 
 
 
-library_information = Chroma.from_documents(
-    documents=splits,
-    embedding=embedding_function,
-    persist_directory="./filess"
-    )
+# library_information = Chroma.from_documents(
+#     documents=splits,
+#     embedding=embedding_function,
+#     persist_directory="./filess"
+#     )
 

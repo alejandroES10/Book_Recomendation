@@ -15,9 +15,15 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-from src.ollama.ollama_llm import llm
-from src.database.vector_store import collection__of__books, collection__of__general_information    
+# from src.ollama.ollama_llm import llm
+from src.database.vector_store import collection__of__books, collection__of__general_information  
+from langchain_groq import ChatGroq  
+from dotenv import load_dotenv
 
+load_dotenv()
+api_key = os.getenv("GROQ_API_KEY")
+
+llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
 
 
 @tool
