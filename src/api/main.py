@@ -3,6 +3,8 @@ from src.api.controllers import chat_controller, general_information_controller,
 from fastapi.middleware.cors import CORSMiddleware
 from src.api.security.auth import validate_api_key
 
+
+
 app = FastAPI()
 
 app.add_middleware(
