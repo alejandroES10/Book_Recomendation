@@ -11,23 +11,59 @@ router = APIRouter()
 chroma_service = ChromaDBService(vector_store=collection__of__books)
 
 
-@router.post("/", status_code=201,dependencies=[Depends(validate_api_key)])
+# @router.post("/", status_code=201,dependencies=[Depends(validate_api_key)])
+# async def create_documents(documents: List[DocumentModel]):
+#     try:
+#         document_objects = [
+#             Document(
+#                 page_content=doc.page_content,
+#                 metadata = doc.metadata,
+#                 id=str(doc.id))
+#             for doc in documents
+#         ]
+#         ids = [str(doc.id) for doc in documents]
+#         await chroma_service.add_documents_with_ids(document_objects, ids)
+#         return {"message": "Documents created successfully"}
+#     except ValueError as e:
+#         raise HTTPException(status_code=400, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])
 async def create_documents(documents: List[DocumentModel]):
     try:
-        document_objects = [
-            Document(
-                page_content=doc.page_content,
-                metadata = doc.metadata,
-                id=str(doc.id))
-            for doc in documents
-        ]
-        ids = [str(doc.id) for doc in documents]
+        document_objects = []
+        ids = []
+
+        for doc in documents:
+            metadata = doc.metadata
+
+            # Convertir el diccionario de metadatos a texto
+            metadata_text = ". ".join([f"{clave}: {valor}" for clave, valor in metadata.items()])
+
+            # Combinar metadatos en texto + el contenido del documento
+            content = f"{metadata_text}. Descripción: {doc.page_content}"
+
+            document_objects.append(
+                Document(
+                    page_content=content,
+                    metadata={
+                    "fuente": "biblioteca_universitaria",
+                    
+                },
+                    id=str(doc.id)
+                )
+            )
+            ids.append(str(doc.id))
+
         await chroma_service.add_documents_with_ids(document_objects, ids)
         return {"message": "Documents created successfully"}
+
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+
 
 
 @router.delete("/{id}",dependencies=[Depends(validate_api_key)])
