@@ -17,7 +17,7 @@ async def create_documents(documents: List[DocumentModel]):
         document_objects = [
             Document(
                 page_content=doc.page_content,
-                metadata=doc.metadata,
+                metadata = doc.metadata,
                 id=str(doc.id))
             for doc in documents
         ]
@@ -53,7 +53,7 @@ async def update_documents(documents: List[DocumentModel]):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/{id}",dependencies=[Depends(validate_api_key)])
+@router.get("/{id}")
 async def get_document(id: str):
     try:
         document = await chroma_service.find_one(id)
@@ -64,7 +64,7 @@ async def get_document(id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/",dependencies=[Depends(validate_api_key)])
+@router.get("/")
 async def get_documents():
     try:
         return await chroma_service.find_all()

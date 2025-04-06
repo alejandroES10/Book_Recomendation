@@ -28,17 +28,13 @@ from dotenv import load_dotenv
 
 @tool
 async def get_results(content_to_search: str, k_results: int):
-    """Herramienta para buscar libros en la biblioteca universitaria.
-
-    Solo puedes recomendar libros o indicar si están disponibles.
-    Si el libro no está en la biblioteca, responde: "No disponemos del libro 
-    en la biblioteca,¿quieres ayuda con otro libro?".Si el usuario solicita 
-    recomendaciones, revisa su historial de chat y sugiere libros de categorías 
-    previas.
-
-    content_to_search: El input del usuario.
-    k_results:La cantidad de resultados que se quiere, por defecto 4 siempre.
-
+    """Herramienta para buscar libros en el contexto de la biblioteca universitaria.
+           Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto, si no son del tema específico que busca el usuario dale los libros similares que aparezcan solo en este contexto.
+           Si te preguntan si en la biblioteca hay un libro, y cuando hagas la búsqueda no se encuentra dentro de los resultados, solo di que "no disponen de el libro en la biblioteca, quieres ayuda con otro libro ". 
+           Si te preguntan: "Recomiéndame libros que me interesen" revisa su historial de chat a ver qué categorías de libros  ha buscado y recomiéndale libros de esa categoría.
+           
+            contentToSearch: El input del usuario
+            k_results: la cantidad de resultados que se quiere, por defecto 4 siempre
     """
     retriever = collection__of__books.as_retriever(
         search_type="similarity",
@@ -46,18 +42,23 @@ async def get_results(content_to_search: str, k_results: int):
     )
     return await retriever.abatch([content_to_search])
 
+# get_results = create_retriever_tool(
+#     collection__of__books.as_retriever(),
+#     name="Herramienta para buscar libros en la biblioteca universitaria",
+#     description=(
+#         """Herramienta para buscar libros en la biblioteca universitaria. 
+#         Solo puedes recomendar libros o indicar si están disponibles. 
+#         Si el libro no está en la biblioteca, responde: 'No disponemos del libro en la biblioteca,¿quieres ayuda con otro libro?'
+#         Si el usuario solicita recomendaciones, revisa su historial de chat y sugiere libros de categorías previas.
+#         """
+#     ),
+# )
 
 get_library_information = create_retriever_tool(
     collection__of__general_information.as_retriever(),
-    name="Herramienta para buscar información sobre la biblioteca universitaria",
-    description=(
-        """Herramienta para buscar información acerca de los procesos realizados en la 
-        biblioteca universitaria. Se utiliza para buscar información de cómo se realizan 
-        los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. 
-        No se utiliza para buscar libros ni responder a saludos o presentación del usuario
-        """
-    ),
-)
+   "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
+    "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
+
 
 tools = [get_results, get_library_information]
 
@@ -66,13 +67,12 @@ prompt = ChatPromptTemplate.from_messages(
         (
             "system",
             (
-                """Eres un asistente virtual llamado BibCUJAE para información sobre
-                los libros en una biblioteca universitaria.
-                Responde solo con información basada en la base de datos.
-                Si un usuario te saluda, responde el saludo sin usar herramientas.
-                Si un usuario se presenta y saluda, puedes responderle.
-                Si la pregunta no tiene contexto en la base de datos, responde:
-                Solo puedo ayudarte con temas relacionados a la biblioteca.
+                """Eres un asistente virtual llamado BibCUJAE para información acerca de los libros existentes en una biblioteca universitaria.
+                Responde las preguntas del usuario solo basado en el contexto. 
+                Si un usuario te saluda le respondes el saludo.
+                Si un usuario se presenta con su nombre y te saluda puedes responderle.
+                Si el contexto no contiene información relevante de las preguntas, no hagas nada y solo di "Solo puedo ayudarte con temas relacionados a la biblioteca".
+                No uses ningún conocimiento que no provenga directamente de la base de datos.
                 """
             ),
         ),
@@ -166,7 +166,7 @@ async def get_answer(session_id: str, user_input: str):
     
 
     return await agent_with_chat_history.ainvoke(
-        {"question": user_input} or {},
+        {"question": user_input},
         config={"configurable": {"session_id": session_id}},
     )
 
