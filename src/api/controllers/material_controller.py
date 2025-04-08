@@ -32,32 +32,12 @@ chroma_service = ChromaDBService(vector_store=collection__of__books)
 @router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])
 async def create_documents(documents: List[DocumentModel]):
     try:
-        document_objects = []
-        ids = []
-
-        for doc in documents:
-            metadata = doc.metadata
-
-            # Convertir el diccionario de metadatos a texto
-            metadata_text = ". ".join([f"{clave}: {valor}" for clave, valor in metadata.items()])
-
-            # Combinar metadatos en texto + el contenido del documento
-            content = f"{metadata_text}. Descripción: {doc.page_content}"
-
-            document_objects.append(
-                Document(
-                    page_content=content,
-                    metadata={
-                    "fuente": "biblioteca_universitaria",
-                    
-                },
-                    id=str(doc.id)
-                )
-            )
-            ids.append(str(doc.id))
-
-        await chroma_service.add_documents_with_ids(document_objects, ids)
+        await chroma_service.add_documents_with_ids(documents)
         return {"message": "Documents created successfully"}
+    except ValueError as e:
+        raise HTTPException(status_code=400, detail=str(e))
+    except Exception as e:
+        raise HTTPException(status_code=500, detail="Internal server error")
 
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -77,11 +57,21 @@ async def delete_document(id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.put("/",dependencies=[Depends(validate_api_key)])
+# @router.put("/",dependencies=[Depends(validate_api_key)])
+# async def update_documents(documents: List[DocumentModel]):
+#     try:
+#         ids = [doc.id for doc in documents]
+#         await chroma_service.update_documents(ids=ids, documents=documents)
+#         return {"message": "Documents updated successfully"}
+#     except ValueError as e:
+#         raise HTTPException(status_code=400, detail=str(e))
+#     except Exception as e:
+#         raise HTTPException(status_code=500, detail="Internal server error")
+
+@router.put("/", dependencies=[Depends(validate_api_key)])
 async def update_documents(documents: List[DocumentModel]):
     try:
-        ids = [doc.id for doc in documents]
-        await chroma_service.update_documents(ids=ids, documents=documents)
+        await chroma_service.update_documents(documents)
         return {"message": "Documents updated successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
