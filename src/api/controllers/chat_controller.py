@@ -27,7 +27,7 @@ async def get_chat_history(session_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.delete("/{session_id}",dependencies=[Depends(validate_api_key)])
+@router.delete("/{session_id}")
 async def delete_chat_history(session_id: str):
     try:
         await ChatService.delete_chat_history(session_id)
