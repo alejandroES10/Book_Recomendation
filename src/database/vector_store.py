@@ -73,6 +73,7 @@
 import os
 import chromadb
 from langchain_chroma import Chroma
+from src.ollama.ollama_client import OllamaClient
 from src.ollama.ollama_embeddings import embedding_function
 
 # Ruta absoluta basada en el archivo actual
@@ -96,20 +97,22 @@ class ChromaClientSingleton:
         return self.client
 
 # Crear el cliente con ruta absoluta
-client = ChromaClientSingleton().get_client()
+chroma_client = ChromaClientSingleton().get_client()
+
+ollama_client = OllamaClient()
 
 # Crear colecciones usando la ruta absoluta
 collection__of__books = Chroma(
-    client=client,
+    client=chroma_client,
     collection_name="collection__of__books",
-    embedding_function=embedding_function,
+    embedding_function=ollama_client.embedding_function,
     persist_directory=CHROMA_PATH
 )
 
 collection__of__general_information = Chroma(
-    client=client,
+    client=chroma_client,
     collection_name="collection_of_general__information",
-    embedding_function=embedding_function,
+    embedding_function=ollama_client.embedding_function,
     persist_directory=CHROMA_PATH
 )
 

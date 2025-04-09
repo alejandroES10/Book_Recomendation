@@ -32,8 +32,8 @@ async def create_documents_from_pdf(file: UploadFile = File(...)):
         documents = loader.load()
         
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1500,
-            chunk_overlap=150
+            chunk_size=1000,
+            chunk_overlap=100
         )
         
         splits = text_splitter.split_documents(documents)

@@ -25,24 +25,46 @@ class ChromaDBService:
         except Exception as e:
             raise ValueError(f"Failed to add documents: {str(e)}")
 
+    # async def update_documents(self, models: List[DocumentModel]) -> None:
+    #     documents, ids = self._build_chroma_documents(models)
+
+    #     try:
+    #         self._vector_store.update_documents(ids=ids, documents=documents)
+    #     except Exception as e:
+    #         raise ValueError(f"Failed to update documents: {str(e)}")
+
     async def update_documents(self, models: List[DocumentModel]) -> None:
         documents, ids = self._build_chroma_documents(models)
+
+        if len(documents) != len(ids):
+            raise ValueError("IDs and documents count mismatch")
+
+        await self._validate_ids_exist(ids)
 
         try:
             self._vector_store.update_documents(ids=ids, documents=documents)
         except Exception as e:
             raise ValueError(f"Failed to update documents: {str(e)}")
 
+
     async def delete_document_by_file_id(self, file_id: str) -> None:
         result = self._vector_store._collection.delete(where={"file_id": file_id})
         if not result:
             raise ValueError(f"No documents found with file_id: {file_id}")
-
+        
     async def delete_document_by_id(self, id: str) -> None:
+        await self._validate_ids_exist([id])
         try:
             self._vector_store.delete(ids=[id])
         except Exception as e:
             raise ValueError(f"Failed to delete document: {str(e)}")
+
+
+    # async def delete_document_by_id(self, id: str) -> None:
+    #     try:
+    #         self._vector_store.delete(ids=[id])
+    #     except Exception as e:
+    #         raise ValueError(f"Failed to delete document: {str(e)}")
 
     # async def find_one(self, id: str) -> Optional[Document]:
     #     result = self._vector_store.get(ids=[id])
@@ -124,6 +146,18 @@ class ChromaDBService:
                 key, value = pair.split(": ", 1)
                 metadata[key.lower()] = value.strip(".")
         return metadata
+
+    async def _validate_ids_exist(self, ids: List[str]) -> None:
+        """Verifica que todos los IDs existan en la colección"""
+        existing = self._vector_store._collection.get(ids=ids)
+        if not existing or not existing.get("ids"):
+            raise ValueError("None of the provided IDs exist in the database")
+
+        existing_ids_set = set(existing["ids"])
+        missing_ids = [doc_id for doc_id in ids if doc_id not in existing_ids_set]
+
+        if missing_ids:
+            raise ValueError(f"The following IDs do not exist in the database: {', '.join(missing_ids)}")
 
 
 

@@ -15,13 +15,14 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-from src.ollama.ollama_llm import llm
+from src.ollama.ollama_client import OllamaClient
 from src.database.vector_store import collection__of__books, collection__of__general_information  
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
+llm = OllamaClient().llm
 
 # load_dotenv()
 # api_key = os.getenv("GROQ_API_KEY")
@@ -44,6 +45,8 @@ async def get_results(content_to_search: str, k_results: int):
         search_kwargs={"k": k_results},
     )
     return await retriever.abatch([content_to_search])
+
+
 
 # get_results = create_retriever_tool(
 #     collection__of__books.as_retriever(),

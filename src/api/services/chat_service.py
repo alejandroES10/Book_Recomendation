@@ -5,19 +5,19 @@ from src.chatbot.agent import agent_with_chat_history, get_answer
 
 class ChatService:
     @staticmethod
-    def _get_chat_history(session_id: str) -> MongoDBChatMessageHistory:
+    def get_chat_history(session_id: str) -> MongoDBChatMessageHistory:
         """Create and return a MongoDB chat history instance"""
         return MongoDBChatMessageHistory(
             session_id=session_id,
             connection_string="mongodb://localhost:27017",
-            database_name="library_db",
+            database_name="chats_db",
             collection_name="chat_histories",
         )
 
     @staticmethod
     async def delete_chat_history(session_id: str) -> None:
         """Delete chat history for a session"""
-        chat_history = ChatService._get_chat_history(session_id)
+        chat_history = ChatService.get_chat_history(session_id)
         if not chat_history.messages:
             raise ValueError(f"No chat history found for session: {session_id}")
         chat_history.clear()
