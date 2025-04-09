@@ -22,5 +22,5 @@ async def read_root():
 
 app.include_router(material_controller.router, prefix="/materials")
 
-app.include_router(chat_controller.router, prefix="/chat")
+app.include_router(chat_controller.router, prefix="/chat",dependencies=[Depends(validate_api_key)])
 app.include_router(general_information_controller.router, prefix="/general_information",dependencies=[Depends(validate_api_key)])

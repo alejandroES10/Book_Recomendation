@@ -16,7 +16,7 @@ async def chat(request: ChatRequestModel):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/{session_id}")
+@router.get("/{session_id}",dependencies=[Depends(validate_api_key)])
 async def get_chat_history(session_id: str):
     try:
         history = await ChatService.get_chat_history(session_id)
@@ -27,7 +27,7 @@ async def get_chat_history(session_id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.delete("/{session_id}")
+@router.delete("/{session_id}",dependencies=[Depends(validate_api_key)])
 async def delete_chat_history(session_id: str):
     try:
         await ChatService.delete_chat_history(session_id)
