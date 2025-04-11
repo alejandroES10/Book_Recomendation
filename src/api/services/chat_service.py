@@ -1,7 +1,9 @@
 from typing import List
 from langchain_core.messages import BaseMessage
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
-from src.chatbot.agent import agent_with_chat_history, get_answer
+from src.chatbot.agent import get_answer
+from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
+
 
 class ChatService:
     @staticmethod
