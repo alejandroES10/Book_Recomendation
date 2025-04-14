@@ -107,6 +107,7 @@ agent_with_chat_history = RunnableWithMessageHistory(
         connection_string="mongodb://localhost:27017",
         database_name="chats_db",
         collection_name="chat_histories",
+        create_index=True,
         max_history=10  # Físicamente limita a 6 mensajes en MongoDB
     ),
     input_messages_key="question",
