@@ -73,6 +73,7 @@
 import os
 import chromadb
 from langchain_chroma import Chroma
+from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.ollama.ollama_client import OllamaClient
 from src.ollama.ollama_embeddings import embedding_function
 
@@ -116,3 +117,24 @@ collection__of__general_information = Chroma(
     persist_directory=CHROMA_PATH
 )
 
+collection__of__thesis = Chroma(
+  
+    collection_name="collection_of_thesis",
+    embedding_function=ollama_client.embedding_function,
+    persist_directory='./tesis'
+)
+
+# from langchain_community.document_loaders import PyPDFDirectoryLoader
+
+# loader = PyPDFDirectoryLoader( "/Users/alejandroestrada/Documents/Universidad/Tercer Año/Tesis Descargadas" ) 
+# documents = loader.load()
+# print(documents)
+# text_splitter = RecursiveCharacterTextSplitter(
+#             chunk_size=1000,
+#             chunk_overlap=100
+#         )
+        
+# splits = text_splitter.split_documents(documents)
+# collection__of__thesis.add_documents(
+#     documents=splits
+# )
