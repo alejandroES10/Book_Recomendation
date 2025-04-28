@@ -83,10 +83,10 @@ get_library_information = create_retriever_tool(
    "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
     "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
 
-get_tesis_information = create_retriever_tool(
-    collection__of__thesis.as_retriever(),
-   "Herramienta para buscar información acerca de las tesis realizadas en la universidad",
-    "Se utiliza para buscar información sobre las distintas tesis realizadas en la universidad. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
+# get_tesis_information = create_retriever_tool(
+#     collection__of__thesis.as_retriever(),
+#    "Herramienta para buscar información acerca de las tesis realizadas en la universidad",
+#     "Se utiliza para buscar información sobre las distintas tesis realizadas en la universidad. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
 
 
 tools = [get_results, get_library_information, search_thesis]

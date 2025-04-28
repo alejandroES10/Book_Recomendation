@@ -117,16 +117,17 @@ collection__of__general_information = Chroma(
     persist_directory=CHROMA_PATH
 )
 
-collection__of__thesis = Chroma(
+# instance = chromadb.AsyncHttpClient()
+# collection__of__thesis = Chroma(
   
-    collection_name="collection_of_thesis",
-    embedding_function=ollama_client.embedding_function,
-    persist_directory='./tesis'
-)
+#     collection_name="collection_of_thesis",
+#     embedding_function=ollama_client.embedding_function,
+#     persist_directory='./tesis'
+# )
 
 # from langchain_community.document_loaders import PyPDFDirectoryLoader
 
-# loader = PyPDFDirectoryLoader( "/Users/alejandroestrada/Documents/Universidad/Tercer Año/Tesis Descargadas" ) 
+# loader = PyPDFDirectoryLoader( "/Users/alejandroestrada/Documents/Universidad/Tercer Año/tesis chatbot" ) 
 # documents = loader.load()
 # print(documents)
 # text_splitter = RecursiveCharacterTextSplitter(
