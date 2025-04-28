@@ -6,12 +6,12 @@ from langchain_core.documents import Document
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.api.services.chromadb_service import ChromaDBService
-from src.database.vector_store import collection__of__general_information
+from src.database.vector_store import collection_of_general_information
 from src.api.security.auth import validate_api_key
 
 router = APIRouter()
 
-chroma_service = ChromaDBService(vector_store=collection__of__general_information)
+chroma_service = ChromaDBService(vector_store=collection_of_general_information)
 
 
 @router.post("/", status_code=201,dependencies=[Depends(validate_api_key)])

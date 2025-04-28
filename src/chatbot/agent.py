@@ -16,18 +16,18 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.ollama.ollama_client import OllamaClient
-from src.database.vector_store import collection__of__books, collection__of__general_information, collection__of__thesis  
+from src.database.vector_store import collection_of_books, collection_of_general_information
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
-# llm = OllamaClient().llm
+llm = OllamaClient().llm
 
-load_dotenv()
-api_key = os.getenv("GROQ_API_KEY")
+# load_dotenv()
+# api_key = os.getenv("GROQ_API_KEY")
 
-llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
+# llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
 
 
 @tool
@@ -40,29 +40,29 @@ async def get_results(content_to_search: str, k_results: int):
             contentToSearch: El input del usuario
             k_results: la cantidad de resultados que se quiere, por defecto 4 siempre
     """
-    retriever = collection__of__books.as_retriever(
+    retriever = collection_of_books.as_retriever(
         search_type="similarity",
         search_kwargs={"k": k_results},
     )
     return await retriever.abatch([content_to_search])
 
-@tool
-async def search_thesis(content_to_search: str):
-    """Herramienta para buscar tesis en el contexto de la biblioteca universitaria.
-       Solo puedes recomendar tesis o decir si están presentes tesis que estén en este contexto. 
-       Si no son del tema específico que busca el usuario, ofrece las tesis similares que aparezcan solo en este contexto.
-       Si te preguntan si en la biblioteca hay una tesis, y no se encuentra entre los resultados, di: 
-       "No disponemos de esa tesis en la biblioteca. ¿Quieres ayuda con otra tesis?"
-       Si te preguntan: "Recomiéndame tesis que me interesen", revisa su historial de chat para ver qué temas ha buscado y recomiéndale tesis relacionadas.
+# @tool
+# async def search_thesis(content_to_search: str):
+#     """Herramienta para buscar tesis en el contexto de la biblioteca universitaria.
+#        Solo puedes recomendar tesis o decir si están presentes tesis que estén en este contexto. 
+#        Si no son del tema específico que busca el usuario, ofrece las tesis similares que aparezcan solo en este contexto.
+#        Si te preguntan si en la biblioteca hay una tesis, y no se encuentra entre los resultados, di: 
+#        "No disponemos de esa tesis en la biblioteca. ¿Quieres ayuda con otra tesis?"
+#        Si te preguntan: "Recomiéndame tesis que me interesen", revisa su historial de chat para ver qué temas ha buscado y recomiéndale tesis relacionadas.
 
-       content_to_search: El contenido a buscar
+#        content_to_search: El contenido a buscar
       
-    """
-    retriever = collection__of__thesis.as_retriever(
-        search_type="similarity",
+#     """
+#     retriever = collection_of_thesis.as_retriever(
+#         search_type="similarity",
         
-    )
-    return await retriever.abatch([content_to_search])
+#     )
+#     return await retriever.abatch([content_to_search])
 
 
 
@@ -79,9 +79,9 @@ async def search_thesis(content_to_search: str):
 # )
 
 get_library_information = create_retriever_tool(
-    collection__of__general_information.as_retriever(),
+    collection_of_general_information.as_retriever(),
    "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
-    "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
+    "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario. Si no encuentras resultados di que no disponen de la información")
 
 # get_tesis_information = create_retriever_tool(
 #     collection__of__thesis.as_retriever(),
@@ -89,7 +89,7 @@ get_library_information = create_retriever_tool(
 #     "Se utiliza para buscar información sobre las distintas tesis realizadas en la universidad. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
 
 
-tools = [get_results, get_library_information, search_thesis]
+tools = [get_results, get_library_information]
 
 prompt = ChatPromptTemplate.from_messages(
     [

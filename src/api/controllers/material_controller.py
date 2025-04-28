@@ -3,12 +3,12 @@ from langchain_core.documents import Document
 from typing import List
 from src.api.models.document_model import DocumentModel
 from src.api.services.chromadb_service import ChromaDBService
-from src.database.vector_store import collection__of__books
+from src.database.vector_store import collection_of_books
 from src.api.security.auth import validate_api_key
 
 router = APIRouter()
 
-chroma_service = ChromaDBService(vector_store=collection__of__books)
+chroma_service = ChromaDBService(vector_store=collection_of_books)
 
 
 # @router.post("/", status_code=201,dependencies=[Depends(validate_api_key)])

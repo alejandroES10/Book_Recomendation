@@ -1,121 +1,92 @@
-# from langchain_core.documents import Document
-# from langchain_chroma import Chroma
-# from langchain_community.embeddings import OllamaEmbeddings
-# from langchain_text_splitters import RecursiveCharacterTextSplitter
-# from src.ollama.ollama_embeddings import embedding_function
+# import os
 # import chromadb
-# # from langchain_ollama import OllamaEmbeddings
-# # from langchain_community.chat_models import ChatOllama
-# import asyncio
- 
+# from langchain_chroma import Chroma
+# from langchain_text_splitters import RecursiveCharacterTextSplitter
+# from src.ollama.ollama_client import OllamaClient
+# from src.ollama.ollama_embeddings import embedding_function
+
+# # Ruta absoluta basada en el archivo actual
+# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+# CHROMA_PATH = os.path.join(BASE_DIR, "chromadb")
+
 # class ChromaClientSingleton:
 #     _instance = None
+#     _persist_path = None
 
-#     def __new__(cls):
+#     def __new__(cls, persist_directory=CHROMA_PATH):
 #         if cls._instance is None:
+#             cls._persist_path = persist_directory
 #             cls._instance = super(ChromaClientSingleton, cls).__new__(cls)
-#             cls._instance.client = chromadb.PersistentClient()
+#             cls._instance.client = chromadb.PersistentClient(path=persist_directory)
+#         elif persist_directory != cls._persist_path:
+#             print(f"Ya existe una instancia con path: {cls._persist_path}, ignorando nuevo path: {persist_directory}")
 #         return cls._instance
 
 #     def get_client(self):
-#         return self._instance.client
+#         return self.client
 
+# # Crear el cliente con ruta absoluta
+# chroma_client = ChromaClientSingleton().get_client()
 
-# # Crear instancia única para el cliente Chroma
-# # persistent_client = ChromaClientSingleton().get_client()
-# persistent_client = chromadb.PersistentClient()
-# collection = persistent_client.get_or_create_collection("collection_of_general__information")
+# ollama_client = OllamaClient()
 
-# # collection_of_books_ = persistent_client.get_or_create_collection("collection_of_books_",embedding_function= embedding_function)
-
+# # Crear colecciones usando la ruta absoluta
 # collection__of__books = Chroma(
-#     client=persistent_client,
+#     client=chroma_client,
 #     collection_name="collection__of__books",
-#     embedding_function=embedding_function,
-#     persist_directory="./chroma-books"  # Especifica el directorio de persistencia
+#     embedding_function=ollama_client.embedding_function,
+#     persist_directory=CHROMA_PATH
 # )
 
 # collection__of__general_information = Chroma(
-#     client=persistent_client,
+#     client=chroma_client,
 #     collection_name="collection_of_general__information",
-#     embedding_function=embedding_function,
-#     persist_directory="./chroma-general-information"
+#     embedding_function=ollama_client.embedding_function,
+#     persist_directory=CHROMA_PATH
 # )
-
-
-
-# # from langchain_community.document_loaders import PyPDFLoader
-
-
-# # loader = PyPDFLoader("/Users/alejandroestrada/Documents/Procesos realizados en la Biblioteca Universitaria .pdf")
-# # pages = loader.load()
-
-# # text_splitter = RecursiveCharacterTextSplitter(
-# #  chunk_size=1500, 
-# #  chunk_overlap=150 
-
-# # )
-
-# # splits = text_splitter.split_documents(pages)
-
-# # for split in splits:
-# #     split.metadata = DM.metadatas
-# # generar mismo id para todos esos fragmentos del mismo documento
-
-
-
-# # library_information = Chroma.from_documents(
-# #     documents=splits,
-# #     embedding=embedding_function,
-# #     persist_directory="./filess"
-# #     )
-
 import os
 import chromadb
 from langchain_chroma import Chroma
-from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.ollama.ollama_client import OllamaClient
-from src.ollama.ollama_embeddings import embedding_function
+# from src.ollama.ollama_embeddings import embedding_function
 
-# Ruta absoluta basada en el archivo actual
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-CHROMA_PATH = os.path.join(BASE_DIR, "chromadb")
+from dotenv import load_dotenv
+load_dotenv()
+
+
+CHROMA_SERVER_HOST: str = os.environ["CHROMA_SERVER_HOST"]
+CHROMA_SERVER_PORT: int = int(os.environ["CHROMA_SERVER_PORT"])
 
 class ChromaClientSingleton:
     _instance = None
-    _persist_path = None
 
-    def __new__(cls, persist_directory=CHROMA_PATH):
+    def __new__(cls, host=CHROMA_SERVER_HOST, port=CHROMA_SERVER_PORT):
         if cls._instance is None:
-            cls._persist_path = persist_directory
             cls._instance = super(ChromaClientSingleton, cls).__new__(cls)
-            cls._instance.client = chromadb.PersistentClient(path=persist_directory)
-        elif persist_directory != cls._persist_path:
-            print(f"Ya existe una instancia con path: {cls._persist_path}, ignorando nuevo path: {persist_directory}")
+            cls._instance.client = chromadb.HttpClient(host=host, port=port)
         return cls._instance
 
     def get_client(self):
         return self.client
 
-# Crear el cliente con ruta absoluta
+# Crear el cliente conectado al servidor Chroma
 chroma_client = ChromaClientSingleton().get_client()
 
 ollama_client = OllamaClient()
 
-# Crear colecciones usando la ruta absoluta
-collection__of__books = Chroma(
+# Crear colecciones SIN persist_directory, ya que el servidor se encarga
+collection_of_books = Chroma(
     client=chroma_client,
-    collection_name="collection__of__books",
+    collection_name="collection_of_books",
     embedding_function=ollama_client.embedding_function,
-    persist_directory=CHROMA_PATH
 )
 
-collection__of__general_information = Chroma(
+collection_of_general_information = Chroma(
     client=chroma_client,
-    collection_name="collection_of_general__information",
+    collection_name="collection_of_general_information",
     embedding_function=ollama_client.embedding_function,
-    persist_directory=CHROMA_PATH
 )
+
 
 # instance = chromadb.AsyncHttpClient()
 # collection__of__thesis = Chroma(
