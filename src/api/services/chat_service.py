@@ -13,6 +13,7 @@ class ChatService:
     @staticmethod
     async def _build_chat_history(session_id: str) -> MongoDBChatMessageHistory:
         """Create and return a MongoDB chat history instance"""
+        load_dotenv()
         chat = MongoDBChatMessageHistory(
             session_id=session_id,
             connection_string=os.environ["MONGO_CONNECTION_STRING"],
