@@ -5,6 +5,8 @@ from src.chatbot.agent import get_answer
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 from src.api.models.message_model import MessageModel
 from src.api.models.chat_history_model import ChatHistoryModel
+import os
+from dotenv import load_dotenv
 
 
 class ChatService:
@@ -13,9 +15,9 @@ class ChatService:
         """Create and return a MongoDB chat history instance"""
         chat = MongoDBChatMessageHistory(
             session_id=session_id,
-            connection_string="mongodb://localhost:27017",
-            database_name="chats_db",
-            collection_name="chat_histories",
+            connection_string=os.environ["MONGO_CONNECTION_STRING"],
+            database_name=os.environ["MONGO_DATABASE_NAME"],
+            collection_name=os.environ["MONGO_COLLECTION_NAME"],
         )
 
         return chat

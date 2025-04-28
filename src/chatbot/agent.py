@@ -24,7 +24,7 @@ from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMon
 
 llm = OllamaClient().llm
 
-# load_dotenv()
+load_dotenv()
 # api_key = os.getenv("GROQ_API_KEY")
 
 # llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
@@ -123,15 +123,31 @@ agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
 
 
 # Configuración del agente con historial limitado
+# agent_with_chat_history = RunnableWithMessageHistory(
+#     agent_executor,
+#     lambda session_id: LimitedMongoDBChatMessageHistory(
+#         session_id=session_id,
+#         connection_string="mongodb://localhost:27017",
+#         database_name="chats_db",
+#         collection_name="chat_histories",
+#         create_index=True,
+#         max_history=10  # Físicamente limita a 6 mensajes en MongoDB
+#     ),
+#     input_messages_key="question",
+#     history_messages_key="history",
+# )
+
+# import os
+
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
     lambda session_id: LimitedMongoDBChatMessageHistory(
         session_id=session_id,
-        connection_string="mongodb://localhost:27017",
-        database_name="chats_db",
-        collection_name="chat_histories",
+        connection_string=os.environ["MONGO_CONNECTION_STRING"],  
+        database_name=os.environ["MONGO_DATABASE_NAME"],  
+        collection_name=os.environ["MONGO_COLLECTION_NAME"], 
         create_index=True,
-        max_history=10  # Físicamente limita a 6 mensajes en MongoDB
+        max_history=10 
     ),
     input_messages_key="question",
     history_messages_key="history",
