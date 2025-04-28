@@ -8,20 +8,16 @@ from src.api.models.chat_history_model import ChatHistoryModel
 import os
 from dotenv import load_dotenv
 
+from src.database.mongodb.mongodb_connection import MongoDBConnection
+
 
 class ChatService:
     @staticmethod
     async def _build_chat_history(session_id: str) -> MongoDBChatMessageHistory:
         """Create and return a MongoDB chat history instance"""
-        load_dotenv()
-        chat = MongoDBChatMessageHistory(
-            session_id=session_id,
-            connection_string=os.environ["MONGO_CONNECTION_STRING"],
-            database_name=os.environ["MONGO_DATABASE_NAME"],
-            collection_name=os.environ["MONGO_COLLECTION_NAME"],
-        )
 
-        return chat
+        return MongoDBConnection.get_connection(session_id)
+
         # return await chat.aget_messages()
         
 

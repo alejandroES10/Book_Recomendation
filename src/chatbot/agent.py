@@ -15,6 +15,7 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
+from src.database.mongodb.mongodb_connection import MongoDBConnection
 from src.ollama.ollama_client import OllamaClient
 from src.database.vector_store import collection_of_books, collection_of_general_information
 from langchain_groq import ChatGroq  
@@ -139,20 +140,26 @@ agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
 
 # import os
 
+# agent_with_chat_history = RunnableWithMessageHistory(
+#     agent_executor,
+#     lambda session_id: LimitedMongoDBChatMessageHistory(
+#         session_id=session_id,
+#         connection_string=os.environ["MONGO_CONNECTION_STRING"],  
+#         database_name=os.environ["MONGO_DATABASE_NAME"],  
+#         collection_name=os.environ["MONGO_COLLECTION_NAME"], 
+#         create_index=True,
+#         max_history=10 
+#     ),
+#     input_messages_key="question",
+#     history_messages_key="history",
+# )
+
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
-    lambda session_id: LimitedMongoDBChatMessageHistory(
-        session_id=session_id,
-        connection_string=os.environ["MONGO_CONNECTION_STRING"],  
-        database_name=os.environ["MONGO_DATABASE_NAME"],  
-        collection_name=os.environ["MONGO_COLLECTION_NAME"], 
-        create_index=True,
-        max_history=10 
-    ),
+    lambda session_id: MongoDBConnection.get_connection(session_id),
     input_messages_key="question",
     history_messages_key="history",
 )
-
 # agent_with_chat_history = RunnableWithMessageHistory(
 #     agent_executor,
 #     lambda session_id: MongoDBChatMessageHistory(

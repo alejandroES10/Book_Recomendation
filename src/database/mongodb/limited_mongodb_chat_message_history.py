@@ -36,17 +36,18 @@ class LimitedMongoDBChatMessageHistory(MongoDBChatMessageHistory):
         super().__init__(*args, **kwargs)
         self.max_history = max_history
     
-    def add_messages(self, messages: List[BaseMessage]) -> None:
+    async def aadd_messages(self, messages: List[BaseMessage]) -> None:
         # Agregar timestamp a cada mensaje
         for message in messages:
             if not hasattr(message, 'additional_kwargs'):
                 message.additional_kwargs = {}
-            message.additional_kwargs['timestamp'] = datetime.utcnow().isoformat()  # Fecha en formato ISO
-        
-        super().add_messages(messages)
+            message.additional_kwargs['timestamp'] = datetime.now().isoformat()
+ 
+     
+        await super().aadd_messages(messages)
         all_messages = super().messages
         
         if len(all_messages) > self.max_history:
             last_messages = all_messages[-self.max_history:]
-            self.clear()
-            super().add_messages(last_messages)
+            await self.aclear()
+            super().aadd_messages(last_messages)
