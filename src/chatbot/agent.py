@@ -23,7 +23,7 @@ from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
-llm = OllamaClient().llm
+llm = OllamaClient().get_llm()
 
 load_dotenv()
 # api_key = os.getenv("GROQ_API_KEY")

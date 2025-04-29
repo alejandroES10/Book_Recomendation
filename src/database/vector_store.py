@@ -78,13 +78,13 @@ ollama_client = OllamaClient()
 collection_of_books = Chroma(
     client=chroma_client,
     collection_name="collection_of_books",
-    embedding_function=ollama_client.embedding_function,
+    embedding_function=ollama_client.get_embedding_function(),
 )
 
 collection_of_general_information = Chroma(
     client=chroma_client,
     collection_name="collection_of_general_information",
-    embedding_function=ollama_client.embedding_function,
+    embedding_function=ollama_client.get_embedding_function(),
 )
 
 
