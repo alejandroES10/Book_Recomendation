@@ -16,14 +16,14 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.database.mongodb.mongodb_connection import MongoDBConnection
-from src.ollama.ollama_client import OllamaClient
+from src.ollama.ollama_client import OllamaClientSingleton
 from src.database.vector_store import collection_of_books, collection_of_general_information
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
-llm = OllamaClient().get_llm()
+llm = OllamaClientSingleton().get_llm()
 
 load_dotenv()
 # api_key = os.getenv("GROQ_API_KEY")

@@ -47,7 +47,7 @@
 import os
 import chromadb
 from langchain_chroma import Chroma
-from src.ollama.ollama_client import OllamaClient
+from src.ollama.ollama_client import OllamaClientSingleton
 # from src.ollama.ollama_embeddings import embedding_function
 
 from dotenv import load_dotenv
@@ -60,19 +60,19 @@ CHROMA_SERVER_PORT: int = int(os.environ["CHROMA_SERVER_PORT"])
 class ChromaClientSingleton:
     _instance = None
 
-    def __new__(cls, host=CHROMA_SERVER_HOST, port=CHROMA_SERVER_PORT):
+    def __new__(cls, host: str = CHROMA_SERVER_HOST, port: int = CHROMA_SERVER_PORT):
         if cls._instance is None:
             cls._instance = super(ChromaClientSingleton, cls).__new__(cls)
-            cls._instance.client = chromadb.HttpClient(host=host, port=port)
+            cls._instance._client = chromadb.HttpClient(host=host, port=port)
         return cls._instance
 
     def get_client(self):
-        return self.client
+        return self._client
 
 # Crear el cliente conectado al servidor Chroma
 chroma_client = ChromaClientSingleton().get_client()
 
-ollama_client = OllamaClient()
+ollama_client = OllamaClientSingleton()
 
 # Crear colecciones SIN persist_directory, ya que el servidor se encarga
 collection_of_books = Chroma(
