@@ -17,7 +17,7 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 from src.database.mongodb.mongodb_connection import MongoDBConnection
 from src.ollama.ollama_client import OllamaClientSingleton
-from src.database.vector_store import collection_of_books, collection_of_general_information
+from src.database.vector_store import collection_of_books, collection_of_general_information, collection__of__thesis
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv
 from typing import List
@@ -47,23 +47,26 @@ async def get_results(content_to_search: str, k_results: int):
     )
     return await retriever.abatch([content_to_search])
 
-# @tool
-# async def search_thesis(content_to_search: str):
-#     """Herramienta para buscar tesis en el contexto de la biblioteca universitaria.
-#        Solo puedes recomendar tesis o decir si están presentes tesis que estén en este contexto. 
-#        Si no son del tema específico que busca el usuario, ofrece las tesis similares que aparezcan solo en este contexto.
-#        Si te preguntan si en la biblioteca hay una tesis, y no se encuentra entre los resultados, di: 
-#        "No disponemos de esa tesis en la biblioteca. ¿Quieres ayuda con otra tesis?"
-#        Si te preguntan: "Recomiéndame tesis que me interesen", revisa su historial de chat para ver qué temas ha buscado y recomiéndale tesis relacionadas.
+@tool
+async def search_thesis(content_to_search: str):
+    """Herramienta para buscar tesis en el contexto de la biblioteca universitaria.
+       Solo puedes recomendar tesis o decir si están presentes tesis que estén en este contexto.
+       Los metadatos describen características de las tesis como título, autor, y el enlace url.Responde siempre esos metadatos de los fragmentos que recuperes.
+       Cuando devuelvas el enlace deja un espacio para que desde el front se le de clic y se acceda.
+       Debes responder preguntas sobre las tesis que te pregunten. 
+       Si no son del tema específico que busca el usuario, ofrece las tesis similares que aparezcan solo en este contexto.
+       Si te preguntan si en la biblioteca hay una tesis, y no se encuentra entre los resultados, di: 
+       "No disponemos de esa tesis en la biblioteca. ¿Quieres ayuda con otra tesis?"
+       Si te preguntan: "Recomiéndame tesis que me interesen", revisa su historial de chat para ver qué temas ha buscado y recomiéndale tesis relacionadas.
 
-#        content_to_search: El contenido a buscar
+       content_to_search: El contenido a buscar
       
-#     """
-#     retriever = collection_of_thesis.as_retriever(
-#         search_type="similarity",
+    """
+    retriever = collection__of__thesis.as_retriever(
+        search_type="similarity",
         
-#     )
-#     return await retriever.abatch([content_to_search])
+    )
+    return await retriever.abatch([content_to_search])
 
 
 
@@ -90,7 +93,7 @@ get_library_information = create_retriever_tool(
 #     "Se utiliza para buscar información sobre las distintas tesis realizadas en la universidad. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
 
 
-tools = [get_results, get_library_information]
+tools = [get_results, get_library_information,search_thesis]
 
 prompt = ChatPromptTemplate.from_messages(
     [
