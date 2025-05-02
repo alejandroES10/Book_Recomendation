@@ -23,12 +23,12 @@ from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
-llm = OllamaClientSingleton().get_llm()
+# llm = OllamaClientSingleton().get_llm()
 
 load_dotenv()
-# api_key = os.getenv("GROQ_API_KEY")
+api_key = os.getenv("GROQ_API_KEY")
 
-# llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
+llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
 
 
 @tool
