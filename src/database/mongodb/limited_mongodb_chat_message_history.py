@@ -58,14 +58,40 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-class MongoClientSingleton:
-    _client = None
+# class MongoClientSingleton:
+#     _client = None
 
-    @classmethod
-    def get_client(cls) -> MongoClient:
-        if cls._client is None:
-            cls._client = MongoClient(os.getenv("MONGO_CONNECTION_STRING"))
-        return cls._client
+#     @classmethod
+#     def get_client(cls) -> MongoClient:
+#         if cls._client is None:
+#             cls._client = MongoClient(os.getenv("MONGO_CONNECTION_STRING"))
+#         return cls._client
+
+from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+from pymongo import MongoClient
+import os
+from dotenv import load_dotenv
+
+load_dotenv()
+
+class MongoClientSingleton:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(MongoClientSingleton, cls).__new__(cls)
+            cls._instance._client = MongoClient(os.getenv("MONGO_CONNECTION_STRING"))
+        return cls._instance
+
+    def get_client(self) -> MongoClient:
+        return self._client
+
+
 
 
 class LimitedMongoDBChatMessageHistory(MongoDBChatMessageHistory):
