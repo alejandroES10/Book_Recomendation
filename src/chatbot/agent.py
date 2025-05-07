@@ -23,12 +23,12 @@ from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
-# llm = OllamaClientSingleton().get_llm()
+llm = OllamaClientSingleton().get_llm()
 
-load_dotenv()
-api_key = os.getenv("GROQ_API_KEY")
+# load_dotenv()
+# api_key = os.getenv("GROQ_API_KEY")
 
-llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
+# llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
 
 
 @tool
@@ -157,12 +157,16 @@ agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
 #     history_messages_key="history",
 # )
 
+
+
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
     lambda session_id: MongoDBConnection.get_connection(session_id),
     input_messages_key="question",
     history_messages_key="history",
+   
 )
+
 # agent_with_chat_history = RunnableWithMessageHistory(
 #     agent_executor,
 #     lambda session_id: MongoDBChatMessageHistory(
@@ -187,8 +191,7 @@ async def get_answer(session_id: str, user_input: str):
     Returns:
         dict: Respuesta del agente.
     """
-    
-
+   
     return await agent_with_chat_history.ainvoke(
         {"question": user_input},
         config={"configurable": {"session_id": session_id}},
