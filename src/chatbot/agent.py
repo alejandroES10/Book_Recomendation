@@ -55,6 +55,7 @@ async def search_thesis(content_to_search: str):
        Los metadatos describen características de las tesis como título, autor, y el enlace url.Responde siempre esos metadatos de los fragmentos que recuperes.
        Cuando devuelvas el enlace deja un espacio para que desde el front se le de clic y se acceda.
        Debes responder preguntas sobre las tesis que te pregunten. 
+       No des información de identificadores de tesis (id), si te preguntan di que no tienes esa información.
        Si no son del tema específico que busca el usuario, ofrece las tesis similares que aparezcan solo en este contexto.
        Si te preguntan si en la biblioteca hay una tesis, y no se encuentra entre los resultados, di: 
        "No disponemos de esa tesis en la biblioteca. ¿Quieres ayuda con otra tesis?"
