@@ -23,12 +23,12 @@ from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
-llm = OllamaClientSingleton().get_llm()
+# llm = OllamaClientSingleton().get_llm()
 
-# load_dotenv()
-# api_key = os.getenv("GROQ_API_KEY")
+load_dotenv()
+api_key = os.getenv("GROQ_API_KEY")
 
-# llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
+llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatiles")
 
 
 @tool
@@ -51,6 +51,7 @@ async def get_results(content_to_search: str, k_results: int):
 async def search_thesis(content_to_search: str):
     """Herramienta para buscar tesis en el contexto de la biblioteca universitaria.
        Solo puedes recomendar tesis o decir si están presentes tesis que estén en este contexto.
+       Solo puedes responder preguntas basado en estas tesis y no en tu conocimiento.
        Los metadatos describen características de las tesis como título, autor, y el enlace url.Responde siempre esos metadatos de los fragmentos que recuperes.
        Cuando devuelvas el enlace deja un espacio para que desde el front se le de clic y se acceda.
        Debes responder preguntas sobre las tesis que te pregunten. 
