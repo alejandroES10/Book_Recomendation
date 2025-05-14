@@ -22,3 +22,7 @@ class IBookMetadataService(ABC):
 
     async def update_book(self, id: str, model: BookMetadataModel) -> None:
         pass
+
+
+    async def get_all_books(self)-> dict:
+        pass

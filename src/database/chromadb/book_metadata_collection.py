@@ -12,27 +12,6 @@ class BookMetadataCollection(ChromaCollection):
         super().__init__()
         self._collection = collection_of_books
 
-    def _build_chroma_documents(self, models: List[DocumentModel]) -> Tuple[List[Document], List[str]]:
-        documents = []
-        ids = []
-        for model in models:
-            metadata_text = ". ".join([f"{k.capitalize()}: {v}" for k, v in model.metadata.items()]) + "."
-            documents.append(Document(
-                page_content=metadata_text,
-                metadata={"fuente": "biblioteca_universitaria"},
-                id=str(model.id)
-            ))
-            ids.append(str(model.id))
-        return documents, ids
-
-    def _extract_metadata_from_text(self, text: str) -> dict:
-        metadata = {}
-        for item in text.strip().split(". "):
-            if ": " in item:
-                key, value = item.split(": ", 1)
-                metadata[key.lower()] = value.strip(".")
-        return metadata
-
     async def _validate_ids_exist(self, ids: List[str]) -> None:
         result = self._collection._vector_store._collection.get(ids=ids)
         if not result or not result.get("ids"):
@@ -41,8 +20,8 @@ class BookMetadataCollection(ChromaCollection):
         if missing:
             raise ValueError(f"IDs faltantes en la base de datos: {', '.join(missing)}")
 
-    async def add_documents(self, models: List[DocumentModel]) -> List[str]:
-        documents, ids = self._build_chroma_documents(models)
+    async def add_documents(self, documents: List[Document], ids: List[str]) -> List[str]:
+
         existing = self._collection._vector_store._collection.get(ids=ids)
         if existing and existing.get("ids"):
             raise ValueError("IDs duplicados encontrados en la base de datos")
@@ -51,8 +30,7 @@ class BookMetadataCollection(ChromaCollection):
         except Exception as e:
             raise ValueError(f"Error al añadir documentos: {e}")
 
-    async def update_documents(self, models: List[DocumentModel]) -> None:
-        documents, ids = self._build_chroma_documents(models)
+    async def update_documents(self, documents: List[Document], ids: List[str]) -> None:
         if len(documents) != len(ids):
             raise ValueError("Cantidad de documentos y de IDs no coinciden")
         await self._validate_ids_exist(ids)

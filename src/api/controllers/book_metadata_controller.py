@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException,Depends
 from langchain_core.documents import Document
 from typing import List
 from src.api.models.document_model import BookMetadataModel, DocumentModel
+from src.api.services.book_metadata_service import BookMetadataService
 from src.api.services.chromadb_service import ChromaDBService
 from src.database.chromadb.vector_store import collection_of_books
 from src.api.security.auth import validate_api_key
@@ -10,29 +11,12 @@ router = APIRouter()
 
 chroma_service = ChromaDBService(vector_store=collection_of_books)
 
-
-# @router.post("/", status_code=201,dependencies=[Depends(validate_api_key)])
-# async def create_documents(documents: List[DocumentModel]):
-#     try:
-#         document_objects = [
-#             Document(
-#                 page_content=doc.page_content,
-#                 metadata = doc.metadata,
-#                 id=str(doc.id))
-#             for doc in documents
-#         ]
-#         ids = [str(doc.id) for doc in documents]
-#         await chroma_service.add_documents_with_ids(document_objects, ids)
-#         return {"message": "Documents created successfully"}
-#     except ValueError as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="Internal server error")
+book_metadata_service = BookMetadataService()
 
 @router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])
-async def create_documents(documents: List[BookMetadataModel]):
+async def create_books(documents: List[BookMetadataModel]):
     try:
-        await chroma_service.add_documents_with_ids(documents)
+        await book_metadata_service.add_books(documents)
         return {"message": "Documents created successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -40,10 +24,10 @@ async def create_documents(documents: List[BookMetadataModel]):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.delete("/{id}",dependencies=[Depends(validate_api_key)])
+@router.delete_book("/{id}",dependencies=[Depends(validate_api_key)])
 async def delete_document(id: str):
     try:
-        await chroma_service.delete_document_by_id(id)
+        await book_metadata_service.delete_book(id)
         return {"message": "Document deleted successfully"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
@@ -51,21 +35,10 @@ async def delete_document(id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-# @router.put("/",dependencies=[Depends(validate_api_key)])
-# async def update_documents(documents: List[DocumentModel]):
-#     try:
-#         ids = [doc.id for doc in documents]
-#         await chroma_service.update_documents(ids=ids, documents=documents)
-#         return {"message": "Documents updated successfully"}
-#     except ValueError as e:
-#         raise HTTPException(status_code=400, detail=str(e))
-#     except Exception as e:
-#         raise HTTPException(status_code=500, detail="Internal server error")
-
 @router.put("/", dependencies=[Depends(validate_api_key)])
-async def update_documents(documents: List[BookMetadataModel]):
+async def update_book(documents: List[BookMetadataModel]):
     try:
-        await chroma_service.update_documents(documents)
+        await book_metadata_service.update_book(documents)
         return {"message": "Documents updated successfully"}
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
@@ -73,10 +46,10 @@ async def update_documents(documents: List[BookMetadataModel]):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/{id}")
+@router.get_book("/{id}")
 async def get_document(id: str):
     try:
-        document = await chroma_service.find_one(id)
+        document = await book_metadata_service.get_book(id)
         if not document:
             raise HTTPException(status_code=404, detail="Document not found")
         return document
@@ -84,9 +57,9 @@ async def get_document(id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/")
+@router.get_all_books("/")
 async def get_documents():
     try:
-        return await chroma_service.find_all()
+        return await book_metadata_service.get_all_books()
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
