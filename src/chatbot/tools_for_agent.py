@@ -1,6 +1,6 @@
 from langchain.tools.retriever import create_retriever_tool
 
-from src.database.vector_store import  collection__of__books
+from src.database.chromadb.vector_store import  collection__of__books
 
 retriever_of_books = collection__of__books.as_retriever(search_type="similarity")
 retriever_of_books.search_kwargs = {"include_metadata": True}

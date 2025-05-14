@@ -6,7 +6,7 @@ from langchain_core.documents import Document
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.api.services.chromadb_service import ChromaDBService
-from src.database.vector_store import collection_of_general_information
+from src.database.chromadb.vector_store import collection_of_general_information
 from src.api.security.auth import validate_api_key
 
 router = APIRouter()

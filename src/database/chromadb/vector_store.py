@@ -1,75 +1,14 @@
-# import os
-# import chromadb
-# from langchain_chroma import Chroma
-# from langchain_text_splitters import RecursiveCharacterTextSplitter
-# from src.ollama.ollama_client import OllamaClient
-# from src.ollama.ollama_embeddings import embedding_function
 
-# # Ruta absoluta basada en el archivo actual
-# BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-# CHROMA_PATH = os.path.join(BASE_DIR, "chromadb")
-
-# class ChromaClientSingleton:
-#     _instance = None
-#     _persist_path = None
-
-#     def __new__(cls, persist_directory=CHROMA_PATH):
-#         if cls._instance is None:
-#             cls._persist_path = persist_directory
-#             cls._instance = super(ChromaClientSingleton, cls).__new__(cls)
-#             cls._instance.client = chromadb.PersistentClient(path=persist_directory)
-#         elif persist_directory != cls._persist_path:
-#             print(f"Ya existe una instancia con path: {cls._persist_path}, ignorando nuevo path: {persist_directory}")
-#         return cls._instance
-
-#     def get_client(self):
-#         return self.client
-
-# # Crear el cliente con ruta absoluta
-# chroma_client = ChromaClientSingleton().get_client()
-
-# ollama_client = OllamaClient()
-
-# # Crear colecciones usando la ruta absoluta
-# collection__of__books = Chroma(
-#     client=chroma_client,
-#     collection_name="collection__of__books",
-#     embedding_function=ollama_client.embedding_function,
-#     persist_directory=CHROMA_PATH
-# )
-
-# collection__of__general_information = Chroma(
-#     client=chroma_client,
-#     collection_name="collection_of_general__information",
-#     embedding_function=ollama_client.embedding_function,
-#     persist_directory=CHROMA_PATH
-# )
 import os
 import uuid
 import chromadb
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.ollama.ollama_client import OllamaClientSingleton
+from src.database.chromadb.chroma_singleton import ChromaClientSingleton
 # from src.ollama.ollama_embeddings import embedding_function
 
-from dotenv import load_dotenv
-load_dotenv()
 
-
-CHROMA_SERVER_HOST: str = os.environ["CHROMA_SERVER_HOST"]
-CHROMA_SERVER_PORT: int = int(os.environ["CHROMA_SERVER_PORT"])
-
-class ChromaClientSingleton:
-    _instance = None
-
-    def __new__(cls, host: str = CHROMA_SERVER_HOST, port: int = CHROMA_SERVER_PORT):
-        if cls._instance is None:
-            cls._instance = super(ChromaClientSingleton, cls).__new__(cls)
-            cls._instance._client = chromadb.HttpClient(host=host, port=port)
-        return cls._instance
-
-    def get_client(self):
-        return self._client
 
 # Crear el cliente conectado al servidor Chroma
 chroma_client = ChromaClientSingleton().get_client()

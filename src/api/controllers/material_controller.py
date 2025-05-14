@@ -1,9 +1,9 @@
 from fastapi import APIRouter, HTTPException,Depends
 from langchain_core.documents import Document
 from typing import List
-from src.api.models.document_model import DocumentModel
+from src.api.models.document_model import BookMetadataModel, DocumentModel
 from src.api.services.chromadb_service import ChromaDBService
-from src.database.vector_store import collection_of_books
+from src.database.chromadb.vector_store import collection_of_books
 from src.api.security.auth import validate_api_key
 
 router = APIRouter()
@@ -30,7 +30,7 @@ chroma_service = ChromaDBService(vector_store=collection_of_books)
 #         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])
-async def create_documents(documents: List[DocumentModel]):
+async def create_documents(documents: List[BookMetadataModel]):
     try:
         await chroma_service.add_documents_with_ids(documents)
         return {"message": "Documents created successfully"}
@@ -38,12 +38,6 @@ async def create_documents(documents: List[DocumentModel]):
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
-
-    except ValueError as e:
-        raise HTTPException(status_code=400, detail=str(e))
-    except Exception as e:
-        raise HTTPException(status_code=500, detail="Internal server error")
-
 
 
 @router.delete("/{id}",dependencies=[Depends(validate_api_key)])
@@ -69,7 +63,7 @@ async def delete_document(id: str):
 #         raise HTTPException(status_code=500, detail="Internal server error")
 
 @router.put("/", dependencies=[Depends(validate_api_key)])
-async def update_documents(documents: List[DocumentModel]):
+async def update_documents(documents: List[BookMetadataModel]):
     try:
         await chroma_service.update_documents(documents)
         return {"message": "Documents updated successfully"}
