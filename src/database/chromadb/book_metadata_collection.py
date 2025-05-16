@@ -1,6 +1,5 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 from langchain_core.documents import Document
-from src.api.models.document_model import DocumentModel
 from src.database.chromadb.chroma_collection import ChromaCollection
 from src.database.chromadb.vector_store import collection_of_books
 
@@ -35,7 +34,7 @@ class BookMetadataCollection(ChromaCollection):
             raise ValueError("Cantidad de documentos y de IDs no coinciden")
         await self._validate_ids_exist(ids)
         try:
-            self._collection._vector_store.update_documents(ids=ids, documents=documents)
+            await self._collection._vector_store.update_documents(ids=ids, documents=documents)
         except Exception as e:
             raise ValueError(f"Error al actualizar documentos: {e}")
 

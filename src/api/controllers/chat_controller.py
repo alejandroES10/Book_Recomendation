@@ -36,3 +36,4 @@ async def delete_chat_history(session_id: str):
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
         raise HTTPException(status_code=500, detail="Internal server error")
+    

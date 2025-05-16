@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 from langchain_core.documents import Document
-from src.api.models.document_model import DocumentModel
+from src.api.models.book_metadata_model import DocumentModel
 from src.database.chromadb.chroma_collection import ChromaCollection
 from src.database.chromadb.vector_store import collection__of__thesis
 

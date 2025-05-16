@@ -18,13 +18,13 @@ class BookMetadataService(IBookMetadataService):
     async def delete_book(self, id: str) -> None:
         return await self.collection.delete_documents(id)
 
-    async def update_book(self, id: str, models: BookMetadataModel) -> None:
+    async def update_book(self, models: BookMetadataModel) -> None:
         documents, ids = self._build_chroma_documents(models)
         return await self.collection.update_document(documents, ids)
     
     
     async def get_all_books(self)-> dict:
-        return self.collection.find_all()
+        return await self.collection.find_all()
     
 
     

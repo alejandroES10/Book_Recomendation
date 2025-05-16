@@ -1,21 +1,23 @@
 from typing import List
 
 from fastapi import File
-from src.api.models.document_model import DocumentModel
+from src.api.models.book_metadata_model import DocumentModel
 
-class IGeneralInformationService:
+from abc import ABC, abstractmethod
 
-    def __init__(self):
-        pass
-    
-    async def add_general_info(self, file: File) -> List[str]:
-        pass
-
-    async def get_general_info(self, id: str) -> dict:
+class IGeneralInformationService(ABC):
+    @abstractmethod
+    async def add_general_info(self, file: File) -> dict:
         pass
 
+    @abstractmethod
+    async def get_general_info_by_document_id(self, id: str) -> dict:
+        pass
+
+    @abstractmethod
     async def get_all_general_info(self) -> dict:
         pass
 
+    @abstractmethod
     async def delete_general_info(self, id: str) -> None:
         pass

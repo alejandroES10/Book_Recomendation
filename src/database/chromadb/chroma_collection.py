@@ -1,6 +1,7 @@
 
 from abc import ABC, abstractmethod
 from typing import Any, Dict, List, Optional
+from langchain_core.documents import Document
 
 
 
@@ -11,15 +12,16 @@ class ChromaCollection(ABC):
         self._collection = None
 
     @abstractmethod
-    async def add_documents(self, elements: List[Any]) -> List[str]:
+    async def add_documents(self, documents: List[Document], ids:Optional[List[str]]) -> List[str]:
+        pass
+
+
+    @abstractmethod
+    async def delete_documents(self, document_id: str) -> None:
         pass
 
     @abstractmethod
-    async def delete_documents(self, element_id: str) -> None:
-        pass
-
-    @abstractmethod
-    async def update_documents(self, elements: List[Any]) -> None:
+    async def update_documents(self, documents: List[Document], ids:Optional[List[str]]) -> None:
         pass
 
     @abstractmethod
@@ -27,7 +29,7 @@ class ChromaCollection(ABC):
         pass
 
     @abstractmethod
-    async def find_one(self, id: str) -> Optional[Dict]:
+    async def find_one(self, document_id: str) -> Optional[Dict]:
         pass
 
 
