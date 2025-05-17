@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from src.api.models.document_model import BookMetadataModel
+from src.api.models.book_metadata_model import BookMetadataModel
 from src.database.chromadb.book_metadata_collection import BookMetadataCollection
 from src.api.interfaces.ibook_metadata_service import IBookMetadataService
 from langchain_core.documents import Document

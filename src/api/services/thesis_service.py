@@ -1,6 +1,6 @@
 
 from typing import List
-from src.api.models.document_model import DocumentModel
+from src.api.models.book_metadata_model import DocumentModel
 from src.database.chromadb.thesis_collection import ThesisCollection
 from src.api.interfaces.ithesis_service import IThesisService
 

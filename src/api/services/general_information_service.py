@@ -6,7 +6,7 @@ import uuid
 from fastapi import File
 from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from src.api.models.document_model import DocumentModel
+from src.api.models.book_metadata_model import DocumentModel
 from src.database.chromadb.general_information_collection import GeneralInformationCollection
 from src.api.interfaces.igeneral_information_service import IGeneralInformationService
 

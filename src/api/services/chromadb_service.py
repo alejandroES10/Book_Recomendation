@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from src.api.models.document_model import DocumentModel  
+from src.api.models.book_metadata_model import DocumentModel  
 
 class ChromaDBService:
     def __init__(self, vector_store: Chroma):
