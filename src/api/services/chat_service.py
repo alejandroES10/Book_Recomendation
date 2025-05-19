@@ -31,7 +31,7 @@ class ChatService (IChatService):
     async def _build_chat_history(self,session_id: str) -> BaseChatMessageHistory:
         """Create and return a MongoDB chat history instance"""
 
-        return await self._chat_with_database.get_chat_history(session_id)
+        return self._chat_with_database.get_chat_history(session_id)
 
    
     async def delete_chat_history(self, session_id: str) -> None:
@@ -52,7 +52,7 @@ class ChatService (IChatService):
             MessageModel(
                 type=msg.type,
                 content=msg.content,
-                timestamp=msg.additional_kwargs.get("timestamp") if msg.additional_kwargs else None
+                created_at=msg.additional_kwargs.get("timestamp") if msg.additional_kwargs else None
             )
             for msg in chat_history.messages
         ]

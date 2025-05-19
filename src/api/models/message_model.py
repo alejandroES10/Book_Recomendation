@@ -4,4 +4,4 @@ from typing import Optional
 class MessageModel(BaseModel):
     type: str
     content: str
-    timestamp: Optional[str]
+    created_at: Optional[str]

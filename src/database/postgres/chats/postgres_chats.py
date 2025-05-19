@@ -47,9 +47,26 @@ class ChatWithPostgres(BaseChatWithDatabase):
     def get_chat_history(self, session_id: str) -> BaseChatMessageHistory:
         self.init_connection()
        
-        
         return CustomPostgresChatMessageHistory(
             self.table_name,
             session_id,
             max_messages=10,
             sync_connection=self.connection)
+
+# class ChatWithPostgres(BaseChatWithDatabase):
+#     def __init__(self):
+#         self.connection = None
+#         self.table_name = "chat_history"
+
+#     async def init_connection(self):
+#         self.connection = await psycopg.AsyncConnection.connect("postgresql://postgres:postgres@localhost/chats")
+#         await CustomPostgresChatMessageHistory.acreate_tables(self.connection, self.table_name)
+
+#     async def get_chat_history(self, session_id: str) -> BaseChatMessageHistory:
+#         await self.init_connection()
+#         return CustomPostgresChatMessageHistory(
+#             self.table_name,
+#             session_id,
+#             max_messages=10,
+#             async_connection=self.connection
+#         )

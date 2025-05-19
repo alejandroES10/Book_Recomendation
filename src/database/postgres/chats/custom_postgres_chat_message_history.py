@@ -1,6 +1,6 @@
 import re
 import json
-from typing import Optional
+from typing import Optional, Sequence
 from langchain_postgres import PostgresChatMessageHistory
 import psycopg
 from psycopg import sql
@@ -163,10 +163,62 @@ class CustomPostgresChatMessageHistory(PostgresChatMessageHistory):
                 await cur.execute(query_delete, (self._session_id, to_delete))
         await self._aconnection.commit()
 
-    def add_message(self, message: BaseMessage) -> None:
-        super().add_message(message)
+    def add_messages(self, messages: Sequence[BaseMessage]) -> None:
+        super().add_messages(messages)
         self._ensure_max_messages_sync()
 
-    async def aadd_message(self, message: BaseMessage) -> None:
-        await super().aadd_message(message)
+    async def aadd_messages(self, messages: Sequence[BaseMessage]) -> None:
+        await super().aadd_messages(messages)
         await self._ensure_max_messages_async()
+
+    def get_all_messages_for_session(self) -> List[dict]:
+        """Fetch all messages and metadata for the current session_id."""
+        if self._connection is None:
+            raise ValueError("No sync_connection provided.")
+
+        query = sql.SQL(
+            "SELECT id, session_id, message, created_at "
+            "FROM {table_name} "
+            "WHERE session_id = %s "
+            "ORDER BY id;"
+        ).format(table_name=sql.Identifier(self._table_name))
+
+        with self._connection.cursor() as cur:
+            cur.execute(query, (self._session_id,))
+            rows = cur.fetchall()
+
+        result = []
+        for row in rows:
+            result.append({
+                "id": row[0],
+                "session_id": row[1],
+                "message": row[2],
+                "created_at": row[3],
+            })
+        return result
+
+    async def aget_all_messages_for_session(self) -> List[dict]:
+        """Asynchronously fetch all messages and metadata for the current session_id."""
+        if self._aconnection is None:
+            raise ValueError("No async_connection provided.")
+
+        query = sql.SQL(
+            "SELECT id, session_id, message, created_at "
+            "FROM {table_name} "
+            "WHERE session_id = %s "
+            "ORDER BY id;"
+        ).format(table_name=sql.Identifier(self._table_name))
+
+        async with self._aconnection.cursor() as cur:
+            await cur.execute(query, (self._session_id,))
+            rows = await cur.fetchall()
+
+        result = []
+        for row in rows:
+            result.append({
+                "id": row[0],
+                "session_id": row[1],
+                "message": row[2],
+                "created_at": row[3],
+            })
+        return result
