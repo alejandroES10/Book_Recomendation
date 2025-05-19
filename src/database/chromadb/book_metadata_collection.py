@@ -55,7 +55,9 @@ class BookMetadataCollection(ChromaCollection):
         }
 
     async def find_all(self) -> List[dict]:
+        
         result = self._collection._vector_store.get()
+        
         return [{
             "id": id_,
             "metadata": self._extract_metadata_from_text(doc)

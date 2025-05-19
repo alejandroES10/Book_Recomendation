@@ -29,6 +29,7 @@ class BookMetadataService(IBookMetadataService):
 
     
     #**********************************
+
     def _build_chroma_documents(self, models: List[BookMetadataModel]) -> Tuple[List[Document], List[str]]:
         documents = []
         ids = []

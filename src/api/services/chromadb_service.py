@@ -1,7 +1,7 @@
 from typing import List, Optional, Tuple
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
-from src.api.models.book_metadata_model import DocumentModel  
+from src.api.models.book_metadata_model import BookMetadataModel 
 
 class ChromaDBService:
     def __init__(self, vector_store: Chroma):
@@ -13,7 +13,7 @@ class ChromaDBService:
         except Exception as e:
             raise ValueError(f"Failed to add documents: {str(e)}")
 
-    async def add_documents_with_ids(self, models: List[DocumentModel]) -> None:
+    async def add_documents_with_ids(self, models: List[BookMetadataModel]) -> None:
         documents, ids = self._build_chroma_documents(models)
 
         existing = self._vector_store._collection.get(ids=ids)
@@ -33,7 +33,7 @@ class ChromaDBService:
     #     except Exception as e:
     #         raise ValueError(f"Failed to update documents: {str(e)}")
 
-    async def update_documents(self, models: List[DocumentModel]) -> None:
+    async def update_documents(self, models: List[BookMetadataModel]) -> None:
         documents, ids = self._build_chroma_documents(models)
 
         if len(documents) != len(ids):
@@ -113,7 +113,7 @@ class ChromaDBService:
 
 
 
-    def _build_chroma_documents(self, models: List[DocumentModel]) -> Tuple[List[Document], List[str]]:
+    def _build_chroma_documents(self, models: List[BookMetadataModel]) -> Tuple[List[Document], List[str]]:
         """Transforma modelos de entrada en objetos Document de LangChain"""
         documents = []
         ids = []

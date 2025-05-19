@@ -1,7 +1,7 @@
 from typing import List
 
 from fastapi import File
-from src.api.models.book_metadata_model import DocumentModel
+
 
 from abc import ABC, abstractmethod
 

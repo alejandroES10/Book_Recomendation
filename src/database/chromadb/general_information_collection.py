@@ -1,6 +1,6 @@
 from typing import List, Optional, Tuple
 from langchain_core.documents import Document
-from src.api.models.book_metadata_model import DocumentModel
+
 from src.database.chromadb.chroma_collection import ChromaCollection
 from src.database.chromadb.vector_store import collection_of_general_information
 
@@ -42,6 +42,8 @@ class GeneralInformationCollection(ChromaCollection):
             "metadata": meta
         } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
 
-    async def update_documents(self, elements: List[DocumentModel]) -> None:
-        raise NotImplementedError("No se permite actualización en esta colección")
+    # async def update_documents(self, elements: List[DocumentModel]) -> None:
+    #     raise NotImplementedError("No se permite actualización en esta colección")
 
+    async def update_documents(self, documents: List[Document], ids:Optional[List[str]]) -> None:
+        pass
