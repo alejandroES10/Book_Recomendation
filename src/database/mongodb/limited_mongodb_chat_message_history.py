@@ -73,11 +73,7 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-from pymongo import MongoClient
-import os
-from dotenv import load_dotenv
 
-load_dotenv()
 
 class MongoClientSingleton:
     _instance = None

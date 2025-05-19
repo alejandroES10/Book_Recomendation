@@ -10,30 +10,41 @@ import os
 from dotenv import load_dotenv
 
 from src.database.mongodb.mongodb_connection import MongoDBConnection
-
+from src.database.postgres.chats.postgres_chats import BaseChatWithDatabase, ChatWithPostgres
+from langchain_core.chat_history import BaseChatMessageHistory
 
 class ChatService (IChatService):
-    
-    async def _build_chat_history(session_id: str) -> MongoDBChatMessageHistory:
-        """Create and return a MongoDB chat history instance"""
+# class ChatService ():
 
-        return MongoDBConnection.get_connection(session_id)
+    def __init__(self):
+        self._chat_with_database = ChatWithPostgres()
+
+    #********* BaseChatMessageHistory *********
+    
+    # async def _build_chat_history(session_id: str) -> MongoDBChatMessageHistory:
+    #     """Create and return a MongoDB chat history instance"""
+
+    #     return MongoDBConnection.get_connection(session_id)
 
         # return await chat.aget_messages()
         
+    async def _build_chat_history(self,session_id: str) -> BaseChatMessageHistory:
+        """Create and return a MongoDB chat history instance"""
+
+        return self._chat_with_database.get_chat_history(session_id)
 
    
-    async def delete_chat_history(session_id: str) -> None:
+    async def delete_chat_history(self, session_id: str) -> None:
         """Delete chat history for a session"""
-        chat_history = await ChatService._build_chat_history(session_id)
+        chat_history = await self._build_chat_history(session_id)
         if not chat_history.messages:
             raise ValueError(f"No chat history found for session: {session_id}")
         await chat_history.aclear()
 
     
-    async def get_chat_history(session_id: str) -> ChatHistoryModel:
+    async def get_chat_history(self,session_id: str) -> ChatHistoryModel:
         """Retrieve chat history for a session"""
-        chat_history = await  ChatService._build_chat_history(session_id)
+        chat_history = await  self._build_chat_history(session_id)
         if not chat_history.messages:
             raise ValueError(f"No chat history found for session: {session_id}")
         

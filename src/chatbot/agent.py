@@ -12,6 +12,8 @@ from langchain.tools.retriever import create_retriever_tool
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
+from src.database.postgres.chats.postgres_chats import ChatWithPostgres
+
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
@@ -160,10 +162,18 @@ agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
 # )
 
 
+#************* Anterior *************************
+# agent_with_chat_history = RunnableWithMessageHistory(
+#     agent_executor,
+#     lambda session_id: MongoDBConnection.get_connection(session_id),
+#     input_messages_key="question",
+#     history_messages_key="history",
+   
+# )
 
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
-    lambda session_id: MongoDBConnection.get_connection(session_id),
+    lambda session_id: ChatWithPostgres().get_chat_history(session_id),
     input_messages_key="question",
     history_messages_key="history",
    

@@ -1,15 +1,17 @@
 from fastapi import APIRouter, HTTPException,Depends
+from src.api.interfaces.ichat_service import IChatService
 from src.api.services.chat_service import ChatService
 from src.api.models.chat_request_model import ChatRequestModel
 from src.api.security.auth import validate_api_key
 
 router = APIRouter()
 
+chat_service = IChatService()
 
 @router.post("/",dependencies=[Depends(validate_api_key)])
 async def chat(request: ChatRequestModel):
     try:
-        return await ChatService.get_chat_bot_answer(request.session_id, request.input)
+        return await chat_service.get_chat_bot_answer(request.session_id, request.input)
     except ValueError as e:
         raise HTTPException(status_code=400, detail=str(e))
     except Exception as e:
@@ -20,7 +22,7 @@ async def chat(request: ChatRequestModel):
 async def get_chat_history(session_id: str):
     try:
         # history = await ChatService.get_chat_history(session_id)
-        return await ChatService.get_chat_history(session_id)
+        return await chat_service.get_chat_history(session_id)
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))
     except Exception as e:
@@ -30,7 +32,7 @@ async def get_chat_history(session_id: str):
 @router.delete("/{session_id}",dependencies=[Depends(validate_api_key)])
 async def delete_chat_history(session_id: str):
     try:
-        await ChatService.delete_chat_history(session_id)
+        await chat_service.delete_chat_history(session_id)
         return {"message": "Chat history deleted successfully"}
     except ValueError as e:
         raise HTTPException(status_code=404, detail=str(e))

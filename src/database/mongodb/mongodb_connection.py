@@ -1,6 +1,17 @@
+from abc import ABC, abstractmethod
 import os
 from dotenv import load_dotenv
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
+from langchain_core.chat_history import BaseChatMessageHistory
+
+class BaseChatWithDatabase(ABC):
+    """Clase base para manejar la conexión a la base de datos y el historial de mensajes."""
+
+    @abstractmethod
+    def get_chat_history(self, session_id: str)  -> BaseChatMessageHistory:
+        """Método abstracto para obtener la conexión a la base de datos."""
+        pass
+
 
 class MongoDBConnection:
     @staticmethod
