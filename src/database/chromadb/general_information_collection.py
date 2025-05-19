@@ -10,22 +10,21 @@ class GeneralInformationCollection(ChromaCollection):
     """Colección para documentos de información general."""
 
     def __init__(self):
-        super().__init__()
         self._collection = collection_of_general_information
 
     async def add_documents(self, documents: List[Document]) -> List[str]:
         try:
-            return await self._collection._vector_store.aadd_documents(documents)
+            return await self._collection.aadd_documents(documents)
         except Exception as e:
             raise ValueError(f"Error al añadir documentos: {e}")
 
     async def delete_documents(self, file_id: str) -> None:
-        deleted = self._collection._vector_store._collection.delete(where={"file_id": file_id})
+        deleted = self._collection._collection.delete(where={"file_id": file_id})
         if not deleted:
             raise ValueError(f"No se encontraron documentos con file_id: {file_id}")
 
     async def find_one(self, id: str) -> Optional[dict]:
-        result = self._collection._vector_store.get(ids=[id])
+        result = self._collection.get(ids=[id])
         if not result or not result.get('documents'):
             return None
         return {
@@ -35,7 +34,7 @@ class GeneralInformationCollection(ChromaCollection):
         }
 
     async def find_all(self) -> List[dict]:
-        result = self._collection._vector_store.get()
+        result = self._collection.get()
         return [{
             "id": id_,
             "content": doc,

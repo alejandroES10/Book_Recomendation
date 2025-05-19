@@ -43,10 +43,4 @@ class BookMetadataService(IBookMetadataService):
             ids.append(str(model.id))
         return documents, ids
 
-    def _extract_metadata_from_text(self, text: str) -> dict:
-        metadata = {}
-        for item in text.strip().split(". "):
-            if ": " in item:
-                key, value = item.split(": ", 1)
-                metadata[key.lower()] = value.strip(".")
-        return metadata
+   

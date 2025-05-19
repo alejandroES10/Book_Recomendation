@@ -14,25 +14,25 @@ class ThesisCollection(ChromaCollection):
 
     async def add_documents(self, documents: List[Document]) -> List[str]:
         try:
-            return await self._collection._vector_store.aadd_documents(documents)
+            return await self._collection.aadd_documents(documents)
         except Exception as e:
             raise ValueError(f"Error al añadir documentos: {e}")
 
     async def delete_documents(self, id: str) -> None:
         try:
-            self._collection._vector_store.delete(ids=[id])
+            self._collection.delete(ids=[id])
         except Exception as e:
             raise ValueError(f"Error al eliminar documento: {e}")
 
     async def update_documents(self, documents: List[Document]) -> None:
         try:
             ids = [doc.id for doc in documents]
-            self._collection._vector_store.update_documents(ids=ids, documents=documents)
+            self._collection.update_documents(ids=ids, documents=documents)
         except Exception as e:
             raise ValueError(f"Error al actualizar documentos: {e}")
 
     async def find_one(self, id: str) -> Optional[dict]:
-        result = self._collection._vector_store.get(ids=[id])
+        result = self._collection.get(ids=[id])
         if not result or not result.get('documents'):
             return None
         return {
@@ -42,7 +42,7 @@ class ThesisCollection(ChromaCollection):
         }
 
     async def find_all(self) -> List[dict]:
-        result = self._collection._vector_store.get()
+        result = self._collection.get()
         return [{
             "id": id_,
             "content": doc,

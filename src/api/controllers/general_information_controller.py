@@ -48,7 +48,7 @@ async def get_document(id: str):
         raise HTTPException(status_code=500, detail="Internal server error")
 
 
-@router.get("/",dependencies=[Depends(validate_api_key)])
+@router.get("/")
 async def get_documents():
     try:
         return await general_info_service.get_all_general_info()
