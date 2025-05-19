@@ -8,7 +8,6 @@ class BookMetadataCollection(ChromaCollection):
     """Colección especializada en libros con metadatos."""
 
     def __init__(self):
-        super().__init__()
         self._collection = collection_of_books
 
     async def _validate_ids_exist(self, ids: List[str]) -> None:
@@ -58,7 +57,5 @@ class BookMetadataCollection(ChromaCollection):
         
         result = self._collection.get()
         
-        return [{
-            "id": id_,
-            "metadata": self._extract_metadata_from_text(doc)
-        } for doc, id_ in zip(result["documents"], result["ids"])]
+
+        return result

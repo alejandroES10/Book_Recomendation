@@ -8,8 +8,8 @@ from langchain_core.documents import Document
 class ChromaCollection(ABC):
     """Clase abstracta base para todas las colecciones de Chroma."""
 
-    def __init__(self):
-        self._collection = None
+    # def __init__(self):
+    #     self._collection = None
 
     @abstractmethod
     async def add_documents(self, documents: List[Document], ids:Optional[List[str]]) -> List[str]:
