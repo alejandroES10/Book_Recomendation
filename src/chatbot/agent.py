@@ -25,16 +25,16 @@ from dotenv import load_dotenv
 from typing import List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 
-# llm = OllamaClientSingleton().get_llm()
+llm = OllamaClientSingleton().get_llm()
 
-load_dotenv()
-api_key = os.getenv("GROQ_API_KEY")
+# load_dotenv()
+# api_key = os.getenv("GROQ_API_KEY")
 
-llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatiles")
+# llm = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatiles")
 
 
 @tool
-async def get_results(content_to_search: str, k_results: int):
+def get_results(content_to_search: str, k_results: int):
     """Herramienta para buscar libros en el contexto de la biblioteca universitaria.
            Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto, si no son del tema específico que busca el usuario dale los libros similares que aparezcan solo en este contexto.
            Si te preguntan si en la biblioteca hay un libro, y cuando hagas la búsqueda no se encuentra dentro de los resultados, solo di que "no disponen de el libro en la biblioteca, quieres ayuda con otro libro ". 
@@ -47,7 +47,7 @@ async def get_results(content_to_search: str, k_results: int):
         search_type="similarity",
         search_kwargs={"k": k_results},
     )
-    return await retriever.abatch([content_to_search])
+    return retriever.batch([content_to_search])
 
 @tool
 async def search_thesis(content_to_search: str):
@@ -204,7 +204,7 @@ async def get_answer(session_id: str, user_input: str):
         dict: Respuesta del agente.
     """
    
-    return await agent_with_chat_history.ainvoke(
+    return await agent_with_chat_history.invoke(
         {"question": user_input},
         config={"configurable": {"session_id": session_id}},
     )

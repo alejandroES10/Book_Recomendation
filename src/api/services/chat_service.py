@@ -14,10 +14,10 @@ from src.database.postgres.chats.postgres_chats import BaseChatWithDatabase, Cha
 from langchain_core.chat_history import BaseChatMessageHistory
 
 class ChatService (IChatService):
-# class ChatService ():
-
+    
     def __init__(self):
         self._chat_with_database = ChatWithPostgres()
+        
 
     #********* BaseChatMessageHistory *********
     
@@ -31,7 +31,7 @@ class ChatService (IChatService):
     async def _build_chat_history(self,session_id: str) -> BaseChatMessageHistory:
         """Create and return a MongoDB chat history instance"""
 
-        return self._chat_with_database.get_chat_history(session_id)
+        return await self._chat_with_database.get_chat_history(session_id)
 
    
     async def delete_chat_history(self, session_id: str) -> None:
@@ -61,8 +61,9 @@ class ChatService (IChatService):
     
     
     
-    async def get_chat_bot_answer(session_id: str, input: str) -> str:
+    async def get_chat_bot_answer(self,session_id: str, input: str) -> str:
         """Get chatbot response for user input"""
+        
         try:
             return await get_answer(session_id, input)
         except Exception as e:

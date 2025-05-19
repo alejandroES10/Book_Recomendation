@@ -23,7 +23,7 @@ async def read_root():
 
 app.include_router(book_metadata_controller.router, prefix="/materials")
 
-# app.include_router(chat_controller.router, prefix="/chat")
+app.include_router(chat_controller.router, prefix="/chat")
 app.include_router(general_information_controller.router, prefix="/general-information",dependencies=[Depends(validate_api_key)])
 
 # from fastapi import FastAPI

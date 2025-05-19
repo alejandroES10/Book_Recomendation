@@ -1,12 +1,12 @@
 from fastapi import APIRouter, HTTPException,Depends
-from src.api.interfaces.ichat_service import IChatService
+
 from src.api.services.chat_service import ChatService
 from src.api.models.chat_request_model import ChatRequestModel
 from src.api.security.auth import validate_api_key
 
 router = APIRouter()
 
-chat_service = IChatService()
+chat_service = ChatService()
 
 @router.post("/",dependencies=[Depends(validate_api_key)])
 async def chat(request: ChatRequestModel):
