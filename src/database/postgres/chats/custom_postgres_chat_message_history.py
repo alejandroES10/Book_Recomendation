@@ -3,7 +3,7 @@ import json
 from typing import Optional, Sequence
 from langchain_postgres import PostgresChatMessageHistory
 import psycopg
-from psycopg import sql
+from psycopg import logger, sql
 from langchain_core.messages import BaseMessage
 from typing import List
 from psycopg import sql
@@ -60,20 +60,46 @@ class CustomPostgresChatMessageHistory(PostgresChatMessageHistory):
 
 
 
+    # @staticmethod
+    # def create_tables(connection: psycopg.Connection, table_name: str) -> None:
+    #     queries = _create_custom_table_and_index(table_name)
+    #     with connection.cursor() as cursor:
+    #         for query in queries:
+    #             cursor.execute(query)
+    #     connection.commit()
+
+    # @staticmethod
+    # async def acreate_tables(connection: psycopg.AsyncConnection, table_name: str) -> None:
+    #     queries = _create_custom_table_and_index(table_name)
+    #     async with connection.cursor() as cursor:
+    #         for query in queries:
+    #             await cursor.execute(query)
+    #     await connection.commit()
+
     @staticmethod
-    def create_tables(connection: psycopg.Connection, table_name: str) -> None:
+    def create_tables(
+        connection: psycopg.Connection,
+        table_name: str,
+        /,
+    ) -> None:
+        """Create the table schema in the database and create relevant indexes."""
         queries = _create_custom_table_and_index(table_name)
+        logger.info("Creating schema for table %s", table_name)
         with connection.cursor() as cursor:
             for query in queries:
                 cursor.execute(query)
         connection.commit()
 
     @staticmethod
-    async def acreate_tables(connection: psycopg.AsyncConnection, table_name: str) -> None:
+    async def acreate_tables(
+        connection: psycopg.AsyncConnection, table_name: str, /
+    ) -> None:
+        """Create the table schema in the database and create relevant indexes."""
         queries = _create_custom_table_and_index(table_name)
-        async with connection.cursor() as cursor:
+        logger.info("Creating schema for table %s", table_name)
+        async with connection.cursor() as cur:
             for query in queries:
-                await cursor.execute(query)
+                await cur.execute(query)
         await connection.commit()
 
 
