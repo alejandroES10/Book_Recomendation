@@ -2,7 +2,7 @@ from typing import List
 from langchain_core.messages import BaseMessage
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 from src.api.interfaces.ichat_service import IChatService
-from src.chatbot.agent import get_answer
+
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 from src.api.models.message_model import MessageModel
 from src.api.models.chat_history_model import ChatHistoryModel
@@ -10,6 +10,7 @@ import os
 from dotenv import load_dotenv
 
 from src.database.mongodb.mongodb_connection import MongoDBConnection
+from src.database.postgres.chats.custom_sql_chat_message_history import CustomSQLChatMessageHistory
 from src.database.postgres.chats.postgres_chats import BaseChatWithDatabase, ChatWithPostgres
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import SQLChatMessageHistory
@@ -29,24 +30,24 @@ class ChatService (IChatService):
 
         # return await chat.aget_messages()
         
-    async def _build_chat_history(self,session_id: str) -> BaseChatMessageHistory:
-        """Create and return a MongoDB chat history instance"""
+    def build_chat_history(self,session_id: str) -> CustomSQLChatMessageHistory:
+        """Create and return a SQL chat history instance"""
 
         return self._chat_with_database.get_chat_history(session_id)
 
    
     async def delete_chat_history(self, session_id: str) -> None:
         """Delete chat history for a session"""
-        chat_history = await self._build_chat_history(session_id)
+        chat_history = self.build_chat_history(session_id)
         if not chat_history.messages:
             raise ValueError(f"No chat history found for session: {session_id}")
         await chat_history.aclear()
 
     
-    async def get_chat_history(self,session_id: str) -> ChatHistoryModel:
+    async def get_chat_history(self,session_id: str):
         """Retrieve chat history for a session"""
-        chat_history = await  self._build_chat_history(session_id)
-        history = await chat_history.aget_messages()
+        chat_history = self.build_chat_history(session_id)
+        history = await chat_history. aget_raw_messages()
         if not history:
             raise ValueError(f"No chat history found for session: {session_id}")
         
@@ -61,15 +62,18 @@ class ChatService (IChatService):
 
         # return ChatHistoryModel(session_id=session_id, history=history)
 
-        return history.aget_messages()
+        return history
     
     
     
     async def get_chat_bot_answer(self,session_id: str, input: str) -> str:
+        from src.chatbot.agent import get_answer
         """Get chatbot response for user input"""
         
         try:
-            return await get_answer(session_id, input)
+            result = await get_answer(session_id, input)
+            response = {"ouput": result['output'] }
+            return response
         except Exception as e:
             raise ValueError(f"Failed to get chatbot answer: {str(e)}")
 

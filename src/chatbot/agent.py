@@ -12,6 +12,7 @@ from langchain.tools.retriever import create_retriever_tool
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
+from src.api.services.chat_service import ChatService
 from src.database.postgres.chats.postgres_chats import ChatWithPostgres
 
 
@@ -74,27 +75,11 @@ async def search_thesis(content_to_search: str):
 
 
 
-# get_results = create_retriever_tool(
-#     collection__of__books.as_retriever(),
-#     name="Herramienta para buscar libros en la biblioteca universitaria",
-#     description=(
-#         """Herramienta para buscar libros en la biblioteca universitaria. 
-#         Solo puedes recomendar libros o indicar si están disponibles. 
-#         Si el libro no está en la biblioteca, responde: 'No disponemos del libro en la biblioteca,¿quieres ayuda con otro libro?'
-#         Si el usuario solicita recomendaciones, revisa su historial de chat y sugiere libros de categorías previas.
-#         """
-#     ),
-# )
-
 get_library_information = create_retriever_tool(
     collection_of_general_information.as_retriever(),
    "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
     "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario. Si no encuentras resultados di que no disponen de la información")
 
-# get_tesis_information = create_retriever_tool(
-#     collection__of__thesis.as_retriever(),
-#    "Herramienta para buscar información acerca de las tesis realizadas en la universidad",
-#     "Se utiliza para buscar información sobre las distintas tesis realizadas en la universidad. No se utiliza para buscar libros ni responder a saludos o presentación del usuario")
 
 
 tools = [get_results, get_library_information,search_thesis]
@@ -130,70 +115,13 @@ agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
 
 
 
-# Configuración del agente con historial limitado
-# agent_with_chat_history = RunnableWithMessageHistory(
-#     agent_executor,
-#     lambda session_id: LimitedMongoDBChatMessageHistory(
-#         session_id=session_id,
-#         connection_string="mongodb://localhost:27017",
-#         database_name="chats_db",
-#         collection_name="chat_histories",
-#         create_index=True,
-#         max_history=10  # Físicamente limita a 6 mensajes en MongoDB
-#     ),
-#     input_messages_key="question",
-#     history_messages_key="history",
-# )
-
-# import os
-
-# agent_with_chat_history = RunnableWithMessageHistory(
-#     agent_executor,
-#     lambda session_id: LimitedMongoDBChatMessageHistory(
-#         session_id=session_id,
-#         connection_string=os.environ["MONGO_CONNECTION_STRING"],  
-#         database_name=os.environ["MONGO_DATABASE_NAME"],  
-#         collection_name=os.environ["MONGO_COLLECTION_NAME"], 
-#         create_index=True,
-#         max_history=10 
-#     ),
-#     input_messages_key="question",
-#     history_messages_key="history",
-# )
-
-
-#************* Anterior *************************
-# agent_with_chat_history = RunnableWithMessageHistory(
-#     agent_executor,
-#     lambda session_id: MongoDBConnection.get_connection(session_id),
-#     input_messages_key="question",
-#     history_messages_key="history",
-   
-# )
-
-
-
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
-    lambda session_id:  ChatWithPostgres().get_chat_history(session_id),
+    lambda session_id:  ChatService().build_chat_history(session_id),
     input_messages_key="question",
     history_messages_key="history",
    
 )
-
-
-# agent_with_chat_history = RunnableWithMessageHistory(
-#     agent_executor,
-#     lambda session_id: MongoDBChatMessageHistory(
-#         session_id=session_id,
-#         connection_string="mongodb://localhost:27017",
-#         database_name="chats_db",
-#         collection_name="chat_histories",
-#         history_size= 6
-#     ),
-#     input_messages_key="question",
-#     history_messages_key="history",
-# )
 
 
 

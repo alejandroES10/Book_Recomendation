@@ -6,6 +6,8 @@ from sqlalchemy.orm import declarative_base
 from langchain_community.chat_message_histories.sql import BaseMessageConverter
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
+from src.database.postgres.chats.custom_sql_chat_message_history import CustomSQLChatMessageHistory
+
 
 # Declarar base para el modelo
 Base = declarative_base()
@@ -15,10 +17,10 @@ class CustomMessage(Base):
     __tablename__ = "custom_message_store"
 
     id = sa.Column(sa.BigInteger, primary_key=True, autoincrement=True)
-    session_id = sa.Column(sa.Text)
+    session_id = sa.Column(sa.Text, index=True)  
     type = sa.Column(sa.Text)
     content = sa.Column(sa.Text)
-    created_at = sa.Column(sa.DateTime)  # Se elimina server_default
+    created_at = sa.Column(sa.DateTime)
 
 # Convertidor personalizado
 class CustomMessageConverter(BaseMessageConverter):
@@ -40,7 +42,7 @@ class CustomMessageConverter(BaseMessageConverter):
             session_id=session_id,
             type=message.type,
             content=message.content,
-            created_at=datetime.utcnow()
+            created_at=datetime.now()
         )
 
     def get_sql_model_class(self) -> Any:
@@ -169,10 +171,9 @@ class ChatWithPostgres(BaseChatWithDatabase):
         
 
     def get_chat_history(self, session_id: str) -> BaseChatMessageHistory:
-        return SQLChatMessageHistory(
+        return CustomSQLChatMessageHistory(
             session_id=session_id,
             connection=self._connection,
-			table_name="custom_message_store",
             engine_args={"echo": False},
 			custom_message_converter=CustomMessageConverter()
         )
