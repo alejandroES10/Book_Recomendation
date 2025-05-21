@@ -34,7 +34,7 @@ llm = OllamaClientSingleton().get_llm()
 
 
 @tool
-def get_results(content_to_search: str, k_results: int):
+async def get_results(content_to_search: str, k_results: int):
     """Herramienta para buscar libros en el contexto de la biblioteca universitaria.
            Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto, si no son del tema específico que busca el usuario dale los libros similares que aparezcan solo en este contexto.
            Si te preguntan si en la biblioteca hay un libro, y cuando hagas la búsqueda no se encuentra dentro de los resultados, solo di que "no disponen de el libro en la biblioteca, quieres ayuda con otro libro ". 
@@ -47,7 +47,7 @@ def get_results(content_to_search: str, k_results: int):
         search_type="similarity",
         search_kwargs={"k": k_results},
     )
-    return retriever.batch([content_to_search])
+    return await retriever.abatch([content_to_search])
 
 @tool
 async def search_thesis(content_to_search: str):
@@ -171,13 +171,16 @@ agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
    
 # )
 
+
+
 agent_with_chat_history = RunnableWithMessageHistory(
     agent_executor,
-    lambda session_id: ChatWithPostgres().get_chat_history(session_id),
+    lambda session_id:  ChatWithPostgres().get_chat_history(session_id),
     input_messages_key="question",
     history_messages_key="history",
    
 )
+
 
 # agent_with_chat_history = RunnableWithMessageHistory(
 #     agent_executor,
@@ -193,6 +196,7 @@ agent_with_chat_history = RunnableWithMessageHistory(
 # )
 
 
+
 async def get_answer(session_id: str, user_input: str):
     """Obtiene la respuesta del agente basado en el historial de chat.
 
@@ -204,7 +208,8 @@ async def get_answer(session_id: str, user_input: str):
         dict: Respuesta del agente.
     """
    
-    return agent_with_chat_history.invoke(
+    
+    return await agent_with_chat_history.ainvoke(
         {"question": user_input},
         config={"configurable": {"session_id": session_id}},
     )

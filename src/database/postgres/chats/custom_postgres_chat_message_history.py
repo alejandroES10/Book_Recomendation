@@ -2,6 +2,7 @@ import re
 import json
 from typing import Optional, Sequence
 from langchain_postgres import PostgresChatMessageHistory
+
 import psycopg
 from psycopg import logger, sql
 from langchain_core.messages import BaseMessage
