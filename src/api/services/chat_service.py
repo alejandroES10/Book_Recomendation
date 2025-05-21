@@ -12,6 +12,7 @@ from dotenv import load_dotenv
 from src.database.mongodb.mongodb_connection import MongoDBConnection
 from src.database.postgres.chats.postgres_chats import BaseChatWithDatabase, ChatWithPostgres
 from langchain_core.chat_history import BaseChatMessageHistory
+from langchain_community.chat_message_histories import SQLChatMessageHistory
 
 class ChatService (IChatService):
     
@@ -45,19 +46,22 @@ class ChatService (IChatService):
     async def get_chat_history(self,session_id: str) -> ChatHistoryModel:
         """Retrieve chat history for a session"""
         chat_history = await  self._build_chat_history(session_id)
-        if not chat_history.messages:
+        history = await chat_history.aget_messages()
+        if not history:
             raise ValueError(f"No chat history found for session: {session_id}")
         
-        history = [
-            MessageModel(
-                type=msg.type,
-                content=msg.content,
-                created_at=msg.additional_kwargs.get("timestamp") if msg.additional_kwargs else None
-            )
-            for msg in chat_history.messages
-        ]
+        # history = [
+        #     MessageModel(
+        #         type=msg.type,
+        #         content=msg.content,
+        #         created_at=msg.additional_kwargs.get("timestamp") if msg.additional_kwargs else None
+        #     )
+        #     for msg in chat_history.messages
+        # ]
 
-        return ChatHistoryModel(session_id=session_id, history=history)
+        # return ChatHistoryModel(session_id=session_id, history=history)
+
+        return history.aget_messages()
     
     
     

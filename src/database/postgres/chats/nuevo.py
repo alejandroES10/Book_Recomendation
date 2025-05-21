@@ -44,3 +44,14 @@ message_history.message
 # # 5. Muestra los mensajes
 # for msg in messages:
 #     print(msg)
+
+
+
+# history_engine = create_async_engine(url="postgresql+psycopg://user:password@localhost:5432)
+
+# def get_session_history(session_id: str) -> BaseChatMessageHistory:
+#     return SQLChatMessageHistory( 
+#         session_id=session_id,
+#         connection=history_engine,
+#         engine_args={"echo": False},
+#     )
