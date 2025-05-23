@@ -1,6 +1,3 @@
-
-
-
 from abc import ABC, abstractmethod
 import sys
 import os
@@ -11,7 +8,10 @@ from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.agents import tool
 from langchain.tools.retriever import create_retriever_tool
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
+
+from src.database.postgres.chats.postgres_chats import ChatWithPostgres
 
 
 
@@ -23,9 +23,8 @@ from langchain_groq import ChatGroq
 from dotenv import load_dotenv
 from typing import Callable, List
 from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
-from src.chatbot.utils_for_agent import TOOLS, PROMPT_AGENT, LLM
 
-llma = OllamaClientSingleton().get_llm()
+LLM = OllamaClientSingleton().get_llm()
 
 # load_dotenv()
 # api_key = os.getenv("GROQ_API_KEY")
@@ -82,9 +81,9 @@ get_library_information = create_retriever_tool(
 
 
 
-tools = [get_results, get_library_information,search_thesis]
+TOOLS = [get_results, get_library_information,search_thesis]
 
-prompta = ChatPromptTemplate.from_messages(
+PROMPT_AGENT = ChatPromptTemplate.from_messages(
     [
         (
             "system",
@@ -103,79 +102,3 @@ prompta = ChatPromptTemplate.from_messages(
         ("placeholder", "{agent_scratchpad}"),
     ]
 )
-
-# agent = create_tool_calling_agent(llm, tools, prompt)
-
-# agent_executor = AgentExecutor(agent=agent, tools=tools,  verbose=True)
-
-
-
-
-
-
-
-
-# agent_with_chat_history = RunnableWithMessageHistory(
-#     agent_executor,
-#     lambda session_id:  ChatService().build_chat_history(session_id),
-#     input_messages_key="question",
-#     history_messages_key="history",
-   
-# )
-
-
-
-# async def get_answer(session_id: str, user_input: str, chat_history: BaseChatMessageHistory):
-#     """Obtiene la respuesta del agente basado en el historial de chat.
-
-#     Args:
-#         session_id (str): ID de la sesión del usuario.
-#         user_input (str): Entrada del usuario.
-
-#     Returns:
-#         dict: Respuesta del agente.
-#     """
-   
-    
-#     return await agent_with_chat_history.ainvoke(
-#         {"question": user_input},
-#         config={"configurable": {"session_id": session_id}},
-#     )
-
-
-from langchain_core.chat_history import BaseChatMessageHistory
-
-class IAgent(ABC):
-    @abstractmethod
-    async def get_answer(self, session_id: str, user_input: str, chat_history: GetSessionHistoryCallable):
-        """Obtiene la respuesta del agente basado en el historial de chat."""
-        pass
-
-
-class AgentChatBot(IAgent):
-    def __init__(self):
-        self.llm = LLM
-        self.tools = TOOLS
-        self.prompt = PROMPT_AGENT
-        self.agent_executor = self._create_agent_executor()
-
-    def _create_agent_executor(self) -> AgentExecutor:
-        agent = self._create_agent()
-        return AgentExecutor(agent=agent, tools=self.tools, verbose=True)
-
-    def _create_agent(self):
-        return create_tool_calling_agent(self.llm, self.tools, self.prompt)
-
-    async def get_answer(self, session_id: str, user_input: str, get_chat_history: GetSessionHistoryCallable):
-        """Ejecuta el agente con historial de chat inyectado."""
-        agent_with_chat_history = RunnableWithMessageHistory(
-            self.agent_executor,
-            lambda session_id: get_chat_history(session_id),
-            input_messages_key="question",
-            history_messages_key="history",
-        )
-
-        return await agent_with_chat_history.ainvoke(
-            {"question": user_input},
-            config={"configurable": {"session_id": session_id}}
-        )

@@ -14,11 +14,14 @@ from src.database.postgres.chats.custom_sql_chat_message_history import CustomSQ
 from src.database.postgres.chats.postgres_chats import BaseChatWithDatabase, ChatWithPostgres
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import SQLChatMessageHistory
+from src.chatbot.agent import AgentChatBot
+
 
 class ChatService (IChatService):
     
     def __init__(self):
         self._chat_with_database = ChatWithPostgres()
+        self._agent = AgentChatBot()
         
 
     #********* BaseChatMessageHistory *********
@@ -67,11 +70,14 @@ class ChatService (IChatService):
     
     
     async def get_chat_bot_answer(self,session_id: str, input: str) -> str:
-        from src.chatbot.agent import get_answer
+        
         """Get chatbot response for user input"""
         
         try:
-            result = await get_answer(session_id, input)
+            
+            result = await self._agent.get_answer(session_id, input,self.build_chat_history)
+            if not result:
+                raise ValueError("No response from chatbot")
             response = {"ouput": result['output'] }
             return response
         except Exception as e:
