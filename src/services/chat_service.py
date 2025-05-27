@@ -11,17 +11,17 @@ from dotenv import load_dotenv
 
 
 from src.database.postgres.chats.custom_sql_chat_message_history import CustomSQLChatMessageHistory
-from src.database.postgres.chats.postgres_chats import BaseChatWithDatabase, ChatWithPostgres
+from src.database.postgres.chats.chats_repository import  BaseChatWithDatabase, ChatWithPostgres
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import SQLChatMessageHistory
-from src.chatbot.agent import AgentChatBot
+from src.chatbot.agent import Agent
 
 
 class ChatService (IChatService):
     
-    def __init__(self):
-        self._chat_with_database = ChatWithPostgres()
-        self._agent = AgentChatBot()
+    def __init__(self, chat_with_database:BaseChatWithDatabase, agent: Agent):
+        self._chat_with_database = chat_with_database
+        self._agent = agent
         
 
     #********* BaseChatMessageHistory *********

@@ -11,7 +11,7 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 
-from src.database.postgres.chats.chats_repository import ChatWithPostgres
+
 
 
 
