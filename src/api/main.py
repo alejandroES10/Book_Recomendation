@@ -5,6 +5,7 @@ from src.database.postgres.chats.chats_repository import ChatWithPostgres
 from src.security.auth import validate_api_key
 from src.services.chat_service import ChatService
 from src.chatbot.agent import AgentChatBot
+from src.services.general_information_service import GeneralInformationService
 
 
 
@@ -34,12 +35,17 @@ book_controller = BookMetadataController(service)
 
 
 chat_with_postgres = ChatWithPostgres()
-agent = AgentChatBot()  # Asegúrate de que tienes una instancia de tu agente
-chat_service = ChatService(chat_with_postgres,agent)  # instancia concreta que implementa IChatService
+agent = AgentChatBot()  
+chat_service = ChatService(chat_with_postgres,agent)  
 chat_controller = chat_controller.ChatController(chat_service)
+
+general_info_service = GeneralInformationService()
+general_info_controller = general_information_controller.GeneralInformationController(general_info_service)
+
 
 app.include_router(book_controller.router, prefix="/books", tags=["Book Metadata"])
 app.include_router(chat_controller.router, prefix="/chat", tags=["Chat"])
+app.include_router(general_info_controller.router, prefix="/general-info", tags=["General Information"])
 
 
 # app.include_router(book_metadata_controller.router, prefix="/materials")
