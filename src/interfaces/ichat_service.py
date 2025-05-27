@@ -1,7 +1,7 @@
 from abc import ABC, abstractmethod
 from typing import List
 
-from src.api.models.chat_history_model import ChatHistoryModel
+from src.schemas.chat_history_schema import ChatHistorySchema
 
 
 class IChatService(ABC):
@@ -11,7 +11,7 @@ class IChatService(ABC):
         pass
 
     @abstractmethod
-    async def get_chat_history(self,session_id: str) -> ChatHistoryModel:
+    async def get_chat_history(self,session_id: str) -> ChatHistorySchema:
         pass
 
     @abstractmethod   

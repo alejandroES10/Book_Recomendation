@@ -3,7 +3,7 @@ from typing import Annotated
 
 MAX_WORDS = 1000  # Aproximadamente 8000 tokens
 
-class ChatRequestModel(BaseModel):
+class ChatRequestSchema(BaseModel):
     session_id: str
     input: str
 

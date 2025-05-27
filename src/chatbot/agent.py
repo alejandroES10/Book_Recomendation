@@ -16,13 +16,12 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
-from src.database.mongodb.mongodb_connection import MongoDBConnection
+
 from src.ollama.ollama_client import OllamaClientSingleton
 from src.database.chromadb.vector_store import collection_of_books, collection_of_general_information, collection__of__thesis
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv
 from typing import Callable, List
-from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
 from src.chatbot.utils_for_agent import TOOLS, PROMPT_AGENT, LLM
 
 llma = OllamaClientSingleton().get_llm()

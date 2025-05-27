@@ -1,11 +1,11 @@
 from fastapi import APIRouter, HTTPException,Depends
 from langchain_core.documents import Document
 from typing import List
-from src.api.models.book_metadata_model import BookMetadataModel
-from src.api.services.book_metadata_service import BookMetadataService
-from src.api.services.chromadb_service import ChromaDBService
+from src.schemas.book_metadata_schema import BookMetadataSchema
+from src.services.book_metadata_service import BookMetadataService
+from src.services.chromadb_service import ChromaDBService
 
-from src.api.security.auth import validate_api_key
+from src.security.auth import validate_api_key
 
 router = APIRouter()
 
@@ -14,7 +14,7 @@ router = APIRouter()
 book_metadata_service = BookMetadataService()
 
 @router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])
-async def create_books(documents: List[BookMetadataModel]):
+async def create_books(documents: List[BookMetadataSchema]):
     try:
         await book_metadata_service.add_books(documents)
         return {"message": "Documents created successfully"}
@@ -36,7 +36,7 @@ async def delete_document(id: str):
 
 
 @router.put("/", dependencies=[Depends(validate_api_key)])
-async def update_book(documents: List[BookMetadataModel]):
+async def update_book(documents: List[BookMetadataSchema]):
     try:
         await book_metadata_service.update_book(documents)
         return {"message": "Documents updated successfully"}

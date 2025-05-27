@@ -1,6 +1,6 @@
 from abc import abstractmethod
 from typing import List
-from src.api.models.book_metadata_model import DocumentModel
+from src.schemas.book_metadata_schema import DocumentModel
 
 class IThesisService:
     

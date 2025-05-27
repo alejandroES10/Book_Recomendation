@@ -1,9 +1,9 @@
 from pydantic import BaseModel
 from typing import List, Optional
-from src.api.models.message_model import MessageModel
+from src.api.schemas.message_schema import MessageSchema
 
 
 
 class ChatHistoryModel(BaseModel):
     session_id: str
-    history: List[MessageModel]
+    history: List[MessageSchema]

@@ -3,13 +3,13 @@
 
 from abc import ABC, abstractmethod
 from typing import List
-from src.api.models.book_metadata_model import BookMetadataModel
+from src.schemas.book_metadata_schema import BookMetadataSchema
 
 
 class IBookMetadataService(ABC):
 
     @abstractmethod
-    async def add_books(self, models: List[BookMetadataModel]) -> List[str]:
+    async def add_books(self, models: List[BookMetadataSchema]) -> List[str]:
         pass
 
     @abstractmethod
@@ -21,7 +21,7 @@ class IBookMetadataService(ABC):
         pass
 
     @abstractmethod
-    async def update_book(self, id: str, model: BookMetadataModel) -> None:
+    async def update_book(self, id: str, model: BookMetadataSchema) -> None:
         pass
 
 

@@ -8,7 +8,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from src.database.chromadb.general_information_collection import GeneralInformationCollection
-from src.api.interfaces.igeneral_information_service import IGeneralInformationService
+from src.interfaces.igeneral_information_service import IGeneralInformationService
 
 
 class GeneralInformationService(IGeneralInformationService):

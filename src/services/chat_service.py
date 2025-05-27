@@ -1,15 +1,15 @@
 from typing import List
 from langchain_core.messages import BaseMessage
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
-from src.api.interfaces.ichat_service import IChatService
+from src.interfaces.ichat_service import IChatService
 
-from src.database.mongodb.limited_mongodb_chat_message_history import LimitedMongoDBChatMessageHistory
-from src.api.models.message_model import MessageModel
-from src.api.models.chat_history_model import ChatHistoryModel
+
+from src.schemas.message_schema import MessageSchema
+from src.schemas.chat_history_schema import ChatHistorySchema
 import os
 from dotenv import load_dotenv
 
-from src.database.mongodb.mongodb_connection import MongoDBConnection
+
 from src.database.postgres.chats.custom_sql_chat_message_history import CustomSQLChatMessageHistory
 from src.database.postgres.chats.postgres_chats import BaseChatWithDatabase, ChatWithPostgres
 from langchain_core.chat_history import BaseChatMessageHistory

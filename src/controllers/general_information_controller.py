@@ -1,9 +1,9 @@
 
 from fastapi import APIRouter, File, HTTPException, UploadFile,Depends
 
-from src.api.services.general_information_service import GeneralInformationService
+from src.services.general_information_service import GeneralInformationService
 
-from src.api.security.auth import validate_api_key
+from src.security.auth import validate_api_key
 
 router = APIRouter()
 

@@ -1,7 +1,7 @@
 from fastapi import FastAPI, Depends
-from src.api.controllers import book_metadata_controller, chat_controller, general_information_controller
+from src.controllers import book_metadata_controller, chat_controller, general_information_controller
 from fastapi.middleware.cors import CORSMiddleware
-from src.api.security.auth import validate_api_key
+from src.security.auth import validate_api_key
 
 
 

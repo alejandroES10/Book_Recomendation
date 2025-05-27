@@ -1,15 +1,15 @@
 from fastapi import APIRouter, HTTPException,Depends
 
-from src.api.services.chat_service import ChatService
-from src.api.models.chat_request_model import ChatRequestModel
-from src.api.security.auth import validate_api_key
+from src.services.chat_service import ChatService
+from src.schemas.chat_request_schema import ChatRequestSchema
+from src.security.auth import validate_api_key
 
 router = APIRouter()
 
 chat_service = ChatService()
 
 @router.post("/",dependencies=[Depends(validate_api_key)])
-async def chat(request: ChatRequestModel):
+async def chat(request: ChatRequestSchema):
     try:
         return await chat_service.get_chat_bot_answer(request.session_id, request.input)
     except ValueError as e:
