@@ -11,13 +11,13 @@ from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 
-from src.database.postgres.chats.postgres_chats import ChatWithPostgres
+from src.database.postgres.chats.chats_repository import ChatWithPostgres
 
 
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from src.ollama.ollama_client import OllamaClientSingleton
+from src.ai_models.ollama_client import OllamaClientSingleton
 from src.database.chromadb.vector_store import collection_of_books, collection_of_general_information, collection__of__thesis
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv

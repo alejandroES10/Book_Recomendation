@@ -2,7 +2,7 @@ from sqlalchemy import Column, Integer, String, Boolean, BigInteger, Text, JSON
 from sqlalchemy.orm import declarative_base
 Base = declarative_base()
 
-class Thesis(Base):
+class ThesisModel(Base):
     __tablename__ = 'thesis'
 
     id = Column(Integer, primary_key=True)

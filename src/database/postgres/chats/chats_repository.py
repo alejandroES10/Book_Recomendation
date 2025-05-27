@@ -52,10 +52,9 @@ class CustomMessageConverter(BaseMessageConverter):
 from abc import ABC, abstractmethod
 from langchain_core.chat_history import BaseChatMessageHistory
 
-from src.database.postgres.chats.postg import PostgresChatMessageHistory
+
 from psycopg_pool import AsyncConnectionPool
 
-from src.database.postgres.chats.custom_postgres_chat_message_history import CustomPostgresChatMessageHistory
 
 
 class BaseChatWithDatabase(ABC):
