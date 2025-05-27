@@ -69,7 +69,10 @@ class ThesisDataImporterService(IThesisDataImporterService):
         Si se pierde la conexión a DSpace, se detiene el proceso.
         """
         try:
+            con = 0
             items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
+            print("Cantidad*********")
+            print(len(items))
         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
             print(f"[ERROR] Conexión fallida al obtener los ítems desde DSpace: {e}")
             raise  # Detiene completamente el proceso
@@ -109,6 +112,11 @@ class ThesisDataImporterService(IThesisDataImporterService):
                     cleaned_metadata = self._clean_metadata(item.metadata)
                     thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
                     await self.thesis_repository.upsert_thesis(session, thesis_schema)
+                    con +=1
+                    print("canttttt")
+                    print(con)
+
+       
 
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
                 print(f"[ERROR] Conexión perdida al procesar el ítem '{getattr(item, 'handle', 'unknown')}': {e}")
