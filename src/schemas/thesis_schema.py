@@ -4,8 +4,7 @@ from typing import Dict
 class ThesisSchema(BaseModel):
     handle: str
     metadata_json: Dict
-    original_name: str
-    size_bytes: int
+    original_name_document: str
+    size_bytes_document: int
     download_url: str
-    checksum_md5: str
-    is_processed: bool = False
+    is_vectorized: bool = False

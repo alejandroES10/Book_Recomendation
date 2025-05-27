@@ -5,37 +5,41 @@ from sqlalchemy.exc import SQLAlchemyError
 from ....models.thesis_model import ThesisModel
 from src.schemas.thesis_schema import ThesisSchema
 
-from sqlalchemy.ext.asyncio import (
-    create_async_engine, AsyncSession, async_sessionmaker
-)
+# from sqlalchemy.ext.asyncio import (
+#     create_async_engine, AsyncSession, async_sessionmaker
+# )
 
-DATABASE_CONFIG = {
-    "DB_NAME": "dspace_db",
-    "DB_USER": "postgres",
-    "DB_PASSWORD": "postgres",
-    "DB_HOST": "localhost",
-    "DB_PORT": "5432",
-}
+# DATABASE_CONFIG = {
+#     "DB_NAME": "dspace_db",
+#     "DB_USER": "postgres",
+#     "DB_PASSWORD": "postgres",
+#     "DB_HOST": "localhost",
+#     "DB_PORT": "5432",
+# }
 
-ASYNC_DB_URL = (
-    f"postgresql+asyncpg://{DATABASE_CONFIG['DB_USER']}:{DATABASE_CONFIG['DB_PASSWORD']}"
-    f"@{DATABASE_CONFIG['DB_HOST']}:{DATABASE_CONFIG['DB_PORT']}/{DATABASE_CONFIG['DB_NAME']}"
-)
+# ASYNC_DB_URL = (
+#     f"postgresql+asyncpg://{DATABASE_CONFIG['DB_USER']}:{DATABASE_CONFIG['DB_PASSWORD']}"
+#     f"@{DATABASE_CONFIG['DB_HOST']}:{DATABASE_CONFIG['DB_PORT']}/{DATABASE_CONFIG['DB_NAME']}"
+# )
 
-# Motor asíncrono con pool
-engine = create_async_engine(
-    ASYNC_DB_URL,
-    echo=False,
-    # pool_size=10,
-    # max_overflow=20,
-)
+# # Motor asíncrono con pool
+# engine = create_async_engine(
+#     ASYNC_DB_URL,
+#     echo=False,
+#     # pool_size=10,
+#     # max_overflow=20,
+# )
 
-# Session async
-AsyncSessionLocal = async_sessionmaker(
-    bind=engine, class_=AsyncSession, expire_on_commit=False
-)
+# # Session async
+# AsyncSessionLocal = async_sessionmaker(
+#     bind=engine, class_=AsyncSession, expire_on_commit=False
+# )
+
+# from .init_db import create_tables_async
+
 
 class ThesisRepository:
+
     @staticmethod
     async def upsert_thesis(session: AsyncSession, tesis: ThesisSchema):
         try:
@@ -49,12 +53,12 @@ class ThesisRepository:
                 await session.commit()
                 print(f"✅ Insertado: {tesis.handle}")
                 return True
-            elif existing.is_processed:
+            elif existing.is_vectorized:
                 print(f"⏩ Ya procesado: {tesis.handle}")
                 return False
             elif existing.download_url != tesis.download_url:
                 existing.download_url = tesis.download_url
-                existing.is_processed = False
+                existing.is_vectorized = False
                 await session.commit()
                 print(f"🔄 Actualizado URL: {tesis.handle}")
                 return True
@@ -96,10 +100,10 @@ class ThesisRepository:
         try:
             thesis = await ThesisRepository.get_by_handle(session, handle)
             if thesis:
-                if thesis.is_processed:
+                if thesis.is_vectorized:
                     print(f"⏩ Ya estaba marcado como procesado: {handle}")
                     return False
-                thesis.is_processed = True
+                thesis.is_vectorized = True
                 await session.commit()
                 print(f"✅ Marcado como procesado: {handle}")
                 return True
@@ -112,12 +116,12 @@ class ThesisRepository:
             return False
         
     @staticmethod
-    async def get_unprocessed_theses(session: AsyncSession):
+    async def get_non_vectorized_theses(session: AsyncSession):
         """
         Devuelve una lista de tesis que aún no han sido procesadas (vectorizadas).
         """
         try:
-            stmt = select(ThesisModel).where(ThesisModel.is_processed == False)
+            stmt = select(ThesisModel).where(ThesisModel.is_vectorized == False)
             result = await session.execute(stmt)
             theses = result.scalars().all()
             print(f"📥 {len(theses)} tesis sin procesar encontradas.")
@@ -160,61 +164,61 @@ class ThesisRepository:
 #         )
 #         await ThesisRepository.upsert_thesis(session, dto)
 
-async def main():
-    async with AsyncSessionLocal() as session:
-        # Test upsert
-        dto1 = ThesisSchema(
-            handle="789/789",
-            metadata_json={"title": "Tesis de prueba 5"},
-            original_name="tesis_de_prueba5",
-            size_bytes=123456,
-            download_url="http://example.com/tesis_de_prueba5.pdf",
-            checksum_md5="tdp5",
-            is_processed=False
-        )
-        dto2 = ThesisSchema(
-            handle="10/10",
-            metadata_json={"title": "Tesis de prueba 6"},
-            original_name="tesis_de_prueba6",
-            size_bytes=123456,
-            download_url="https://repositorio.minciencias.gov.co/server/api/core/bitstreams/d8136985-e6e9-4a1e-93c8-bc8b43e185a7/content",
-            checksum_md5="tdp6",
-            is_processed=False
-        )
-        dto3 = ThesisSchema(
-            handle="11/11",
-            metadata_json={"title": "Tesis de prueba 7"},
-            original_name="tesis_de_prueba7",
-            size_bytes=123456,
-            download_url="",
-            checksum_md5="tdp7",
-            is_processed=False
-        )
-        # await ThesisRepository.upsert_thesis(session, dto1)
-        # await ThesisRepository.upsert_thesis(session, dto3)
-        # await ThesisRepository.upsert_thesis(session, dto2)
+# async def main():
+#     async with AsyncSessionLocal() as session:
+#         # Test upsert
+#         dto1 = ThesisSchema(
+#             handle="789/789",
+#             metadata_json={"title": "Tesis de prueba 5"},
+#             original_name_document="tesis_de_prueba5",
+#             size_bytes_document=123456,
+#             download_url="http://example.com/tesis_de_prueba5.pdf",
+#             checksum_md5="tdp5",
+#             is_processed=False
+#         )
+#         dto2 = ThesisSchema(
+#             handle="10/10",
+#             metadata_json={"title": "Tesis de prueba 6"},
+#             original_name_document="tesis_de_prueba6",
+#             size_bytes_document=123456,
+#             download_url="https://repositorio.minciencias.gov.co/server/api/core/bitstreams/d8136985-e6e9-4a1e-93c8-bc8b43e185a7/content",
+#             checksum_md5="tdp6",
+#             is_processed=False
+#         )
+#         dto3 = ThesisSchema(
+#             handle="11/11",
+#             metadata_json={"title": "Tesis de prueba 7"},
+#             original_name_document="tesis_de_prueba7",
+#             size_bytes_document=123456,
+#             download_url="",
+#             checksum_md5="tdp7",
+#             is_processed=False
+#         )
+#         # await ThesisRepository.upsert_thesis(session, dto1)
+#         # await ThesisRepository.upsert_thesis(session, dto3)
+#         # await ThesisRepository.upsert_thesis(session, dto2)
 
-        # await ThesisRepository.mark_as_processed(session, "123/123")
-        # await ThesisRepository.delete_all(session)
-        theses = await ThesisRepository.get_all(session)
-        for thesis in theses:
-            print(f"📘 Handle: {thesis.handle}, Procesada: {thesis.is_processed}, Metadatos:{thesis.metadata_json}, Url: {thesis.download_url}" )
+#         # await ThesisRepository.mark_as_processed(session, "123/123")
+#         # await ThesisRepository.delete_all(session)
+#         theses = await ThesisRepository.get_all(session)
+#         for thesis in theses:
+#             print(f"📘 Handle: {thesis.handle}, Procesada: {thesis.is_vectorized}, Metadatos:{thesis.metadata_json}, Url: {thesis.download_url}" )
 
-        print("cantidad de tesis", len(theses))
+#         print("cantidad de tesis", len(theses))
 
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+#     asyncio.run(main())
 
-        # # Test get all
-        # theses = await ThesisRepository.get_all(session)
-        # print(f"Total theses: {len(theses)}")
+#         # # Test get all
+#         # theses = await ThesisRepository.get_all(session)
+#         # print(f"Total theses: {len(theses)}")
 
-        # # Test get by handle
-        # thesis = await ThesisRepository.get_by_handle(session, "test_handle")
-        # print(f"Thesis found: {thesis}")
+#         # # Test get by handle
+#         # thesis = await ThesisRepository.get_by_handle(session, "test_handle")
+#         # print(f"Thesis found: {thesis}")
 
-        # Test delete by handle
-        # await ThesisRepository.delete_by_handle(session, "test_handle")
-        # thesis_after_delete = await ThesisRepository.get_by_handle(session, "test_handle")
-        # print(f"Thesis after delete: {thesis_after_delete}")
+#         # Test delete by handle
+#         # await ThesisRepository.delete_by_handle(session, "test_handle")
+#         # thesis_after_delete = await ThesisRepository.get_by_handle(session, "test_handle")
+#         # print(f"Thesis after delete: {thesis_after_delete}")

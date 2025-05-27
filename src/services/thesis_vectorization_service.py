@@ -2,19 +2,14 @@
 import asyncio
 from typing import List
 from src.database.chromadb.thesis_collection import ThesisCollection
-from src.database.postgres.thesis.thesis_repository import ThesisRepository, AsyncSessionLocal
+from src.database.postgres.thesis.thesis_repository import ThesisRepository
+from src.database.postgres.thesis.init_db import AsyncSessionLocal
 
 from langchain_community.document_loaders import PyPDFLoader
 
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_core.documents import Document
 
-
-class ThesisVectorizationService:
-    def __init__(self, thesis_collection: ThesisCollection, thesis_repository: ThesisRepository):
-        self.thesis_collection = thesis_collection
-        self.thesis_repository = thesis_repository
-        
 
 from src.interfaces.ithesis_vectorization_service import IThesisVectorizationService
 from src.schemas.thesis_schema import ThesisSchema
@@ -64,28 +59,27 @@ class ThesisVectorizationService(IThesisVectorizationService):
         Gets all unprocessed theses and converts them into ThesisDto objects.
         """
         async with AsyncSessionLocal() as session:
-            theses = await self.thesis_repository.get_unprocessed_theses(session)
+            theses = await self.thesis_repository.get_non_vectorized_theses(session)
 
         return [
             ThesisSchema(
                 handle=thesis.handle,
                 metadata_json=thesis.metadata_json,
-                original_name=thesis.original_name,
-                size_bytes=thesis.size_bytes,
+                original_name_document=thesis.original_name_document,
+                size_bytes_document=thesis.size_bytes_document,
                 download_url=thesis.download_url,
-                checksum_md5=thesis.checksum_md5,
-                is_processed=thesis.is_processed
+                is_processed=thesis.is_vectorized
             )
             for thesis in theses
         ]
 
 
         
-    async def process_thesis_to_fragments(self, thesis_dto: ThesisSchema) -> List[Document]:
+    async def process_thesis_to_fragments(self, thesis_schema: ThesisSchema) -> List[Document]:
             """
             Procesa una tesis y devuelve sus fragmentos enriquecidos con metadatos.
             """
-            loader = PyPDFLoader(thesis_dto.download_url)
+            loader = PyPDFLoader(thesis_schema.download_url)
             documents = await loader.aload()
             print("********Documento cargado********")
             print(documents)
@@ -101,11 +95,10 @@ class ThesisVectorizationService(IThesisVectorizationService):
                 enriched_fragment = Document(
                     page_content=fragment.page_content,
                     metadata={
-                        "handle": thesis_dto.handle,
-                        "original_name": thesis_dto.original_name,
-                        "size_bytes": thesis_dto.size_bytes,
-                        "checksum_md5": thesis_dto.checksum_md5,
-                        **thesis_dto.metadata_json
+                        "handle": thesis_schema.handle,
+                        "original_name_document": thesis_schema.original_name_document,
+                        "size_bytes_document": thesis_schema.size_bytes_document,
+                        **thesis_schema.metadata_json
                     }
                 )
                 print("********Fragmento com metadatos********")
@@ -117,15 +110,15 @@ class ThesisVectorizationService(IThesisVectorizationService):
 
 
 #*********************************** Test **************************************
-async def main():
-    thesis_collection = ThesisCollection()  # Instancia según tu implementación real
-    thesis_repository = ThesisRepository()
+# async def main():
+#     thesis_collection = ThesisCollection()  # Instancia según tu implementación real
+#     thesis_repository = ThesisRepository()
 
-    vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository)
+#     vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository)
     
-    await vectorization_service.vectorize_thesis()
+#     await vectorization_service.vectorize_thesis()
 
      
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+#     asyncio.run(main())
