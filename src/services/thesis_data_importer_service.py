@@ -1,98 +1,16 @@
 
 
-# import asyncio
-# from src.services.dspace_service import DSpaceService
-
-# from src.repositories.thesis_repository import ThesisRepository, AsyncSessionLocal
-
-# from src.schemas.thesis_dto import ThesisDto
-
-# COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
-
-
-# class ThesisManager:
-
-#     def __init__(self, dspace_service: DSpaceService, thesis_repository: ThesisRepository):
-#         self.dspace_service = dspace_service
-#         self.thesis_repository = thesis_repository
-
-#     async def upsert_thesis(self):
-#         """
-#         Inserta o actualiza una tesis en la base de datos.
-#         """
-#         try:
-#             items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=10)
-#         except Exception as e:
-#             print(f"[ERROR] No se pudieron obtener ítems: {e}")
-#             return
-
-#         if not items:
-#             print("[INFO] No se encontraron ítems en la comunidad.")
-#             return
-
-#         for item in items:
-#             try:
-#                 bundles = await self.dspace_service.get_bundles_by_item(item)
-#                 if not bundles:
-#                     continue
-
-#                 # Buscar el bundle llamado "ORIGINAL"
-#                 original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
-#                 if not original_bundle:
-#                     continue
-
-#                 bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
-#                 if not bitstreams or not isinstance(bitstreams, list):
-#                     continue
-
-#                 bitstream = bitstreams[0]
-#                 bitstream_uuid = bitstream.uuid 
-#                 pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream_uuid}/content"
-                
-#                 if not pdf_url:
-#                     continue
-                
-#                 async with AsyncSessionLocal() as session:
-
-#                     thesis_dto = self._build_thesis_dto(item,bitstream, pdf_url)
-#                     await self.thesis_repository.upsert_thesis(thesis_dto)
-
-#             except Exception as e:
-#                 print(f"[ERROR] Error procesando el ítem '{getattr(item, 'handle', 'desconocido')}': {e}")         
-
-#     def _build_thesis_dto(self, item,bitstream, pdf_url: str) -> ThesisDto:
-#             return ThesisDto(
-#                 handle=item.handle,
-#                 metadata_json=item.metadata,
-#                 original_name=bitstream.name,
-#                 size_bytes=bitstream.sizeBytes,
-#                 download_url=pdf_url,
-#                 checksum_md5="Cambiar",
-#                 is_processed=False
-#             )
-    
-# async def main():
-#     dspace_service = DSpaceService("https://repositorio.cujae.edu.cu/server/api")
-#     thesis_repository = ThesisRepository()
-#     thesis_manager = ThesisManager(dspace_service, thesis_repository)
-
-#     await thesis_manager.upsert_thesis()
-
-
-
-# if __name__ == "__main__":
-#     asyncio.run(main())
-
 
 
 import asyncio
+from src.interfaces.ithesis_data_importer_service import IThesisDataImporterService
 from src.services.dspace_service import DSpaceService
 from src.database.postgres.thesis.thesis_repository import ThesisRepository, AsyncSessionLocal
 from src.schemas.thesis_schema import ThesisSchema
 
 COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
 
-class ThesisDataImporterService:
+class ThesisDataImporterService(IThesisDataImporterService):
 
     def __init__(self, dspace_service: DSpaceService, thesis_repository: ThesisRepository):
         self.dspace_service = dspace_service

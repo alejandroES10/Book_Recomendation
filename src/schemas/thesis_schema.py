@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from typing import Dict
 
-class ThesisDto(BaseModel):
+class ThesisSchema(BaseModel):
     handle: str
     metadata_json: Dict
     original_name: str

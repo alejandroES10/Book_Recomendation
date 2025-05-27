@@ -3,7 +3,7 @@ from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
 from ....models.thesis_model import ThesisModel
-from ....schemas.thesis_schema import ThesisSchema
+from src.schemas.thesis_schema import ThesisSchema
 
 from sqlalchemy.ext.asyncio import (
     create_async_engine, AsyncSession, async_sessionmaker

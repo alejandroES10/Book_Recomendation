@@ -16,9 +16,10 @@ class ThesisVectorizationService:
         self.thesis_repository = thesis_repository
         
 
+from src.interfaces.ithesis_vectorization_service import IThesisVectorizationService
 from src.schemas.thesis_schema import ThesisSchema
 
-class ThesisVectorizationService:
+class ThesisVectorizationService(IThesisVectorizationService):
     def __init__(self, thesis_collection: ThesisCollection, thesis_repository: ThesisRepository):
         self.thesis_collection = thesis_collection
         self.thesis_repository = thesis_repository
