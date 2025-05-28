@@ -12,11 +12,11 @@ from src.schemas.thesis_schema import ThesisSchema
 
 COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
 
-class ThesisDataImporterService(IThesisDataImporterService):
+# class ThesisDataImporterService(IThesisDataImporterService):
 
-    def __init__(self, dspace_service: DSpaceService, thesis_repository: ThesisRepository):
-        self.dspace_service = dspace_service
-        self.thesis_repository = thesis_repository
+#     def __init__(self, dspace_service: DSpaceService, thesis_repository: ThesisRepository):
+#         self.dspace_service = dspace_service
+#         self.thesis_repository = thesis_repository
 
     # async def upsert_theses(self):
     #     """
@@ -63,70 +63,171 @@ class ThesisDataImporterService(IThesisDataImporterService):
     #             print(f"[ERROR] Error processing item '{getattr(item, 'handle', 'unknown')}': {e}")    
     # 
     
-    async def upsert_theses(self):
-        """
-        Inserta o actualiza las tesis en la base de datos.
-        Si se pierde la conexión a DSpace, se detiene el proceso.
-        """
-        try:
-            con = 0
-            items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
-            print("Cantidad*********")
-            print(len(items))
-        except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-            print(f"[ERROR] Conexión fallida al obtener los ítems desde DSpace: {e}")
-            raise  # Detiene completamente el proceso
-        except requests.exceptions.RequestException as e:
-            print(f"[ERROR] Fallo general en la petición a DSpace: {e}")
-            raise
-        except Exception as e:
-            print(f"[ERROR] Otro error inesperado al obtener ítems: {e}")
-            raise
+    # async def upsert_theses(self):
+    #     """
+    #     Inserta o actualiza las tesis en la base de datos.
+    #     Si se pierde la conexión a DSpace, se detiene el proceso.
+    #     """
+    #     try:
+    #         con = 0
+    #         items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
+    #         print("Cantidad*********")
+    #         print(len(items))
+    #     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+    #         print(f"[ERROR] Conexión fallida al obtener los ítems desde DSpace: {e}")
+    #         raise  # Detiene completamente el proceso
+    #     except requests.exceptions.RequestException as e:
+    #         print(f"[ERROR] Fallo general en la petición a DSpace: {e}")
+    #         raise
+    #     except Exception as e:
+    #         print(f"[ERROR] Otro error inesperado al obtener ítems: {e}")
+    #         raise
 
-        if not items:
-            print("[INFO] No se encontraron ítems en la comunidad.")
-            raise
+    #     if not items:
+    #         print("[INFO] No se encontraron ítems en la comunidad.")
+    #         raise
 
-        for item in items:
-            try:
-                bundles = await self.dspace_service.get_bundles_by_item(item)
-                if not bundles:
-                    continue
+    #     for item in items:
+    #         try:
+    #             bundles = await self.dspace_service.get_bundles_by_item(item)
+    #             if not bundles:
+    #                 continue
 
-                original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
-                if not original_bundle:
-                    continue
+    #             original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
+    #             if not original_bundle:
+    #                 continue
 
-                bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
-                if not bitstreams or not isinstance(bitstreams, list):
-                    continue
+    #             bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
+    #             if not bitstreams or not isinstance(bitstreams, list):
+    #                 continue
 
-                bitstream = bitstreams[0]
-                bitstream_uuid = bitstream.uuid 
-                pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream_uuid}/content"
+    #             bitstream = bitstreams[0]
+    #             bitstream_uuid = bitstream.uuid 
+    #             pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream_uuid}/content"
                 
-                if not pdf_url:
-                    continue
+    #             if not pdf_url:
+    #                 continue
 
-                async with AsyncSessionLocal() as session:
-                    cleaned_metadata = self._clean_metadata(item.metadata)
-                    thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
-                    await self.thesis_repository.upsert_thesis(session, thesis_schema)
-                    con +=1
-                    print("canttttt")
-                    print(con)
+    #             async with AsyncSessionLocal() as session:
+    #                 cleaned_metadata = self._clean_metadata(item.metadata)
+    #                 thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
+    #                 await self.thesis_repository.upsert_thesis(session, thesis_schema)
+    #                 con +=1
+    #                 print("canttttt")
+    #                 print(con)
 
        
 
-            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-                print(f"[ERROR] Conexión perdida al procesar el ítem '{getattr(item, 'handle', 'unknown')}': {e}")
-                raise  # Detiene el proceso completamente
-            except requests.exceptions.RequestException as e:
-                print(f"[ERROR] Error de red general procesando el ítem '{getattr(item, 'handle', 'unknown')}': {e}")
-                raise
+    #         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+    #             print(f"[ERROR] Conexión perdida al procesar el ítem '{getattr(item, 'handle', 'unknown')}': {e}")
+    #             raise  # Detiene el proceso completamente
+    #         except requests.exceptions.RequestException as e:
+    #             print(f"[ERROR] Error de red general procesando el ítem '{getattr(item, 'handle', 'unknown')}': {e}")
+    #             raise
+    #         except Exception as e:
+    #             print(f"[ERROR] Error procesando el ítem '{getattr(item, 'handle', 'unknown')}': {e}") 
+    #             raise    
+
+
+    # async def upsert_theses(self):
+    #     """
+    #     Inserta o actualiza las tesis en la base de datos.
+    #     Si se pierde la conexión a DSpace, se detiene el proceso.
+    #     """
+    #     try:
+    #         items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
+    #         print(f"[INFO] Cantidad de ítems encontrados: {len(items)}")
+    #     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
+    #         raise RuntimeError(f"[ERROR] Conexión fallida al obtener los ítems desde DSpace: {e}")
+    #     except requests.exceptions.RequestException as e:
+    #         raise RuntimeError(f"[ERROR] Fallo general en la petición a DSpace: {e}")
+    #     except Exception as e:
+    #         raise RuntimeError(f"[ERROR] Otro error inesperado al obtener ítems: {e}")
+
+    #     if not items:
+    #         raise RuntimeError("[INFO] No se encontraron ítems en la comunidad.")
+
+    #     processed_count = 0
+    #     for item in items:
+    #         try:
+    #             if not await self._process_item(item):
+    #                 continue
+    #             processed_count += 1
+    #         except Exception as e:
+    #             handle = getattr(item, 'handle', 'unknown')
+    #             raise RuntimeError(f"[ERROR] Fallo procesando ítem '{handle}': {e}")
+
+    #     print(f"[INFO] Total de tesis procesadas: {processed_count}")
+
+from sqlalchemy.exc import SQLAlchemyError
+from src.database.postgres.thesis.process_status_repository import ProcessStatusRepository
+from src.models.thesis_model import ProcessStatus
+from src.database import AsyncSessionLocal  # asegúrate de que esto esté disponible
+
+class ThesisDataImporterService(IThesisDataImporterService):
+
+    def __init__(self, dspace_service: DSpaceService, thesis_repository: ThesisRepository):
+        self.dspace_service = dspace_service
+        self.thesis_repository = thesis_repository
+
+    async def upsert_theses(self):
+        process_name = "import_theses"
+
+        async with AsyncSessionLocal() as session:
+            try:
+                await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.RUNNING)
+
+                items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
+                print(f"[INFO] Cantidad de ítems encontrados: {len(items)}")
+
+                if not items:
+                    await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.COMPLETED)
+                    print("[INFO] No se encontraron ítems en la comunidad.")
+                    return
+
+                processed_count = 0
+                for item in items:
+                    try:
+                        if not await self._process_item(item):
+                            continue
+                        processed_count += 1
+                    except Exception as e:
+                        handle = getattr(item, 'handle', 'unknown')
+                        raise RuntimeError(f"[ERROR] Fallo procesando ítem '{handle}': {e}")
+
+                print(f"[INFO] Total de tesis procesadas: {processed_count}")
+                await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.COMPLETED)
+
             except Exception as e:
-                print(f"[ERROR] Error procesando el ítem '{getattr(item, 'handle', 'unknown')}': {e}") 
-                raise    
+                await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
+                print(f"[ERROR] Proceso de importación fallido: {e}")
+                raise
+
+
+    async def _process_item(self, item) -> bool:
+        bundles = await self.dspace_service.get_bundles_by_item(item)
+        if not bundles:
+            return False
+
+        original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
+        if not original_bundle:
+            return False
+
+        bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
+        if not bitstreams or not isinstance(bitstreams, list):
+            return False
+
+        bitstream = bitstreams[0]
+        pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
+
+        async with AsyncSessionLocal() as session:
+            cleaned_metadata = self._clean_metadata(item.metadata)
+            thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
+            await self.thesis_repository.upsert_thesis(session, thesis_schema)
+
+        return True
+
+
 
     def _clean_metadata(self, metadata: dict) -> dict:
         """
