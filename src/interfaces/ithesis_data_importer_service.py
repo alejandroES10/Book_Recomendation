@@ -10,3 +10,8 @@ class IThesisDataImporterService(ABC):
         Abstract method to upsert theses from an external source into the database.
         """
         pass
+
+    @abstractmethod
+    async def get_import_status(self) -> dict:
+        pass
+

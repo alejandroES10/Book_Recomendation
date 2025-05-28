@@ -1,3 +1,4 @@
+from contextlib import asynccontextmanager
 from fastapi import FastAPI, Depends
 # from src.controllers import book_metadata_controller, chat_controller, general_information_controller
 from fastapi.middleware.cors import CORSMiddleware
@@ -7,7 +8,10 @@ from src.controllers.thesis_import_controller import ThesisImportController
 from src.controllers.thesis_vectorization_controller import ThesisVectorizationController
 from src.database.chromadb.thesis_collection import ThesisCollection
 from src.database.postgres.chats.chats_repository import ChatWithPostgres
+from src.database.postgres.thesis.init_db import AsyncSessionLocal
+from src.database.postgres.thesis.process_status_repository import ProcessStatusRepository
 from src.database.postgres.thesis.thesis_repository import ThesisRepository
+from src.models.thesis_model import ProcessStatus
 from src.security.auth import validate_api_key
 from src.services.chat_service import ChatService
 from src.chatbot.agent import AgentChatBot
@@ -16,10 +20,31 @@ from src.services.general_information_service import GeneralInformationService
 from src.services.thesis_data_importer_service import ThesisDataImporterService
 from src.services.thesis_vectorization_service import ThesisVectorizationService
 
+import logging
 
+logger = logging.getLogger(__name__)
 
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    logger.info("🌱 Lifespan startup comenzando...")
 
-app = FastAPI()
+    async with AsyncSessionLocal() as session:
+        repo = ProcessStatusRepository()
+        running_processes = await repo.get_all_running_processes(session)
+        logger.info(f"🔎 Se encontraron {len(running_processes)} procesos en estado RUNNING.")
+        for proc in running_processes:
+            logger.info(f"⚠️ Marcando como FAILED el proceso: {proc.name}")
+            await repo.set_status(
+                session,
+                proc.name,
+                ProcessStatus.FAILED,
+                error_messages=["Fallo por cierre inesperado del servidor"]
+            )
+
+    logger.info("✅ Lifespan startup completado.")
+    yield
+
+app = FastAPI(lifespan=lifespan)
 
 app.add_middleware(
     CORSMiddleware,
@@ -54,7 +79,8 @@ general_info_controller = GeneralInformationController(general_info_service)
 base_url_dspace="https://repositorio.cujae.edu.cu/server/api"
 dspace_service = DSpaceService(base_url_dspace)
 thesis_repository = ThesisRepository()
-thesis_import_service = ThesisDataImporterService(dspace_service, thesis_repository)
+process_status_repository = ProcessStatusRepository()
+thesis_import_service = ThesisDataImporterService(dspace_service, thesis_repository,process_status_repository)
 thesis_import_controller = ThesisImportController(thesis_import_service)
 
 thesis_collection = ThesisCollection()

@@ -52,8 +52,8 @@ class ProcessStatusRepository:
                 return {
                     "process_name": existing.process_name.value,
                     "status": existing.status.value,  # como str
-                    "started_at": existing.started_at,
-                    "ended_at": existing.ended_at,
+                    "started_at": existing.started_at.isoformat() if existing.started_at else None,
+                    "ended_at": existing.ended_at.isoformat() if existing.ended_at else None,
                     "error_messages": existing.error_messages
                 }
             return None
@@ -61,20 +61,26 @@ class ProcessStatusRepository:
             print(f"[ERROR] No se pudo obtener el estado del proceso: {e}")
             return None
         
-
-async def main():
-    async with AsyncSessionLocal() as session:
-        process = ProcessStatusRepository()
-        pn = ProcessName.IMPORT_THESIS
-        pe = ProcessStatus.RUNNING
-        await process.set_status(session,pn,pe)
-        print("Agregado el proceso")
-
-        info_process = await process.get_status(session,pn )
-        print("Proceso Existente")
-        print(info_process)
+    async def get_all_running_processes(session: AsyncSession):
+        result = await session.execute(
+            select(ProcessStatusModel).where(ProcessStatusModel.status == ProcessStatus.RUNNING)
+        )
+        return result.scalars().all()
 
 
+# async def main():
+#     async with AsyncSessionLocal() as session:
+#         process = ProcessStatusRepository()
+#         pn = ProcessName.IMPORT_THESIS
+#         pe = ProcessStatus.RUNNING
+#         await process.set_status(session,pn,pe)
+#         print("Agregado el proceso")
 
-if __name__ == "__main__":
-    asyncio.run(main())
+#         info_process = await process.get_status(session,pn )
+#         print("Proceso Existente")
+#         print(info_process)
+
+
+
+# if __name__ == "__main__":
+#     asyncio.run(main())

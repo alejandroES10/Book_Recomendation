@@ -159,29 +159,35 @@ COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
 
     #     print(f"[INFO] Total de tesis procesadas: {processed_count}")
 
-from sqlalchemy.exc import SQLAlchemyError
+
 from src.database.postgres.thesis.process_status_repository import ProcessStatusRepository
-from src.models.thesis_model import ProcessStatus
-from src.database import AsyncSessionLocal  # asegúrate de que esto esté disponible
+from src.models.thesis_model import ProcessName, ProcessStatus
+
 
 class ThesisDataImporterService(IThesisDataImporterService):
 
-    def __init__(self, dspace_service: DSpaceService, thesis_repository: ThesisRepository):
+    def __init__(
+        self,
+        dspace_service: DSpaceService,
+        thesis_repository: ThesisRepository,
+        process_status_repository: ProcessStatusRepository
+    ):
         self.dspace_service = dspace_service
         self.thesis_repository = thesis_repository
+        self.process_status_repository = process_status_repository
 
     async def upsert_theses(self):
-        process_name = "import_theses"
+        process_name = ProcessName.IMPORT_THESIS
 
         async with AsyncSessionLocal() as session:
             try:
-                await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.RUNNING)
+                await self.process_status_repository.set_status(session, process_name, ProcessStatus.RUNNING)
 
                 items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
                 print(f"[INFO] Cantidad de ítems encontrados: {len(items)}")
 
                 if not items:
-                    await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.COMPLETED)
+                    await self.process_status_repository.set_status(session, process_name, ProcessStatus.COMPLETED)
                     print("[INFO] No se encontraron ítems en la comunidad.")
                     return
 
@@ -196,37 +202,17 @@ class ThesisDataImporterService(IThesisDataImporterService):
                         raise RuntimeError(f"[ERROR] Fallo procesando ítem '{handle}': {e}")
 
                 print(f"[INFO] Total de tesis procesadas: {processed_count}")
-                await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.COMPLETED)
+                await self.process_status_repository.set_status(session, process_name, ProcessStatus.COMPLETED)
 
             except Exception as e:
-                await ProcessStatusRepository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
+                await self.process_status_repository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
                 print(f"[ERROR] Proceso de importación fallido: {e}")
                 raise
 
-
-    async def _process_item(self, item) -> bool:
-        bundles = await self.dspace_service.get_bundles_by_item(item)
-        if not bundles:
-            return False
-
-        original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
-        if not original_bundle:
-            return False
-
-        bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
-        if not bitstreams or not isinstance(bitstreams, list):
-            return False
-
-        bitstream = bitstreams[0]
-        pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
-
+    async def get_import_status(self) -> dict:
         async with AsyncSessionLocal() as session:
-            cleaned_metadata = self._clean_metadata(item.metadata)
-            thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
-            await self.thesis_repository.upsert_thesis(session, thesis_schema)
-
-        return True
-
+            status = await self.process_status_repository.get_status(session, ProcessName.IMPORT_THESIS)
+            return status or {}
 
 
     def _clean_metadata(self, metadata: dict) -> dict:
@@ -253,6 +239,29 @@ class ThesisDataImporterService(IThesisDataImporterService):
             download_url=pdf_url,
             is_vectorized=False
         )
+    
+    async def _process_item(self, item) -> bool:
+        bundles = await self.dspace_service.get_bundles_by_item(item)
+        if not bundles:
+            return False
+
+        original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
+        if not original_bundle:
+            return False
+
+        bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
+        if not bitstreams or not isinstance(bitstreams, list):
+            return False
+
+        bitstream = bitstreams[0]
+        pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
+
+        async with AsyncSessionLocal() as session:
+            cleaned_metadata = self._clean_metadata(item.metadata)
+            thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
+            await self.thesis_repository.upsert_thesis(session, thesis_schema)
+
+        return True
     
 # async def main():
 #     dspace_service = DSpaceService("https://repositorio.cujae.edu.cu/server/api")
