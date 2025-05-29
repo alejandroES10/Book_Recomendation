@@ -61,6 +61,7 @@ class ProcessStatusRepository:
             print(f"[ERROR] No se pudo obtener el estado del proceso: {e}")
             return None
         
+    @staticmethod
     async def get_all_running_processes(session: AsyncSession):
         result = await session.execute(
             select(ProcessStatusModel).where(ProcessStatusModel.status == ProcessStatus.RUNNING)

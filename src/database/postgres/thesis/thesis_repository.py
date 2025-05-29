@@ -96,7 +96,7 @@ class ThesisRepository:
             return False
 
     @staticmethod
-    async def mark_as_processed(session: AsyncSession, handle: str):
+    async def mark_as_vectorized(session: AsyncSession, handle: str):
         try:
             thesis = await ThesisRepository.get_by_handle(session, handle)
             if thesis:

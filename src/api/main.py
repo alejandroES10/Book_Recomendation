@@ -33,10 +33,10 @@ async def lifespan(app: FastAPI):
         running_processes = await repo.get_all_running_processes(session)
         logger.info(f"🔎 Se encontraron {len(running_processes)} procesos en estado RUNNING.")
         for proc in running_processes:
-            logger.info(f"⚠️ Marcando como FAILED el proceso: {proc.name}")
+            logger.info(f"⚠️ Marcando como FAILED el proceso: {proc.process_name.value}")
             await repo.set_status(
                 session,
-                proc.name,
+                proc.process_name,
                 ProcessStatus.FAILED,
                 error_messages=["Fallo por cierre inesperado del servidor"]
             )
@@ -62,7 +62,7 @@ async def read_root():
 from src.services.book_metadata_service import BookMetadataService
 from src.controllers.book_metadata_controller import BookMetadataController
 
-app = FastAPI()
+# app = FastAPI()
 
 service = BookMetadataService()
 book_controller = BookMetadataController(service)
@@ -84,8 +84,8 @@ thesis_import_service = ThesisDataImporterService(dspace_service, thesis_reposit
 thesis_import_controller = ThesisImportController(thesis_import_service)
 
 thesis_collection = ThesisCollection()
-thesis_vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository)
-thesis_vectorization_controller = ThesisVectorizationController(thesis_import_service)
+thesis_vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository, process_status_repository)
+thesis_vectorization_controller = ThesisVectorizationController(thesis_vectorization_service)
 
 app.include_router(book_controller.router, prefix="/books", tags=["Book Metadata"])
 app.include_router(chat_controller.router, prefix="/chat", tags=["Chat"])
