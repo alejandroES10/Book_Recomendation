@@ -18,36 +18,62 @@ class GeneralInformationCollection(ChromaCollection):
         except Exception as e:
             raise ValueError(f"Error al añadir documentos: {e}")
 
-    async def delete_documents(self, vectorization_id: str) -> None:
-        exist = self._collection.get(where={"vectorization_id": vectorization_id})
-        if not exist or not exist.get('ids'):
+    def _check_vectorization_exists(self, vectorization_id: str) -> dict:
+        result = self._collection.get(where={"vectorization_id": vectorization_id})
+        if not result or not result.get("ids"):
             raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
-        
+        return result
+
+    def _format_results(self, result: dict) -> List[dict]:
+        return [
+            {
+                "id": id_,
+                "content": doc,
+                "metadata": meta
+            }
+            for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])
+        ]
+
+    async def delete_documents(self, vectorization_id: str) -> None:
+        self._check_vectorization_exists(vectorization_id)
         self._collection._collection.delete(where={"vectorization_id": vectorization_id})
-    
-        # if not deleted:
-        #     raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
 
     async def find_one(self, vectorization_id: str) -> List[dict]:
-        result = self._collection._collection.get(where={"vectorization_id": vectorization_id})
-        print(result)
-        if not result or len(result.get('ids')) == 0:
-            print("*******************")
-            raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
-
-        return [{
-            "id": id_,
-            "content": doc,
-            "metadata": meta
-        } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
+        result = self._check_vectorization_exists(vectorization_id)
+        return self._format_results(result)
 
     async def find_all(self) -> List[dict]:
         result = self._collection.get()
-        return [{
-            "id": id_,
-            "content": doc,
-            "metadata": meta
-        } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
+        return self._format_results(result)
+
+    # async def delete_documents(self, vectorization_id: str) -> None:
+    #     exist = self._collection.get(where={"vectorization_id": vectorization_id})
+    #     if not exist or not exist.get('ids'):
+    #         raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
+        
+    #     self._collection._collection.delete(where={"vectorization_id": vectorization_id})
+    
+    #     # if not deleted:
+    #     #     raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
+
+    # async def find_one(self, vectorization_id: str) -> List[dict]:
+    #     result = self._collection._collection.get(where={"vectorization_id": vectorization_id})
+    #     if not result or not result.get('ids'):
+    #         raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
+
+    #     return [{
+    #         "id": id_,
+    #         "content": doc,
+    #         "metadata": meta
+    #     } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
+
+    # async def find_all(self) -> List[dict]:
+    #     result = self._collection.get()
+    #     return [{
+    #         "id": id_,
+    #         "content": doc,
+    #         "metadata": meta
+    #     } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
 
     # async def update_documents(self, elements: List[DocumentModel]) -> None:
     #     raise NotImplementedError("No se permite actualización en esta colección")

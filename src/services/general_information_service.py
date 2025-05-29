@@ -18,33 +18,36 @@ class GeneralInformationService(IGeneralInformationService):
     async def add_general_info(self, file: File) -> List[str]:
         temp_file_path = f"temp_{uuid.uuid4()}.pdf"
     
+        try:
         # Save the uploaded file to a temporary file
-        with open(temp_file_path, "wb") as buffer:
-            shutil.copyfileobj(file.file, buffer)
+            with open(temp_file_path, "wb") as buffer:
+                shutil.copyfileobj(file.file, buffer)
 
-        vectorization_id = str(uuid.uuid4())
-        
-        loader = PyPDFLoader(temp_file_path)
-        documents = await loader.aload()
-        
-        text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=1000,
-            chunk_overlap=100
-        )
-        
-        splits = text_splitter.split_documents(documents)
-        
-        for split in splits:
-            split.metadata['vectorization_id'] = vectorization_id
-        
-        await self.collection.add_documents(splits)
+            vectorization_id = str(uuid.uuid4())
+            
+            loader = PyPDFLoader(temp_file_path)
+            documents = await loader.aload()
+            
+            text_splitter = RecursiveCharacterTextSplitter(
+                chunk_size=1000,
+                chunk_overlap=100
+            )
+            
+            splits = text_splitter.split_documents(documents)
+            
+            for split in splits:
+                split.metadata['vectorization_id'] = vectorization_id
+            
+            await self.collection.add_documents(splits)
 
-        if os.path.exists(temp_file_path):
-            print("HOLAAAA")
-            print(temp_file_path)
-            os.remove(temp_file_path)
+            # if os.path.exists(temp_file_path):
+            # os.remove(temp_file_path)
     
-        return {"vectorization_id": vectorization_id}
+            return {"vectorization_id": vectorization_id}
+        
+        finally:
+            if os.path.exists(temp_file_path):
+                os.remove(temp_file_path)
 
 
     async def get_general_info_by_document_id(self, id: str) -> dict:
