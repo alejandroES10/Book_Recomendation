@@ -231,6 +231,7 @@ class ThesisDataImporterService(IThesisDataImporterService):
         return cleaned
 
     def _build_thesis_schema(self, item, bitstream, pdf_url: str, cleaned_metadata: dict) -> ThesisSchema:
+
         return ThesisSchema(
             handle=item.handle,
             metadata_json=cleaned_metadata,
@@ -245,6 +246,12 @@ class ThesisDataImporterService(IThesisDataImporterService):
         if not bundles:
             return False
 
+        # print("********* Bundles **********")
+        # for bon in bundles :
+            
+        #     print(bon.name)
+
+
         original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
         if not original_bundle:
             return False
@@ -252,8 +259,20 @@ class ThesisDataImporterService(IThesisDataImporterService):
         bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
         if not bitstreams or not isinstance(bitstreams, list):
             return False
+        
+
+        # Opción 2: el PDF más grande
+        # bitstream = max(
+        #     (b for b in bitstreams if b.name and b.name.lower().endswith(".pdf")),
+        #     key=lambda b: b.sizeBytes or 0,
+        #     default=None
+        # )
 
         bitstream = bitstreams[0]
+        print("uuid Bitstream en 0:")
+        print(bitstream.uuid)
+
+
         pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
 
         async with AsyncSessionLocal() as session:
