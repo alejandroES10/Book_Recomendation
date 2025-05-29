@@ -11,7 +11,7 @@ class IGeneralInformationService(ABC):
         pass
 
     @abstractmethod
-    async def get_general_info_by_document_id(self, id: str) -> dict:
+    async def get_general_info_by_vectorization_id(self, id: str) -> dict:
         pass
 
     @abstractmethod
@@ -19,5 +19,5 @@ class IGeneralInformationService(ABC):
         pass
 
     @abstractmethod
-    async def delete_general_info(self, id: str) -> None:
+    async def delete_general_info_by_vectorization_id(self, id: str) -> None:
         pass

@@ -6,7 +6,7 @@ from src.database.chromadb.chroma_collection import ChromaCollection
 from src.database.chromadb.vector_store import collection__of__thesis
 
 
-class ThesisCollection():
+class ThesisCollection(ChromaCollection):
     """Colección para tesis académicas."""
 
     def __init__(self):
@@ -29,45 +29,25 @@ class ThesisCollection():
 
 #************************ Test ***************************************
 
-async def main():
-    thesis_collection = ThesisCollection()
-    existing = await thesis_collection.exists_by_handle("123/123")
-    print(f"¿Existe el handle '123/123'? {existing}")
+# async def main():
+#     thesis_collection = ThesisCollection()
+#     existing = await thesis_collection.exists_by_handle("123/123")
+#     print(f"¿Existe el handle '123/123'? {existing}")
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+#     asyncio.run(main())
 
-    # async def delete_documents(self, id: str) -> None:
-    #     try:
-    #         self._collection.delete(ids=[id])
-    #     except Exception as e:
-    #         raise ValueError(f"Error al eliminar documento: {e}")
+    async def delete_documents(self, id: str) -> None:
+        pass
 
-    # async def update_documents(self, documents: List[Document]) -> None:
-    #     try:
-    #         ids = [doc.id for doc in documents]
-    #         self._collection.update_documents(ids=ids, documents=documents)
-    #     except Exception as e:
-    #         raise ValueError(f"Error al actualizar documentos: {e}")
+    async def update_documents(self, documents: List[Document]) -> None:
+        pass
 
-    # async def find_one(self, id: str) -> Optional[dict]:
-    #     result = self._collection.get(ids=[id])
-    #     if not result or not result.get('documents'):
-    #         return None
-    #     return {
-    #         "id": result["ids"][0],
-    #         "content": result["documents"][0],
-    #         "metadata": result["metadatas"][0] if result.get("metadatas") else {}
-    #     }
+    async def find_one(self, id: str) -> Optional[dict]:
+        pass
 
-    # async def find_all(self) -> List[dict]:
-    #     result = self._collection.get()
-    #     return [{
-    #         "id": id_,
-    #         "content": doc,
-    #         "metadata": meta
-    #     } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
-
+    async def find_all(self) -> List[dict]:
+        pass
 
 # # Función para obtener la colección correspondiente por nombre
 # def get_collection(name: str) -> Optional[ChromaCollection]:

@@ -68,8 +68,8 @@ class GeneralInformationController:
 
     def _add_routes(self):
         self.router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])(self.create_documents_from_pdf)
-        self.router.delete("/{file_id}", dependencies=[Depends(validate_api_key)])(self.delete_document_by_file_id)
-        self.router.get("/{id}", dependencies=[Depends(validate_api_key)])(self.get_document)
+        self.router.delete("/{vectorization_id}", dependencies=[Depends(validate_api_key)])(self.delete_document_by_vectorization_id)
+        self.router.get("/{vectorization_id}", dependencies=[Depends(validate_api_key)])(self.get_document)
         self.router.get("/")(self.get_documents)
 
     async def create_documents_from_pdf(self, file: UploadFile = File(...)):
@@ -80,18 +80,18 @@ class GeneralInformationController:
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
 
-    async def delete_document_by_file_id(self, file_id: str):
+    async def delete_document_by_vectorization_id(self, vectorization_id: str):
         try:
-            await self.general_info_service.delete_general_info(file_id)
+            await self.general_info_service.delete_general_info_by_vectorization_id(vectorization_id)
             return {"message": "Documents deleted successfully"}
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except Exception:
             raise HTTPException(status_code=500, detail="Internal server error")
 
-    async def get_document(self, id: str):
+    async def get_document(self, vectorization_id: str):
         try:
-            document = await self.general_info_service.get_general_info_by_document_id(id)
+            document = await self.general_info_service.get_general_info_by_vectorization_id(vectorization_id)
             return document
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))

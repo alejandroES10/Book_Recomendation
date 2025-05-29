@@ -50,7 +50,7 @@ class GeneralInformationService(IGeneralInformationService):
                 os.remove(temp_file_path)
 
 
-    async def get_general_info_by_document_id(self, id: str) -> dict:
+    async def get_general_info_by_vectorization_id(self, id: str) -> dict:
         return await self.collection.find_one(id)
         
         
@@ -58,5 +58,5 @@ class GeneralInformationService(IGeneralInformationService):
     async def get_all_general_info(self) -> dict:
         return await self.collection.find_all()
 
-    async def delete_general_info(self, id: str) -> None:
+    async def delete_general_info_by_vectorization_id(self, id: str) -> None:
         return await self.collection.delete_documents(id)

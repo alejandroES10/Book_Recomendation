@@ -46,37 +46,6 @@ class GeneralInformationCollection(ChromaCollection):
         result = self._collection.get()
         return self._format_results(result)
 
-    # async def delete_documents(self, vectorization_id: str) -> None:
-    #     exist = self._collection.get(where={"vectorization_id": vectorization_id})
-    #     if not exist or not exist.get('ids'):
-    #         raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
-        
-    #     self._collection._collection.delete(where={"vectorization_id": vectorization_id})
     
-    #     # if not deleted:
-    #     #     raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
-
-    # async def find_one(self, vectorization_id: str) -> List[dict]:
-    #     result = self._collection._collection.get(where={"vectorization_id": vectorization_id})
-    #     if not result or not result.get('ids'):
-    #         raise ValueError(f"No se encontraron documentos con vectorization_id: {vectorization_id}")
-
-    #     return [{
-    #         "id": id_,
-    #         "content": doc,
-    #         "metadata": meta
-    #     } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
-
-    # async def find_all(self) -> List[dict]:
-    #     result = self._collection.get()
-    #     return [{
-    #         "id": id_,
-    #         "content": doc,
-    #         "metadata": meta
-    #     } for doc, meta, id_ in zip(result["documents"], result["metadatas"], result["ids"])]
-
-    # async def update_documents(self, elements: List[DocumentModel]) -> None:
-    #     raise NotImplementedError("No se permite actualización en esta colección")
-
     async def update_documents(self, documents: List[Document], ids:Optional[List[str]]) -> None:
         pass
