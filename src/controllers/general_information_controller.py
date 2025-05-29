@@ -92,9 +92,9 @@ class GeneralInformationController:
     async def get_document(self, id: str):
         try:
             document = await self.general_info_service.get_general_info_by_document_id(id)
-            if not document:
-                raise HTTPException(status_code=404, detail="Document not found")
             return document
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
         except Exception:
             raise HTTPException(status_code=500, detail="Internal server error")
 

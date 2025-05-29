@@ -20,20 +20,20 @@ from src.services.general_information_service import GeneralInformationService
 from src.services.thesis_data_importer_service import ThesisDataImporterService
 from src.services.thesis_vectorization_service import ThesisVectorizationService
 
-import logging
+# import logging
 
-logger = logging.getLogger(__name__)
+# logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    logger.info("🌱 Lifespan startup comenzando...")
+    print("🌱 Lifespan startup comenzando...")
 
     async with AsyncSessionLocal() as session:
         repo = ProcessStatusRepository()
         running_processes = await repo.get_all_running_processes(session)
-        logger.info(f"🔎 Se encontraron {len(running_processes)} procesos en estado RUNNING.")
+        print(f"🔎 Se encontraron {len(running_processes)} procesos en estado RUNNING.")
         for proc in running_processes:
-            logger.info(f"⚠️ Marcando como FAILED el proceso: {proc.process_name.value}")
+            print(f"⚠️ Marcando como FAILED el proceso: {proc.process_name.value}")
             await repo.set_status(
                 session,
                 proc.process_name,
@@ -41,7 +41,7 @@ async def lifespan(app: FastAPI):
                 error_messages=["Fallo por cierre inesperado del servidor"]
             )
 
-    logger.info("✅ Lifespan startup completado.")
+    print("✅ Lifespan startup completado.")
     yield
 
 app = FastAPI(lifespan=lifespan)

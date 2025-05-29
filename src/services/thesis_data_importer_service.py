@@ -232,6 +232,7 @@ class ThesisDataImporterService(IThesisDataImporterService):
 
     def _build_thesis_schema(self, item, bitstream, pdf_url: str, cleaned_metadata: dict) -> ThesisSchema:
 
+
         return ThesisSchema(
             handle=item.handle,
             metadata_json=cleaned_metadata,
