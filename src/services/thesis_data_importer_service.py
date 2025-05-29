@@ -276,6 +276,8 @@ class ThesisDataImporterService(IThesisDataImporterService):
 
         pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
 
+        # pdf_url = f"http://tesis.cujae.edu.cu/bitstream/handle/{item.handle}/{bitstream.name}?sequence=1&isAllowed=y"
+
         async with AsyncSessionLocal() as session:
             cleaned_metadata = self._clean_metadata(item.metadata)
             thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)

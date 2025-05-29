@@ -60,7 +60,7 @@ class ChatService (IChatService):
             result = await self._agent.get_answer(session_id, input,self.build_chat_history)
             if not result:
                 raise ValueError("No response from chatbot")
-            response = {"ouput": result['output'] }
+            response = {"output": result['output'] }
             return response
         except Exception as e:
             raise ValueError(f"Failed to get chatbot answer: {str(e)}")
