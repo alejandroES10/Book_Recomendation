@@ -33,7 +33,7 @@ class BookMetadataCollection(ChromaCollection):
             raise ValueError("Cantidad de documentos y de IDs no coinciden")
         await self._validate_ids_exist(ids)
         try:
-            await self._collection.update_documents(ids=ids, documents=documents)
+            self._collection.update_documents(ids=ids, documents=documents)
         except Exception as e:
             raise ValueError(f"Error al actualizar documentos: {e}")
 
@@ -46,8 +46,8 @@ class BookMetadataCollection(ChromaCollection):
 
     async def find_one(self, id: str) -> Optional[dict]:
         result = self._collection.get(ids=[id])
-        if not result or not result.get('documents'):
-            return None
+        if not result or not result.get("ids"):
+            raise ValueError("No hay libro con ese ID")
         return {
             "id": result["ids"][0],
             "metadata": self._extract_metadata_from_text(result["documents"][0])

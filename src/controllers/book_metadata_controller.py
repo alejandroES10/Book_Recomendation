@@ -115,9 +115,11 @@ class BookMetadataController:
     async def get_book_metadata(self, id: str):
         try:
             document = await self.book_metadata_service.get_book(id)
-            if not document:
-                raise HTTPException(status_code=404, detail="Document not found")
+            # if not document:
+            #     raise HTTPException(status_code=404, detail="Document not found")
             return document
+        except ValueError as e:
+            raise HTTPException(status_code=404, detail=str(e))
         except Exception:
             raise HTTPException(status_code=500, detail="Internal server error")
 

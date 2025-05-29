@@ -20,7 +20,7 @@ class BookMetadataService(IBookMetadataService):
 
     async def update_book(self, models: BookMetadataSchema) -> None:
         documents, ids = self._build_chroma_documents(models)
-        return await self.collection.update_document(documents, ids)
+        return await self.collection.update_documents(documents, ids)
     
     
     async def get_all_books(self)-> dict:
