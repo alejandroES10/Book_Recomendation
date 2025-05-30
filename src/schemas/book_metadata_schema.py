@@ -42,8 +42,8 @@ class BookMetadataSchema(BaseModel):
         for key in value.keys():
             if not key.strip():
                 raise ValueError("Las claves no pueden ser cadenas vacías")
-            if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', key):
-                raise ValueError(f"Clave '{key}' no válida. Solo letras, números y _")
+            # if not re.match(r'^[a-zA-Z_][a-zA-Z0-9_]*$', key):
+            #     raise ValueError(f"Clave '{key}' no válida. Solo letras, números y _")
             if key.lower() in ['null', 'none']:
                 raise ValueError(f"Clave '{key}' es una palabra reservada")
         

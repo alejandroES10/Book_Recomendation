@@ -85,9 +85,9 @@ class BookMetadataController:
         self.router.get("/{id}")(self.get_book_metadata)
         self.router.get("/")(self.get_all_book_metadata)
 
-    async def create_book_metadata(self, documents: List[BookMetadataSchema]):
+    async def create_book_metadata(self, books: List[BookMetadataSchema]):
         try:
-            await self.book_metadata_service.add_books(documents)
+            await self.book_metadata_service.add_books(books)
             return {"message": "Documents created successfully"}
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))
@@ -103,9 +103,9 @@ class BookMetadataController:
         except Exception:
             raise HTTPException(status_code=500, detail="Internal server error")
 
-    async def update_book_metadata(self, documents: List[BookMetadataSchema]):
+    async def update_book_metadata(self, book: BookMetadataSchema):
         try:
-            await self.book_metadata_service.update_book(documents)
+            await self.book_metadata_service.update_book(book)
             return {"message": "Documents updated successfully"}
         except ValueError as e:
             raise HTTPException(status_code=400, detail=str(e))

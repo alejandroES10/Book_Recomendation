@@ -21,8 +21,8 @@ class IBookMetadataService(ABC):
         pass
 
     @abstractmethod
-    async def update_book(self, id: str, model: BookMetadataSchema) -> None:
-        pass
+    async def update_book(self, models: BookMetadataSchema) -> None:
+        pass    
 
 
     @abstractmethod

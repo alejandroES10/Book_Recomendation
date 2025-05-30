@@ -19,7 +19,11 @@ class BookMetadataService(IBookMetadataService):
         return await self.collection.delete_documents(id)
 
     async def update_book(self, models: BookMetadataSchema) -> None:
-        documents, ids = self._build_chroma_documents(models)
+        print("LLLLL")
+        list_of_models = models if isinstance(models, list) else [models]
+        documents, ids = self._build_chroma_documents(list_of_models)
+        print(f"Updating documents with IDs: {ids}")
+        print(f"Documents to update: {documents}")
         return await self.collection.update_documents(documents, ids)
     
     
@@ -30,7 +34,7 @@ class BookMetadataService(IBookMetadataService):
     
     #**********************************
 
-    def _build_chroma_documents(self, models: List[BookMetadataSchema]) -> Tuple[List[Document], List[str]]:
+    def _build_chroma_documents(self, models: List[BookMetadataSchema] ) -> Tuple[List[Document], List[str]]:
         documents = []
         ids = []
         for model in models:
