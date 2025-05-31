@@ -82,8 +82,8 @@ class BookMetadataController:
         self.router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])(self.create_book_metadata)
         self.router.delete("/{id}", dependencies=[Depends(validate_api_key)])(self.delete_book_metadata)
         self.router.put("/", dependencies=[Depends(validate_api_key)])(self.update_book_metadata)
-        self.router.get("/{id}")(self.get_book_metadata)
-        self.router.get("/")(self.get_all_book_metadata)
+        self.router.get("/{id}",dependencies=[Depends(validate_api_key)])(self.get_book_metadata)
+        self.router.get("/",dependencies=[Depends(validate_api_key)])(self.get_all_book_metadata)
 
     async def create_book_metadata(self, books: List[BookMetadataSchema]):
         try:

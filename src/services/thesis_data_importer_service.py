@@ -273,7 +273,7 @@ class ThesisDataImporterService(IThesisDataImporterService):
         print("uuid Bitstream en 0:")
         print(bitstream.uuid)
 
-
+        #factory
         pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
 
         # pdf_url = f"http://tesis.cujae.edu.cu/bitstream/handle/{item.handle}/{bitstream.name}?sequence=1&isAllowed=y"

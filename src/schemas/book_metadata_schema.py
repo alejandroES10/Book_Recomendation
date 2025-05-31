@@ -33,7 +33,7 @@ class BookMetadataSchema(BaseModel):
 
     @field_validator('metadata')
     @classmethod
-    def validate_metadata(cls, value: Dict[str, Union[str, int, float, bool]]) -> Dict[str, Union[str, int, float, bool]]:
+    def validate_metadata(cls, value: Dict[str, Union[str, int, float, bool,list]]) -> Dict[str, Union[str, int, float, bool]]:
         """Valida el diccionario de metadata incluyendo booleanos"""
         if not value:
             raise ValueError("El diccionario de metadata no puede estar vacío")

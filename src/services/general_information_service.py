@@ -15,15 +15,15 @@ class GeneralInformationService(IGeneralInformationService):
     def __init__(self):
         self.collection = GeneralInformationCollection()
     
-    async def add_general_info(self, file: File) -> List[str]:
-        temp_file_path = f"temp_{uuid.uuid4()}.pdf"
+    async def add_general_info(self,file_id: str, file: File) -> List[str]:
+        temp_file_path = f"temp_{id}.pdf"
     
         try:
         # Save the uploaded file to a temporary file
             with open(temp_file_path, "wb") as buffer:
                 shutil.copyfileobj(file.file, buffer)
 
-            vectorization_id = str(uuid.uuid4())
+            # vectorization_id = str(uuid.uuid4())
             
             loader = PyPDFLoader(temp_file_path)
             documents = await loader.aload()
@@ -36,21 +36,21 @@ class GeneralInformationService(IGeneralInformationService):
             splits = text_splitter.split_documents(documents)
             
             for split in splits:
-                split.metadata['vectorization_id'] = vectorization_id
+                split.metadata['file_id'] = file_id
             
-            await self.collection.add_documents(splits)
+            await self.collection.add_documents(file_id, splits)
 
             # if os.path.exists(temp_file_path):
             # os.remove(temp_file_path)
     
-            return {"vectorization_id": vectorization_id}
+            return {"detail": f"Documento con file_id:{file_id} agregado corretamente"}
         
         finally:
             if os.path.exists(temp_file_path):
                 os.remove(temp_file_path)
 
 
-    async def get_general_info_by_vectorization_id(self, id: str) -> dict:
+    async def get_general_info_by_file_id(self, id: str) -> dict:
         return await self.collection.find_one(id)
         
         
@@ -58,5 +58,5 @@ class GeneralInformationService(IGeneralInformationService):
     async def get_all_general_info(self) -> dict:
         return await self.collection.find_all()
 
-    async def delete_general_info_by_vectorization_id(self, id: str) -> None:
+    async def delete_general_info_by_file_id(self, id: str) -> None:
         return await self.collection.delete_documents(id)
