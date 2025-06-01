@@ -4,7 +4,7 @@ from typing import List
 import uuid
 
 from fastapi import File
-from langchain_community.document_loaders import PyPDFLoader
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 from src.database.chromadb.general_information_collection import GeneralInformationCollection
@@ -24,8 +24,11 @@ class GeneralInformationService(IGeneralInformationService):
                 shutil.copyfileobj(file.file, buffer)
 
             # vectorization_id = str(uuid.uuid4())
+            if file.filename.lower().endswith(('.pdf')):
+                loader = PyPDFLoader(temp_file_path)
+            else:
+                loader = Docx2txtLoader(temp_file_path)
             
-            loader = PyPDFLoader(temp_file_path)
             documents = await loader.aload()
             
             text_splitter = RecursiveCharacterTextSplitter(
@@ -40,10 +43,7 @@ class GeneralInformationService(IGeneralInformationService):
             
             await self.collection.add_documents(file_id, splits)
 
-            # if os.path.exists(temp_file_path):
-            # os.remove(temp_file_path)
-    
-            return {"detail": f"Documento con file_id:{file_id} agregado corretamente"}
+            return {"message": f"Información general del documento con file_id:{file_id} agregado corretamente"}
         
         finally:
             if os.path.exists(temp_file_path):
@@ -54,7 +54,6 @@ class GeneralInformationService(IGeneralInformationService):
         return await self.collection.find_one(id)
         
         
-    
     async def get_all_general_info(self) -> dict:
         return await self.collection.find_all()
 

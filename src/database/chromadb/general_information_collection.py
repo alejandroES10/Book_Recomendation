@@ -14,7 +14,8 @@ class GeneralInformationCollection(ChromaCollection):
 
     async def add_documents(self,file_id: str, documents: List[Document]) -> List[str]:
         try:
-            exist = self._check_file_id_exists(file_id)
+            exist = await self._check_file_id_exists(file_id)
+
             if not exist:
                 return await self._collection.aadd_documents(documents)
             raise ValueError(f"Ya existe información vectorizada del documento con file_id: {file_id}")
@@ -52,6 +53,7 @@ class GeneralInformationCollection(ChromaCollection):
         
     async def find_one(self, file_id: str) -> List[dict]:
         result = await self.get_results(file_id)
+        print(result)
         if not result or not result.get("ids"):
             raise ValueError(f"No existe información vectorizada del documento con file_id: {file_id}")
         return self._format_results(result)

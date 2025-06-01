@@ -22,7 +22,12 @@ class BookMetadataCollection(ChromaCollection):
 
         existing = self._collection._collection.get(ids=ids)
         if existing and existing.get("ids"):
-            raise ValueError("IDs duplicados encontrados en la base de datos")
+            existing_ids = existing["ids"]
+            error_detail = {
+                "message": "No se pudieron agregar los documentos porque ya existen los siguientes IDs",
+                "existing_ids": existing_ids,
+            }
+            raise ValueError(error_detail)
         try:
             return await self._collection.aadd_documents(documents=documents, ids=ids)
         except Exception as e:

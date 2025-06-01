@@ -1,5 +1,5 @@
 from typing import List, Tuple
-from src.schemas.book_metadata_schema import BookMetadataSchema
+from src.schemas.book_metadata_schema import BookCreateSchema
 from src.database.chromadb.book_metadata_collection import BookMetadataCollection
 from src.interfaces.ibook_metadata_service import IBookMetadataService
 from langchain_core.documents import Document
@@ -8,7 +8,7 @@ class BookMetadataService(IBookMetadataService):
     def __init__(self):
         self.collection = BookMetadataCollection()
     
-    async def add_books(self, models: List[BookMetadataSchema]) -> List[str]:
+    async def add_books(self, models: List[BookCreateSchema]) -> List[str]:
         documents, ids = self._build_chroma_documents(models)
         return await self.collection.add_documents(documents, ids)
 
@@ -18,11 +18,10 @@ class BookMetadataService(IBookMetadataService):
     async def delete_book(self, id: str) -> None:
         return await self.collection.delete_documents(id)
 
-    async def update_book(self, models: BookMetadataSchema) -> None:
+    async def update_book(self, models: BookCreateSchema) -> None:
         list_of_models = models if isinstance(models, list) else [models]
         documents, ids = self._build_chroma_documents(list_of_models)
-        print(f"Updating documents with IDs: {ids}")
-        print(f"Documents to update: {documents}")
+
         return await self.collection.update_documents(documents, ids)
     
     
@@ -33,7 +32,7 @@ class BookMetadataService(IBookMetadataService):
     
     #**********************************
 
-    def _build_chroma_documents(self, models: List[BookMetadataSchema] ) -> Tuple[List[Document], List[str]]:
+    def _build_chroma_documents(self, models: List[BookCreateSchema] ) -> Tuple[List[Document], List[str]]:
         documents = []
         ids = []
         for model in models:

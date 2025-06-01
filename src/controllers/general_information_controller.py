@@ -56,6 +56,7 @@
 #         raise HTTPException(status_code=500, detail="Internal server error")
 
 
+import re
 from typing import Annotated
 from fastapi import APIRouter, HTTPException, Depends, UploadFile, File, Form
 from pydantic import BaseModel, Field
@@ -80,9 +81,9 @@ class GeneralInformationController:
 
     def _add_routes(self):
         self.router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])(self.create_documents_from_pdf)
-        self.router.delete("/{file_id}", dependencies=[Depends(validate_api_key)])(self.delete_document_by_vectorization_id)
+        self.router.delete("/{file_id}", dependencies=[Depends(validate_api_key)])(self.delete_document_by_file_id)
         self.router.get("/{file_id}", dependencies=[Depends(validate_api_key)])(self.get_document)
-        self.router.get("/")(self.get_documents)
+        self.router.get("/",dependencies=[Depends(validate_api_key)])(self.get_documents)
 
     # async def create_documents_from_pdf(self,file_id: str, file: Annotated[bytes, File()]):
        
@@ -102,28 +103,39 @@ class GeneralInformationController:
     async def create_documents_from_pdf(self, 
                                         file:Annotated[UploadFile,File()],
                                         file_id:Annotated[str,Form()]):
-        if not file.filename.lower().endswith('.pdf'):
-            raise HTTPException(status_code=400, detail="Only PDF files are accepted")
+        if not file_id or not file_id.strip():
+            raise HTTPException(status_code=422, detail="file_id no puede estar vacío")
+        
+        if re.search(r'\s', file_id):
+            raise HTTPException(
+                status_code=422,
+                detail="El file_id no puede contener espacios en blanco"
+            )
+        extension = file.filename.lower().split('.')[-1]
+        if extension not in ['pdf', 'docx']:
+            raise HTTPException(status_code=422, detail="Solo se aceptan archivos PDF o DOCX")
+        # if not file.filename.lower().endswith('.pdf') or not file.filename.lower().endswith('.docx') :
+        #     raise HTTPException(status_code=422, detail="Solo pdf o documento world se acepta")
         try:
             return await self.general_info_service.add_general_info(file_id,file)
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except Exception as e:
-            raise HTTPException(status_code=500, detail=f"Error processing file: {str(e)}")
+            raise HTTPException(status_code=500, detail=f"Error procesando el documento: {str(e)}")
 
 
-    async def delete_document_by_vectorization_id(self, file_id: str):
+    async def delete_document_by_file_id(self, file_id: str):
         try:
             await self.general_info_service.delete_general_info_by_file_id(file_id)
-            return {"message": "Documents deleted successfully"}
+            return {"message": "Información general eliminada correctamente"}
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except Exception:
             raise HTTPException(status_code=500, detail="Internal server error")
 
-    async def get_document(self, vectorization_id: str):
+    async def get_document(self, file_id: str):
         try:
-            document = await self.general_info_service.get_general_info_by_file_id(vectorization_id)
+            document = await self.general_info_service.get_general_info_by_file_id(file_id)
             return document
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
