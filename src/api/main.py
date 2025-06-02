@@ -6,11 +6,11 @@ from src.controllers.chat_controller import ChatController
 from src.controllers.general_information_controller import GeneralInformationController
 from src.controllers.thesis_import_controller import ThesisImportController
 from src.controllers.thesis_vectorization_controller import ThesisVectorizationController
-from src.database.chromadb.thesis_collection import ThesisCollection
-from src.database.postgres.chats.chats_repository import ChatWithPostgres
-from src.database.postgres.thesis.init_db import AsyncSessionLocal
-from src.database.postgres.thesis.process_status_repository import ProcessStatusRepository
-from src.database.postgres.thesis.thesis_repository import ThesisRepository
+from src.database.chroma_database.thesis_collection import ThesisCollection
+from src.database.postgres_database.chats.chats_repository import ChatWithPostgres
+from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
+from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
+from src.database.postgres_database.thesis.thesis_repository import ThesisRepository
 from src.models.thesis_model import ProcessStatus
 from src.security.auth import validate_api_key
 from src.services.chat_service import ChatService

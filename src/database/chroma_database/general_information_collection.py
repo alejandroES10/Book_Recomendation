@@ -1,8 +1,8 @@
 from typing import List, Optional, Tuple
 from langchain_core.documents import Document
 
-from src.database.chromadb.chroma_collection import ChromaCollection
-from src.database.chromadb.vector_store import collection_of_general_information
+from src.database.chroma_database.chroma_collection import ChromaCollection
+from src.database.chroma_database.vector_store import collection_of_general_information
 
 
 

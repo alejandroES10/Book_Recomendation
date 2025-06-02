@@ -1,7 +1,7 @@
 
 from typing import List
 from src.schemas.book_metadata_schema import DocumentModel
-from src.database.chromadb.thesis_collection import ThesisCollection
+from src.database.chroma_database.thesis_collection import ThesisCollection
 from src.interfaces.ithesis_service import IThesisService
 
 

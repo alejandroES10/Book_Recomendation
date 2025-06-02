@@ -6,8 +6,8 @@ import asyncio
 import requests
 from src.interfaces.ithesis_data_importer_service import IThesisDataImporterService
 from src.services.dspace_service import DSpaceService
-from src.database.postgres.thesis.thesis_repository import ThesisRepository
-from src.database.postgres.thesis.init_db import AsyncSessionLocal
+from src.database.postgres_database.thesis.thesis_repository import ThesisRepository
+from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
 from src.schemas.thesis_schema import ThesisSchema
 
 COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
@@ -160,7 +160,7 @@ COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
     #     print(f"[INFO] Total de tesis procesadas: {processed_count}")
 
 
-from src.database.postgres.thesis.process_status_repository import ProcessStatusRepository
+from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
 from src.models.thesis_model import ProcessName, ProcessStatus
 
 

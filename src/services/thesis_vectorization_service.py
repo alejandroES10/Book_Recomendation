@@ -1,10 +1,10 @@
 
 import asyncio
 from typing import List
-from src.database.chromadb.thesis_collection import ThesisCollection
-from src.database.postgres.thesis.process_status_repository import ProcessStatusRepository
-from src.database.postgres.thesis.thesis_repository import ThesisRepository
-from src.database.postgres.thesis.init_db import AsyncSessionLocal
+from src.database.chroma_database.thesis_collection import ThesisCollection
+from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
+from src.database.postgres_database.thesis.thesis_repository import ThesisRepository
+from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
 
 from langchain_community.document_loaders import PyPDFLoader
 

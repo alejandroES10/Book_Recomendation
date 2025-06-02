@@ -1,7 +1,7 @@
 from typing import List, Optional
 from langchain_core.documents import Document
-from src.database.chromadb.chroma_collection import ChromaCollection
-from src.database.chromadb.vector_store import collection_of_books
+from src.database.chroma_database.chroma_collection import ChromaCollection
+from src.database.chroma_database.vector_store import collection_of_books
 
 
 class BookMetadataCollection(ChromaCollection):
@@ -25,7 +25,7 @@ class BookMetadataCollection(ChromaCollection):
             existing_ids = existing["ids"]
             error_detail = {
                 "message": "No se pudieron agregar los documentos porque ya existen los siguientes IDs",
-                "existing_ids": existing_ids,
+                "existing_ids": existing_ids
             }
             raise ValueError(error_detail)
         try:

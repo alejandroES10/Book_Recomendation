@@ -6,7 +6,7 @@ from sqlalchemy.orm import declarative_base
 from langchain_community.chat_message_histories.sql import BaseMessageConverter
 from langchain_core.messages import AIMessage, BaseMessage, HumanMessage, SystemMessage
 
-from src.database.postgres.chats.custom_sql_chat_message_history import CustomSQLChatMessageHistory
+from src.database.postgres_database.chats.custom_sql_chat_message_history import CustomSQLChatMessageHistory
 
 
 # Declarar base para el modelo

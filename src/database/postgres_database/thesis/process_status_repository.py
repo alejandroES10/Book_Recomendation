@@ -4,7 +4,7 @@ from typing import Any, Dict, Optional
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy.exc import SQLAlchemyError
-from src.database.postgres.thesis.init_db import AsyncSessionLocal
+from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
 from src.models.thesis_model import ProcessStatusModel, ProcessStatus, ProcessName
 
 class ProcessStatusRepository:

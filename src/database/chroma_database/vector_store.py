@@ -5,7 +5,7 @@ import chromadb
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from src.ai_models.ollama_client import OllamaClientSingleton
-from src.database.chromadb.chroma_singleton import ChromaClientSingleton
+from src.database.chroma_database.chroma_singleton import ChromaClientSingleton
 # from src.ollama.ollama_embeddings import embedding_function
 
 

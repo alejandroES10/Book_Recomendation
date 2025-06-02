@@ -1,6 +1,6 @@
 from typing import List, Tuple
 from src.schemas.book_metadata_schema import BookCreateSchema
-from src.database.chromadb.book_metadata_collection import BookMetadataCollection
+from src.database.chroma_database.book_metadata_collection import BookMetadataCollection
 from src.interfaces.ibook_metadata_service import IBookMetadataService
 from langchain_core.documents import Document
 

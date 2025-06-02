@@ -7,7 +7,7 @@ from fastapi import File
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
-from src.database.chromadb.general_information_collection import GeneralInformationCollection
+from src.database.chroma_database.general_information_collection import GeneralInformationCollection
 from src.interfaces.igeneral_information_service import IGeneralInformationService
 
 
