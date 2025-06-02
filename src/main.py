@@ -2,7 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from fastapi.middleware.cors import CORSMiddleware
-from src.start_server import StartServer
+from src.start_server.start_server import StartServer
 
 
 # import logging

@@ -1,5 +1,4 @@
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
+from fastapi import FastAPI
 from src.controllers.chat_controller import ChatController
 from src.controllers.general_information_controller import GeneralInformationController
 from src.controllers.thesis_import_controller import ThesisImportController
