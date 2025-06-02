@@ -22,7 +22,7 @@ from src.database.chroma_database.vector_store import collection_of_books, colle
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv
 from typing import Callable, List
-from src.chatbot.utils_for_agent import TOOLS, PROMPT_AGENT, LLM
+from src.agent.utils_for_agent import TOOLS, PROMPT_AGENT, LLM
 
 
 

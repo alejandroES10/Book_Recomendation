@@ -14,7 +14,7 @@ from src.database.postgres_database.chats.custom_sql_chat_message_history import
 from src.database.postgres_database.chats.chats_repository import  BaseChatWithDatabase, ChatWithPostgres
 from langchain_core.chat_history import BaseChatMessageHistory
 from langchain_community.chat_message_histories import SQLChatMessageHistory
-from src.chatbot.agent import Agent
+from src.agent.agent import Agent
 
 
 class ChatService (IChatService):
