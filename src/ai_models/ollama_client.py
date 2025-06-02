@@ -12,7 +12,7 @@ class OllamaClientSingleton:
                 model=embedding_model, temperature=temperature, base_url=base_url
             )
             cls._instance._llm = ChatOllama(
-                model=llm_model, temperature=temperature, base_url=base_url
+                model=llm_model, temperature=temperature, base_url=base_url, cache=True
             )
         return cls._instance
 
