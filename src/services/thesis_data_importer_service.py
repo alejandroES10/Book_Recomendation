@@ -247,12 +247,6 @@ class ThesisDataImporterService(IThesisDataImporterService):
         if not bundles:
             return False
 
-        # print("********* Bundles **********")
-        # for bon in bundles :
-            
-        #     print(bon.name)
-
-
         original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
         if not original_bundle:
             return False
@@ -261,13 +255,6 @@ class ThesisDataImporterService(IThesisDataImporterService):
         if not bitstreams or not isinstance(bitstreams, list):
             return False
         
-
-        # Opción 2: el PDF más grande
-        # bitstream = max(
-        #     (b for b in bitstreams if b.name and b.name.lower().endswith(".pdf")),
-        #     key=lambda b: b.sizeBytes or 0,
-        #     default=None
-        # )
 
         bitstream = bitstreams[0]
         print("uuid Bitstream en 0:")
