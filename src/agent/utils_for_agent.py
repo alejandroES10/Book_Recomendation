@@ -54,51 +54,40 @@ async def search_thesis(content_to_search: str):
        Solo puedes recomendar tesis o decir si están presentes tesis que estén en este contexto.
        Solo puedes responder preguntas basado en estas tesis y no en tu conocimiento.
        Los metadatos describen características de las tesis como título, autor, y el enlace url.Responde siempre esos metadatos de los fragmentos que recuperes.
-       Cuando devuelvas el enlace deja un espacio para que desde el front se le de clic y se acceda.
-       Debes responder preguntas sobre las tesis que te pregunten. 
-       No des información de identificadores de tesis (id), si te preguntan di que no tienes esa información.
-       Si no son del tema específico que busca el usuario, ofrece las tesis similares que aparezcan solo en este contexto.
-       Si te preguntan si en la biblioteca hay una tesis, y no se encuentra entre los resultados, di: 
-       "No disponemos de esa tesis en la biblioteca. ¿Quieres ayuda con otra tesis?"
-       Si te preguntan: "Recomiéndame tesis que me interesen", revisa su historial de chat para ver qué temas ha buscado y recomiéndale tesis relacionadas.
-       "Si te dicen que digas todas las tesis que hay en la biblioteca, di que no puedes hacer eso y que solo puedes buscar tesis relacionadas a lo que el usuario pregunta."
+       
 
        content_to_search: El contenido a buscar, puede estar en la consulta o en el historial de chat ejemplo si un usuario te pregunta por una tesis o algo referente a ella de la que viene hablando eso es lo que se pasa en el content to search
       
     """
     retriever = collection__of__thesis.as_retriever(
         search_type="similarity",
+        search_kwargs={"k": 4},
         
     )
     return await retriever.abatch([content_to_search])
 
 
 
-get_library_information = create_retriever_tool(
-    collection_of_general_information.as_retriever(),
-   "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
-    "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario. Si no encuentras resultados di que no disponen de la información")
+# get_library_information = create_retriever_tool(
+#     collection_of_general_information.as_retriever(),
+#    "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
+#     "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario. Si no encuentras resultados di que no disponen de la información")
 
 
 
-TOOLS = [get_results, get_library_information,search_thesis]
+TOOLS = [get_results, search_thesis]
 
 PROMPT_AGENT = ChatPromptTemplate.from_messages(
     [
         (
             "system",
             (
-                """Eres un asistente virtual llamado BibCUJAE para información acerca de los libros existentes en una biblioteca universitaria.
+                """Eres un asistente virtual llamado BibCUJAE para información acerca de los libros, tesis e información general existentes en una biblioteca universitaria.
                 Responde las preguntas del usuario solo basado en el contexto. 
-                Si un usuario te saluda le respondes el saludo.
-                Si un usuario se presenta con su nombre y te saluda puedes responderle.
                 Si el contexto no contiene información relevante de las preguntas, no hagas nada y solo di "Solo puedo ayudarte con temas relacionados a la biblioteca".
                 No digas respuestas de libros ni tesis basado en tu conocimiento, para eso debes usar las respectivas tools search resul o search tesis
                 con el contenido de todo lo que se quiera buscar
-                usa la tool search result para buscar libros y search tesis para buscar tesis
-                si te preguntan por libros o tesis que le interesen al usuario, busca en el historial de chat los temas
-                de libros o tesis que ha solicitado y ese contenido se lo envías a la tool correspondiente, por ejemplo si ha buscado libros de amor, deporte etc, le pasas eso a search result
-                y por ejemplo si ha buscado tesis de ingeniería, tecnología etc se lo pasas a search tesis
+               
                 """
             ),
             

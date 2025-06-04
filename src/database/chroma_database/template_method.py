@@ -27,7 +27,8 @@ class BaseDocumentProcessor(ABC):
         splits = splitter.split_documents(documents)
 
         for fragment in splits:
-            fragment.metadata.update(self.metadata)
+            # fragment.metadata.update(self.metadata)
+            fragment.metadata = self.metadata
 
         collection = self.get_collection()
         identifier = self.get_identifier()
