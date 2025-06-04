@@ -4,23 +4,33 @@ import uuid
 import chromadb
 from langchain_chroma import Chroma
 from langchain_text_splitters import RecursiveCharacterTextSplitter
-from src.ai_models.ollama_client import OllamaClientSingleton
-from src.database.chroma_database.chroma_singleton import ChromaClientSingleton
+from src.ai_models.ollama_client import OllamaClient
+from src.database.chroma_database.chroma_singleton import ChromaClient
 # from src.ollama.ollama_embeddings import embedding_function
 
 
 
 # Crear el cliente conectado al servidor Chroma
-chroma_client = ChromaClientSingleton().get_client()
+chroma_client = ChromaClient().get_client()
 
-ollama_client = OllamaClientSingleton()
+ollama_client = OllamaClient()
 
 # Crear colecciones SIN persist_directory, ya que el servidor se encarga
 collection_of_books = Chroma(
-    client=chroma_client,
+    client= chroma_client,
     collection_name="collection_of_books",
     embedding_function=ollama_client.get_embedding_function(),
 )
+# async def c():
+#     client = await chromadb.AsyncHttpClient(host=os.environ["CHROMA_SERVER_HOST"], port=int(os.environ["CHROMA_SERVER_PORT"]), settings=chromadb.config.Settings(anonymized_telemetry=False))
+#     print("Conectando al cliente Chroma...")
+#     print(client)
+#     collection_of_books = Chroma(
+#         client= client,
+#         collection_name="collection_of_aceite",
+#         embedding_function=ollama_client.get_embedding_function(),
+#     )
+#     return collection_of_books
 
 collection_of_general_information = Chroma(
     client=chroma_client,

@@ -13,8 +13,11 @@ class ThesisCollection(ChromaCollection):
         super().__init__()
         self._collection = collection__of__thesis
 
-    async def add_documents(self, documents: List[Document]) -> List[str]:
+    async def add_documents(self,handle:str,  documents: List[Document]) -> List[str]:
         try:
+            exist = await self.exists_by_handle(handle)
+            if exist:
+                raise ValueError(f"Ya existe una tesis con el handle: {handle}")
             return await self._collection.aadd_documents(documents)
         except Exception as e:
             raise ValueError(f"Error al añadir documentos: {e}")
@@ -26,16 +29,18 @@ class ThesisCollection(ChromaCollection):
         except Exception as e:
             raise ValueError(f"Error al verificar existencia de handle '{handle}': {e}");
 
+    async def delete_documents_by_handle(self,handle:str) -> List[str]:
+        try:
+            exist = await self.exists_by_handle(handle)
+            if not exist:
+                raise ValueError(f"No se puede eliminar la tesis porque no existe el handle: {handle}")
+            print("Existe el handle")
+            self._collection._collection.delete(where={"handle": handle})
 
-#************************ Test ***************************************
+        except Exception as e:
+            raise ValueError(f"Error al añadir documentos: {e}")
 
-# async def main():
-#     thesis_collection = ThesisCollection()
-#     existing = await thesis_collection.exists_by_handle("123/123")
-#     print(f"¿Existe el handle '123/123'? {existing}")
 
-# if __name__ == "__main__":
-#     asyncio.run(main())
 
     async def delete_documents(self, id: str) -> None:
         pass
@@ -48,6 +53,17 @@ class ThesisCollection(ChromaCollection):
 
     async def find_all(self) -> List[dict]:
         pass
+
+# ************************ Test ***************************************
+
+async def main():
+    thesis_collection = ThesisCollection()
+    # existing = await thesis_collection.exists_by_handle("123/123")
+    # print(f"¿Existe el handle '123/123'? {existing}")
+    await thesis_collection.delete_documents_by_handle("123456789/10201")
+
+if __name__ == "__main__":
+    asyncio.run(main())
 
 # # Función para obtener la colección correspondiente por nombre
 # def get_collection(name: str) -> Optional[ChromaCollection]:

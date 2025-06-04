@@ -50,7 +50,9 @@ class BookMetadataCollection(ChromaCollection):
             raise ValueError(f"Error al eliminar el documento: {e}")
 
     async def find_one(self, id: str) -> Optional[dict]:
+        
         result = self._collection.get(ids=[id])
+
         if not result or not result.get("ids"):
             raise ValueError("No hay libro con ese ID")
         return {

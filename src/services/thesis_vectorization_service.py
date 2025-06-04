@@ -241,15 +241,20 @@ class ThesisVectorizationService(IThesisVectorizationService):
 
             enriched_documents = []
             sanitized_metadata = self.sanitize_metadata(thesis_schema.metadata_json)
+            print("SANATIZE")
+            print(sanitized_metadata)
 
             for fragment in splits:
                 enriched_fragment = Document(
                     page_content=fragment.page_content,
                     metadata={
                         "handle": thesis_schema.handle,
-                        "original_name_document": thesis_schema.original_name_document,
-                        "size_bytes_document": thesis_schema.size_bytes_document,
-                        **sanitized_metadata
+                        # "original_name_document": thesis_schema.original_name_document,
+                        # "size_bytes_document": thesis_schema.size_bytes_document,
+                        "autor(es)": sanitized_metadata["dc.contributor.author"],
+                        "titulo": sanitized_metadata["dc.title"],
+                        "URI": sanitized_metadata["dc.identifier.uri"]
+                        # **sanitized_metadata
 
                     }
                 )
@@ -261,21 +266,107 @@ class ThesisVectorizationService(IThesisVectorizationService):
 
         except Exception as e:
             raise TesisError(f"No se pudo procesar la tesis '{thesis_schema.handle}': {e}")
+
+    # async def process_thesis_to_fragments(self, thesis_schema: ThesisSchema) -> List[Document]:
+    #     try:
+    #         if not thesis_schema.download_url:
+    #             raise TesisError("URL vacía")
+
+    #         print("URL:", thesis_schema.download_url)
+    #         loader = PyPDFLoader(thesis_schema.download_url)
+    #         documents = await loader.aload()
+
+    #         if not documents:
+    #             raise TesisError("No se pudo extraer contenido del PDF")
+
+    #         text_splitter = RecursiveCharacterTextSplitter(
+    #             chunk_size=1000,
+    #             chunk_overlap=100
+    #         )
+    #         splits = text_splitter.split_documents(documents)
+
+    #         enriched_documents = []
+    #         sanitized_metadata = self.sanitize_metadata(thesis_schema.metadata_json)
+            
+    #         # Convertir metadatos a texto para incluirlo en el primer fragmento
+    #         metadata_text = "\n".join([f"{k}: {v}" for k, v in sanitized_metadata.items()])
+            
+    #         for i, fragment in enumerate(splits):
+    #             if i == 0:  # Primer fragmento lleva metadatos + contenido
+    #                 page_content = f"METADATOS DE LA TESIS:\n{metadata_text}\n\nCONTENIDO:\n{fragment.page_content}"
+    #             else:
+    #                 page_content = fragment.page_content
+                    
+    #             enriched_fragment = Document(
+    #                 page_content=page_content,
+    #                 metadata={
+    #                     "handle": thesis_schema.handle  # Solo el handle como metadato
+    #                 }
+    #             )
+    #             enriched_documents.append(enriched_fragment)
+
+    #         return enriched_documents
+
+    #     except Exception as e:
+    #         raise TesisError(f"No se pudo procesar la tesis '{thesis_schema.handle}': {e}")
         
     async def get_vectorization_status(self) -> dict:
         async with AsyncSessionLocal() as session:
             status = await self.process_status_repository.get_status(session, ProcessName.VECTORIZE_THESIS)
             return status or {}
 #*********************************** Test **************************************
-# async def main():
-#     thesis_collection = ThesisCollection()  # Instancia según tu implementación real
-#     thesis_repository = ThesisRepository()
-
-#     vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository)
+async def main():
+    example_thesis = ThesisSchema(
+    handle="123456789/10201",
+    metadata_json={
+        "dc.contributor.author": ["Pardo Echevarría, Daniel"],
+        "dc.contributor.tutor": ["Cepero Pérez, Nayma", "Díaz Pando, Humberto"],
+        "dc.date.accessioned": "2023-01-06T15:42:42Z",
+        "dc.date.available": "2023-01-06T15:42:42Z",
+        "dc.date.issued": "2022-12",
+        "dc.description": "106 p.",
+        "dc.identifier.uri": "http://tesis.cujae.edu.cu:8080/handle/123456789/10201",
+        "dc.language.iso": "es",
+        "dc.location.physical": "Buró de Información",
+        "dc.provenance": "Facultad de Ingeniería Informática",
+        "dc.publisher": "Universidad Tecnológica de la Habana “José Antonio Echeverría”",
+        "dc.subject": [
+            "Detección de bots",
+            "Árbol de decisión",
+            "Bosque de Desición",
+            "Meta-aprendizaje"
+        ],
+        "dc.title": "Módulo de detección de bots malignos basado en aprendizaje automático",
+        "dc.type": "Thesis"
+    },
+    original_name_document="pardo_echevarria_daniel.pdff",
+    size_bytes_document=2950000,  # ~4.5 MB
+    download_url="https://repositorio.cujae.edu.cu/server/api/core/bitstreams/4aacc12f-47ef-495a-b92a-fa6ee7ea0498/content",
+    is_vectorized=False
+)
+    thesis_collection = ThesisCollection()  # Instancia según tu implementación real
+    thesis_repository = ThesisRepository()
+    process_status = ProcessStatusRepository()
+    vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository,process_status)
     
-#     await vectorization_service.vectorize_thesis()
+    # await vectorization_service.vectorize_thesis()
+
+    enriched_fragments = await vectorization_service.process_thesis_to_fragments(example_thesis)
+
+    # sanitized_metadata = vectorization_service.sanitize_metadata(example_thesis.metadata_json)
+    # print("SANATIZE")
+    # print(sanitized_metadata)
+    # autor = sanitized_metadata['dc.contributor.author']
+    # print("AUTOR")
+    # print(autor)
+
+
+    await vectorization_service.thesis_collection.add_documents(example_thesis.handle,enriched_fragments)
+
+    # async with AsyncSessionLocal() as session:
+    #      await vectorization_service.thesis_repository.mark_as_vectorized(session, example_thesis.handle)
 
      
 
-# if __name__ == "__main__":
-#     asyncio.run(main())
+if __name__ == "__main__":
+    asyncio.run(main())

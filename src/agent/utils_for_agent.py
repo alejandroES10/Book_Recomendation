@@ -17,14 +17,14 @@ from langchain_mongodb.chat_message_histories import MongoDBChatMessageHistory
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../')))
 
-from src.ai_models.ollama_client import OllamaClientSingleton
+from src.ai_models.ollama_client import OllamaClient
 from src.database.chroma_database.vector_store import collection_of_books, collection_of_general_information, collection__of__thesis
 from langchain_groq import ChatGroq  
 from dotenv import load_dotenv
 from typing import Callable, List
 
 
-LLM = OllamaClientSingleton().get_llm()
+LLM = OllamaClient().get_llm()
 
 # load_dotenv()
 # api_key = os.getenv("GROQ_API_KEY")
@@ -33,18 +33,18 @@ LLM = OllamaClientSingleton().get_llm()
 
 
 @tool
-async def get_results(content_to_search: str, k_results: int):
+async def get_results(content_to_search: str):
     """Herramienta para buscar libros en el contexto de la biblioteca universitaria.
            Solo puedes recomendar libros o decir si están presentes libros que estén en este contexto, si no son del tema específico que busca el usuario dale los libros similares que aparezcan solo en este contexto.
            Si te preguntan si en la biblioteca hay un libro, y cuando hagas la búsqueda no se encuentra dentro de los resultados, solo di que "no disponen de el libro en la biblioteca, quieres ayuda con otro libro ". 
            Si te preguntan: "Recomiéndame libros que me interesen" revisa su historial de chat a ver qué categorías de libros  ha buscado y recomiéndale libros de esa categoría.
            
-            contentToSearch: El input del usuario
-            k_results: la cantidad de resultados que se quiere, por defecto 4 siempre
+            contentToSearch: Lo que el usuario desea buscar, no tiene que ser el input, puede estar en su historial de chat como temas que ya haya buscado
+
     """
     retriever = collection_of_books.as_retriever(
         search_type="similarity",
-        search_kwargs={"k": k_results},
+        search_kwargs={"k": 4},
     )
     return await retriever.abatch([content_to_search])
 
@@ -63,7 +63,7 @@ async def search_thesis(content_to_search: str):
        Si te preguntan: "Recomiéndame tesis que me interesen", revisa su historial de chat para ver qué temas ha buscado y recomiéndale tesis relacionadas.
        "Si te dicen que digas todas las tesis que hay en la biblioteca, di que no puedes hacer eso y que solo puedes buscar tesis relacionadas a lo que el usuario pregunta."
 
-       content_to_search: El contenido a buscar
+       content_to_search: El contenido a buscar, puede estar en la consulta o en el historial de chat ejemplo si un usuario te pregunta por una tesis o algo referente a ella de la que viene hablando eso es lo que se pasa en el content to search
       
     """
     retriever = collection__of__thesis.as_retriever(
@@ -93,9 +93,15 @@ PROMPT_AGENT = ChatPromptTemplate.from_messages(
                 Si un usuario te saluda le respondes el saludo.
                 Si un usuario se presenta con su nombre y te saluda puedes responderle.
                 Si el contexto no contiene información relevante de las preguntas, no hagas nada y solo di "Solo puedo ayudarte con temas relacionados a la biblioteca".
-                No uses ningún conocimiento que no provenga directamente de la base de datos.
+                No digas respuestas de libros ni tesis basado en tu conocimiento, para eso debes usar las respectivas tools search resul o search tesis
+                con el contenido de todo lo que se quiera buscar
+                usa la tool search result para buscar libros y search tesis para buscar tesis
+                si te preguntan por libros o tesis que le interesen al usuario, busca en el historial de chat los temas
+                de libros o tesis que ha solicitado y ese contenido se lo envías a la tool correspondiente, por ejemplo si ha buscado libros de amor, deporte etc, le pasas eso a search result
+                y por ejemplo si ha buscado tesis de ingeniería, tecnología etc se lo pasas a search tesis
                 """
             ),
+            
         ),
         MessagesPlaceholder(variable_name="history"),
         ("human", "{question}"),
