@@ -12,157 +12,18 @@ from src.schemas.thesis_schema import ThesisSchema
 
 COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
 
-# class ThesisDataImporterService(IThesisDataImporterService):
-
-#     def __init__(self, dspace_service: DSpaceService, thesis_repository: ThesisRepository):
-#         self.dspace_service = dspace_service
-#         self.thesis_repository = thesis_repository
-
-    # async def upsert_theses(self):
-    #     """
-    #     Inserts or updates theses in the database.
-    #     """
-    #     try:
-    #         items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
-    #     except Exception as e:
-    #         print(f"[ERROR] Failed to fetch items: {e}")
-    #         return
-
-    #     if not items:
-    #         print("[INFO] No items found in the community.")
-    #         return
-
-    #     for item in items:
-    #         try:
-    #             bundles = await self.dspace_service.get_bundles_by_item(item)
-    #             if not bundles:
-    #                 continue
-
-    #             # Find the bundle named "ORIGINAL"
-    #             original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
-    #             if not original_bundle:
-    #                 continue
-
-    #             bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
-    #             if not bitstreams or not isinstance(bitstreams, list):
-    #                 continue
-
-    #             bitstream = bitstreams[0]
-    #             bitstream_uuid = bitstream.uuid 
-    #             pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream_uuid}/content"
-                
-    #             if not pdf_url:
-    #                 continue
-                
-    #             async with AsyncSessionLocal() as session:
-    #                 cleaned_metadata = self._clean_metadata(item.metadata)
-    #                 thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
-    #                 await self.thesis_repository.upsert_thesis(session,thesis_schema)
-
-    #         except Exception as e:
-    #             print(f"[ERROR] Error processing item '{getattr(item, 'handle', 'unknown')}': {e}")    
-    # 
-    
-    # async def upsert_theses(self):
-    #     """
-    #     Inserta o actualiza las tesis en la base de datos.
-    #     Si se pierde la conexión a DSpace, se detiene el proceso.
-    #     """
-    #     try:
-    #         con = 0
-    #         items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
-    #         print("Cantidad*********")
-    #         print(len(items))
-    #     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-    #         print(f"[ERROR] Conexión fallida al obtener los ítems desde DSpace: {e}")
-    #         raise  # Detiene completamente el proceso
-    #     except requests.exceptions.RequestException as e:
-    #         print(f"[ERROR] Fallo general en la petición a DSpace: {e}")
-    #         raise
-    #     except Exception as e:
-    #         print(f"[ERROR] Otro error inesperado al obtener ítems: {e}")
-    #         raise
-
-    #     if not items:
-    #         print("[INFO] No se encontraron ítems en la comunidad.")
-    #         raise
-
-    #     for item in items:
-    #         try:
-    #             bundles = await self.dspace_service.get_bundles_by_item(item)
-    #             if not bundles:
-    #                 continue
-
-    #             original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
-    #             if not original_bundle:
-    #                 continue
-
-    #             bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
-    #             if not bitstreams or not isinstance(bitstreams, list):
-    #                 continue
-
-    #             bitstream = bitstreams[0]
-    #             bitstream_uuid = bitstream.uuid 
-    #             pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream_uuid}/content"
-                
-    #             if not pdf_url:
-    #                 continue
-
-    #             async with AsyncSessionLocal() as session:
-    #                 cleaned_metadata = self._clean_metadata(item.metadata)
-    #                 thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
-    #                 await self.thesis_repository.upsert_thesis(session, thesis_schema)
-    #                 con +=1
-    #                 print("canttttt")
-    #                 print(con)
-
-       
-
-    #         except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-    #             print(f"[ERROR] Conexión perdida al procesar el ítem '{getattr(item, 'handle', 'unknown')}': {e}")
-    #             raise  # Detiene el proceso completamente
-    #         except requests.exceptions.RequestException as e:
-    #             print(f"[ERROR] Error de red general procesando el ítem '{getattr(item, 'handle', 'unknown')}': {e}")
-    #             raise
-    #         except Exception as e:
-    #             print(f"[ERROR] Error procesando el ítem '{getattr(item, 'handle', 'unknown')}': {e}") 
-    #             raise    
-
-
-    # async def upsert_theses(self):
-    #     """
-    #     Inserta o actualiza las tesis en la base de datos.
-    #     Si se pierde la conexión a DSpace, se detiene el proceso.
-    #     """
-    #     try:
-    #         items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
-    #         print(f"[INFO] Cantidad de ítems encontrados: {len(items)}")
-    #     except (requests.exceptions.ConnectionError, requests.exceptions.Timeout) as e:
-    #         raise RuntimeError(f"[ERROR] Conexión fallida al obtener los ítems desde DSpace: {e}")
-    #     except requests.exceptions.RequestException as e:
-    #         raise RuntimeError(f"[ERROR] Fallo general en la petición a DSpace: {e}")
-    #     except Exception as e:
-    #         raise RuntimeError(f"[ERROR] Otro error inesperado al obtener ítems: {e}")
-
-    #     if not items:
-    #         raise RuntimeError("[INFO] No se encontraron ítems en la comunidad.")
-
-    #     processed_count = 0
-    #     for item in items:
-    #         try:
-    #             if not await self._process_item(item):
-    #                 continue
-    #             processed_count += 1
-    #         except Exception as e:
-    #             handle = getattr(item, 'handle', 'unknown')
-    #             raise RuntimeError(f"[ERROR] Fallo procesando ítem '{handle}': {e}")
-
-    #     print(f"[INFO] Total de tesis procesadas: {processed_count}")
-
 
 from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
 from src.models.thesis_model import ProcessName, ProcessStatus
 
+class CreateUrl():
+    @staticmethod
+    def create_url_repository_https(bitstream)-> str:
+     return f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
+    
+    @staticmethod
+    def create_url_repository_http(item,bitstream)-> str:
+       return f"http://tesis.cujae.edu.cu/bitstream/handle/{item.handle}/{bitstream.name}?sequence=1&isAllowed=y"
 
 class ThesisDataImporterService(IThesisDataImporterService):
 
@@ -219,7 +80,20 @@ class ThesisDataImporterService(IThesisDataImporterService):
         """
         Cleans and transforms the metadata, returning only relevant keys and values.
         """
-        exclude_keys = {"dc.description.abstract"}
+        exclude_keys = {
+            "dc.language.iso",
+            "dc.location.physical",
+            "dc.provenance",
+            "dc.publisher",
+            "dc.subject",
+            "dc.contributor.tutor",
+            "dc.date.accessioned",
+            "dc.date.available",
+            "dc.date.issued",
+            "dc.description",
+            "dc.description.abstract"
+        }
+
         cleaned = {}
 
         for key, entries in metadata.items():
@@ -261,7 +135,7 @@ class ThesisDataImporterService(IThesisDataImporterService):
         print(bitstream.uuid)
 
         #factory
-        pdf_url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream.uuid}/content"
+        pdf_url = CreateUrl.create_url_repository_https(bitstream)
 
         # pdf_url = f"http://tesis.cujae.edu.cu/bitstream/handle/{item.handle}/{bitstream.name}?sequence=1&isAllowed=y"
 

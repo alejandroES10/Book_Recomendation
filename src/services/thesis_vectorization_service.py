@@ -315,58 +315,58 @@ class ThesisVectorizationService(IThesisVectorizationService):
             status = await self.process_status_repository.get_status(session, ProcessName.VECTORIZE_THESIS)
             return status or {}
 #*********************************** Test **************************************
-async def main():
-    example_thesis = ThesisSchema(
-    handle="123456789/10201",
-    metadata_json={
-        "dc.contributor.author": ["Pardo Echevarría, Daniel"],
-        "dc.contributor.tutor": ["Cepero Pérez, Nayma", "Díaz Pando, Humberto"],
-        "dc.date.accessioned": "2023-01-06T15:42:42Z",
-        "dc.date.available": "2023-01-06T15:42:42Z",
-        "dc.date.issued": "2022-12",
-        "dc.description": "106 p.",
-        "dc.identifier.uri": "http://tesis.cujae.edu.cu:8080/handle/123456789/10201",
-        "dc.language.iso": "es",
-        "dc.location.physical": "Buró de Información",
-        "dc.provenance": "Facultad de Ingeniería Informática",
-        "dc.publisher": "Universidad Tecnológica de la Habana “José Antonio Echeverría”",
-        "dc.subject": [
-            "Detección de bots",
-            "Árbol de decisión",
-            "Bosque de Desición",
-            "Meta-aprendizaje"
-        ],
-        "dc.title": "Módulo de detección de bots malignos basado en aprendizaje automático",
-        "dc.type": "Thesis"
-    },
-    original_name_document="pardo_echevarria_daniel.pdff",
-    size_bytes_document=2950000,  # ~4.5 MB
-    download_url="https://repositorio.cujae.edu.cu/server/api/core/bitstreams/4aacc12f-47ef-495a-b92a-fa6ee7ea0498/content",
-    is_vectorized=False
-)
-    thesis_collection = ThesisCollection()  # Instancia según tu implementación real
-    thesis_repository = ThesisRepository()
-    process_status = ProcessStatusRepository()
-    vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository,process_status)
+# async def main():
+#     example_thesis = ThesisSchema(
+#     handle="123456789/10201",
+#     metadata_json={
+#         "dc.contributor.author": ["Pardo Echevarría, Daniel"],
+#         "dc.contributor.tutor": ["Cepero Pérez, Nayma", "Díaz Pando, Humberto"],
+#         "dc.date.accessioned": "2023-01-06T15:42:42Z",
+#         "dc.date.available": "2023-01-06T15:42:42Z",
+#         "dc.date.issued": "2022-12",
+#         "dc.description": "106 p.",
+#         "dc.identifier.uri": "http://tesis.cujae.edu.cu:8080/handle/123456789/10201",
+#         "dc.language.iso": "es",
+#         "dc.location.physical": "Buró de Información",
+#         "dc.provenance": "Facultad de Ingeniería Informática",
+#         "dc.publisher": "Universidad Tecnológica de la Habana “José Antonio Echeverría”",
+#         "dc.subject": [
+#             "Detección de bots",
+#             "Árbol de decisión",
+#             "Bosque de Desición",
+#             "Meta-aprendizaje"
+#         ],
+#         "dc.title": "Módulo de detección de bots malignos basado en aprendizaje automático",
+#         "dc.type": "Thesis"
+#     },
+#     original_name_document="pardo_echevarria_daniel.pdff",
+#     size_bytes_document=2950000,  # ~4.5 MB
+#     download_url="https://repositorio.cujae.edu.cu/server/api/core/bitstreams/4aacc12f-47ef-495a-b92a-fa6ee7ea0498/content",
+#     is_vectorized=False
+# )
+#     thesis_collection = ThesisCollection()  # Instancia según tu implementación real
+#     thesis_repository = ThesisRepository()
+#     process_status = ProcessStatusRepository()
+#     vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository,process_status)
     
-    # await vectorization_service.vectorize_thesis()
+#     # await vectorization_service.vectorize_thesis()
 
-    enriched_fragments = await vectorization_service.process_thesis_to_fragments(example_thesis)
+#     enriched_fragments = await vectorization_service.process_thesis_to_fragments(example_thesis)
 
-    # sanitized_metadata = vectorization_service.sanitize_metadata(example_thesis.metadata_json)
-    # print("SANATIZE")
-    # print(sanitized_metadata)
-    # autor = sanitized_metadata['dc.contributor.author']
-    # print("AUTOR")
-    # print(autor)
+#     # sanitized_metadata = vectorization_service.sanitize_metadata(example_thesis.metadata_json)
+#     # print("SANATIZE")
+#     # print(sanitized_metadata)
+#     # autor = sanitized_metadata['dc.contributor.author']
+#     # print("AUTOR")
+#     # print(autor)
 
 
-    await vectorization_service.thesis_collection.add_documents(example_thesis.handle,enriched_fragments)
+#     await vectorization_service.thesis_collection.add_documents(example_thesis.handle,enriched_fragments)
 
-    # async with AsyncSessionLocal() as session:
-    #      await vectorization_service.thesis_repository.mark_as_vectorized(session, example_thesis.handle)
+#     # async with AsyncSessionLocal() as session:
+#     #      await vectorization_service.thesis_repository.mark_as_vectorized(session, example_thesis.handle)
 
      
 
-if __name__ == "__main__":
-    asyncio.run(main())
+# if __name__ == "__main__":
+#     asyncio.run(main())
