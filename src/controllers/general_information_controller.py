@@ -119,7 +119,7 @@ class GeneralInformationController:
         try:
             return await self.general_info_service.add_general_info(file_id,file)
         except ValueError as e:
-            raise HTTPException(status_code=404, detail=str(e))
+            raise HTTPException(status_code=409, detail=str(e))
         except Exception as e:
             raise HTTPException(status_code=500, detail=f"Error procesando el documento: {str(e)}")
 
