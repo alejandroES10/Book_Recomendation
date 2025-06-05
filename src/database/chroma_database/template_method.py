@@ -23,7 +23,7 @@ class BaseDocumentProcessor(ABC):
         loader = self.get_loader()
         documents = await loader.aload()
 
-        splitter = RecursiveCharacterTextSplitter(chunk_size=1000, chunk_overlap=100)
+        splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=150)
         splits = splitter.split_documents(documents)
 
         for fragment in splits:

@@ -44,7 +44,7 @@ class ThesisDataImporterService(IThesisDataImporterService):
             try:
                 await self.process_status_repository.set_status(session, process_name, ProcessStatus.RUNNING)
 
-                items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=100)
+                items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME)
                 print(f"[INFO] Cantidad de ítems encontrados: {len(items)}")
 
                 if not items:
@@ -91,7 +91,8 @@ class ThesisDataImporterService(IThesisDataImporterService):
             "dc.date.available",
             "dc.date.issued",
             "dc.description",
-            "dc.description.abstract"
+            "dc.description.abstract",
+            "dc.type"
         }
 
         cleaned = {}

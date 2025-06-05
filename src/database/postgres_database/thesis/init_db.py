@@ -27,8 +27,10 @@ ASYNC_DB_URL = (
 engine = create_async_engine(
     ASYNC_DB_URL,
     echo=False,
-    # pool_size=10,
-    # max_overflow=20,
+    pool_size=20,       # Conexiones persistentes
+    max_overflow=10,    # Conexiones temporales extra
+    pool_timeout=30,    # Tiempo máximo de espera para una conexión
+    pool_recycle=3600,  # Reciclar conexiones cada 1h (evita timeouts de DB)
 )
 
 AsyncSessionLocal = async_sessionmaker(
