@@ -24,12 +24,12 @@ from dotenv import load_dotenv
 from typing import Callable, List
 
 
-LLM = OllamaClient().get_llm()
+# LLM = OllamaClient().get_llm()
 
-# load_dotenv()
-# api_key = os.getenv("GROQ_API_KEY")
+load_dotenv()
+api_key = os.getenv("GROQ_API_KEY")
 
-# LLM = ChatGroq(temperature=0, model_name="llama-3.1-8b-instant")
+LLM = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
 
 
 @tool
@@ -66,16 +66,43 @@ async def search_thesis(content_to_search: str):
     )
     return await retriever.abatch([content_to_search])
 
+# @tool
+# async def encontrar_contexto_en_historial_de_chat(ultimo_mensaje: str):
+#     """Herramienta para encontrar contexto en el historial de chat del usuario.
+#        Se utiliza para buscar información relevante en el historial de chat del usuario.
+#        Si el usuario te pregunta por un libro o una tesis que ya ha mencionado en su historial de chat, puedes usar esta herramienta para encontrar información de el libro o tesis
+#        para luego llamar a la tool de search_thesis o search_result con esos datos.
+#        Ejemplo de uso:
+#        Si el usuario te pregunta por una tesis que ya ha mencionado en su historial de chat, puedes usar esta herramienta para encontrar información de la tesis y luego llamar a la tool de search_thesis con esos datos.
+
+#        El retorno de esta herramienta es una cadena de texto que contiene el contexto relevante encontrado en el historial de chat del usuario acerca de libro o tesis que se viene hablando
+#        haz tú el retorno de esta herramienta 
+#        mensajes: Lista de últimos 4 o menos mensajes del historial de chat
+      
+#     """
+
+# @tool
+# async def encontrar_contenido_del_ultimo_mensaje(ultimo_mensaje_ia_contenido:str):
+#     """Herramienta para devolver el tema que la IA habló en el mensaje de tipo IA más reciente.
+#     Ejemplo:
+#     Si se está hablando de una tesis y el último mensaje de la IA es "La tesis se titula 'Inteligencia Artificial en la Educación'", esta herramienta devolverá ese contenido Inteligencia Artificial en la Educación.
+#     Si el usuario dice y qué se hace en esa tesis, se toma el retorno de esta herramienta y se llama a la tool search_thesis con ese contenido.
+#     Lo mismo sucede para los libros, lo que luego se llama a la tool get_results con ese contenido.
+#     O sea esta tool lo que permite que se llame a las otras tools (search_thesis o get_results) con el contenido del último mensaje de la IA.que hacen búsqueda semántica con un contenido coherente a buscar
+#        ultimo_mensaje_ia: Datos de libros o tesis encontrados en el mensaje de la IA más reciente.
+      
+#     """
+#     return ultimo_mensaje_ia_contenido
 
 
-# get_library_information = create_retriever_tool(
-#     collection_of_general_information.as_retriever(),
-#    "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
-#     "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario. Si no encuentras resultados di que no disponen de la información")
+get_library_information = create_retriever_tool(
+    collection_of_general_information.as_retriever(),
+   "Herramienta para buscar información acerca de los procesos realizados en la biblioteca universitaria",
+    "Se utiliza para buscar información de cómo se realizan los distintos procesos en la biblioteca como por ejemplo el préstamo de libros. No se utiliza para buscar libros ni responder a saludos o presentación del usuario. Si no encuentras resultados di que no disponen de la información")
 
 
 
-TOOLS = [get_results, search_thesis]
+TOOLS = [get_results, search_thesis,get_library_information]
 
 PROMPT_AGENT = ChatPromptTemplate.from_messages(
     [

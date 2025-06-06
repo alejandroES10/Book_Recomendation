@@ -19,7 +19,7 @@ class BaseDocumentProcessor(ABC):
         self.path_or_url = path_or_url
         self.metadata = metadata
 
-    async def process_and_store(self) -> List[str]:
+    async def process_and_store(self):
         loader = self.get_loader()
         documents = await loader.aload()
 
