@@ -1,3 +1,4 @@
+import json
 from typing import List, Optional
 from langchain_core.documents import Document
 from src.database.chroma_database.chroma_collection import BaseCollection
@@ -18,7 +19,7 @@ class BookMetadataCollection(BaseCollection):
         self._validate_ids(ids)
         result = self._collection._collection.get(ids=ids)
         if not result or not result.get("ids"):
-            raise ValueError("IDs no encontrados en la base de datos")
+            raise ValueError("ID no encontrado")
         missing = [i for i in ids if i not in result["ids"]]
         if missing:
             raise ValueError(f"IDs faltantes en la base de datos: {', '.join(missing)}")
@@ -80,10 +81,20 @@ class BookMetadataCollection(BaseCollection):
             } for doc, id_ in zip(result['documents'], result['ids'])
         ]
     
+    # def _extract_metadata_from_text(self, text: str) -> dict:
+    #     metadata = {}
+    #     # for item in text.strip().split(". "):
+    #     #     if ": " in item:
+    #     #         key, value = item.split(": ", 1)
+    #     #         metadata[key.lower()] = value.strip(".")
+    #     for item in text.strip().split("|||"):
+    #         print(item)
+    #         if "::" in item:
+    #             key, value = item.split("::", 1)
+    #             metadata[key] = value.strip()
+    #     return metadata
     def _extract_metadata_from_text(self, text: str) -> dict:
-        metadata = {}
-        for item in text.strip().split(". "):
-            if ": " in item:
-                key, value = item.split(": ", 1)
-                metadata[key.lower()] = value.strip(".")
-        return metadata
+        try:
+            return json.loads(text)
+        except json.JSONDecodeError:
+            raise ValueError("El contenido del documento no es un JSON válido")

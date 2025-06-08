@@ -28,7 +28,7 @@ from langchain_ollama import OllamaEmbeddings, ChatOllama
 class OllamaClient:
     def __init__(self, 
                  embedding_model: str = "nomic-embed-text", 
-                 llm_model: str = "llama3.1", 
+                 llm_model: str = "llama3.1-storm-custom:latest", 
                  temperature: float = 0.3):
         """
         Inicializa un nuevo cliente Ollama con modelos para embeddings y LLM.

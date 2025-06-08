@@ -11,6 +11,7 @@ from langchain.agents import AgentExecutor, create_tool_calling_agent
 from langchain.agents import tool
 from langchain.tools.retriever import create_retriever_tool
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
+from langchain_openai import ChatOpenAI
 
 
 
@@ -23,6 +24,7 @@ from src.agent.utils_for_agent import TOOLS, PROMPT_AGENT, LLM
 
 
 from langchain_core.chat_history import BaseChatMessageHistory
+
 
 class Agent(ABC):
     @abstractmethod
@@ -43,7 +45,11 @@ class AgentChatBot(Agent):
         return AgentExecutor(agent=agent, tools=self.tools, verbose=True)
 
     def _create_agent(self):
+        # llm = ChatOpenAI(api_key="ollama", model="ajindal/llama3.1-storm:8b", base_url="http://localhost:11434/v1")
+        # print("LLM creado con éxito")
+        # print(llm)
         return create_tool_calling_agent(self.llm, self.tools, self.prompt)
+        
 
     async def get_answer(self, session_id: str, user_input: str, get_chat_history: GetSessionHistoryCallable):
         """Ejecuta el agente con historial de chat inyectado."""
