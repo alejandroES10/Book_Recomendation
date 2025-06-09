@@ -77,7 +77,7 @@ class ChatController:
     async def delete_chat_history(self, session_id: str):
         try:
             await self.chat_service.delete_chat_history(session_id)
-            return {"message": "Chat history deleted successfully"}
+            return {"message": "Historial de chat eliminado correctamente"}
         except ValueError as e:
             raise HTTPException(status_code=404, detail=str(e))
         except Exception:

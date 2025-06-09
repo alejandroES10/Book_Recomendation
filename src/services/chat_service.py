@@ -35,7 +35,7 @@ class ChatService (IChatService):
         chat_history = self.build_chat_history(session_id)
         messages = await chat_history.aget_messages()
         if len(messages) == 0:
-            raise ValueError(f"No chat history found for session: {session_id}")
+            raise ValueError(f"No se encontró historial de chat para el session_id: {session_id}")
         await chat_history.aclear()
 
     
@@ -44,7 +44,7 @@ class ChatService (IChatService):
         chat_history = self.build_chat_history(session_id)
         history = await chat_history.aget_raw_messages()
         if not history:
-            raise ValueError(f"No chat history found for session: {session_id}")
+            raise ValueError(f"No se encontró historial de chat para el session_id: {session_id}")
         
 
         return history
