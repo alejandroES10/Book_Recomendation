@@ -96,7 +96,7 @@ class ChatWithPostgres(BaseChatWithDatabase):
             connection=self._connection,
             engine_args={"echo": False},
 			custom_message_converter=CustomMessageConverter(),
-            max_messages=10
+            max_messages=4
         )
 
 

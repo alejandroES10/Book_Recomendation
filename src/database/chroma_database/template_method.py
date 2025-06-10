@@ -3,11 +3,14 @@ from typing import List
 from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.base import BaseLoader
-
+import asyncio
 from src.database.chroma_database.general_information_collection import GeneralInformationCollection
 from src.database.chroma_database.thesis_collection import ThesisCollection
+from src.services.thesis_vectorization_service import TesisError
 from .chroma_collection import BaseDocumentCollection  # ajusta según tu estructura real
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
+from langchain_community.vectorstores.utils import filter_complex_metadata
+
 
 class BaseDocumentProcessor(ABC):
     def __init__(self, path_or_url: str, metadata: dict):
@@ -21,20 +24,26 @@ class BaseDocumentProcessor(ABC):
 
     async def process_and_store(self):
         loader = self.get_loader()
+    
+        
         documents = await loader.aload()
 
+        
         splitter = RecursiveCharacterTextSplitter(chunk_size=1500, chunk_overlap=150)
         splits = splitter.split_documents(documents)
 
         for fragment in splits:
             # fragment.metadata.update(self.metadata)
-            fragment.metadata = self.metadata
+            # fragment.metadata = self.metadata
+            fragment.metadata = self.clean_metadata(self.metadata)
+            
 
         collection = self.get_collection()
         identifier = self.get_identifier()
 
         return await collection.add_documents(identifier=identifier, documents=splits)
-
+        
+    
     @abstractmethod
     def get_loader(self) -> BaseLoader:
         pass
@@ -47,7 +56,12 @@ class BaseDocumentProcessor(ABC):
     def get_identifier(self) -> str:
         pass
 
-
+    def clean_metadata(self,metadata: dict) -> dict:
+        return {
+            k: v if isinstance(v, (str, int, float, bool, type(None))) else str(v)
+            for k, v in metadata.items()
+        }
+    
 class ThesisProcessor(BaseDocumentProcessor):
     def get_loader(self):
         return PyPDFLoader(self.path_or_url)
@@ -56,6 +70,7 @@ class ThesisProcessor(BaseDocumentProcessor):
         return ThesisCollection()
 
     def get_identifier(self) -> str:
+        print(self.metadata)
         return self.metadata["handle"]
     
 class GeneralInformationProcessor(BaseDocumentProcessor):
@@ -72,3 +87,26 @@ class GeneralInformationProcessor(BaseDocumentProcessor):
 
     def get_identifier(self) -> str:
         return self.metadata["file_id"]
+    
+
+
+
+# import aiohttp
+# import asyncio
+# import tempfile
+
+# async def download_pdf(url: str, timeout_sec: int = 10) -> str:
+#     timeout = aiohttp.ClientTimeout(total=timeout_sec)
+#     async with aiohttp.ClientSession(timeout=timeout) as session:
+#         async with session.get(url) as resp:
+#             if resp.status != 200:
+#                 raise Exception(f"Error {resp.status} al descargar el PDF")
+
+#             tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".pdf")
+#             with open(tmp.name, "wb") as f:
+#                 while True:
+#                     chunk = await resp.content.read(1024)
+#                     if not chunk:
+#                         break
+#                     f.write(chunk)
+#             return tmp.name
