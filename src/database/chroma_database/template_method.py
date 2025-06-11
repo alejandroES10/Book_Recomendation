@@ -23,8 +23,9 @@ class BaseDocumentProcessor(ABC):
         self.metadata = metadata
 
     async def process_and_store(self):
+        
         loader = self.get_loader()
-    
+        
         
         documents = await loader.aload()
 
@@ -57,6 +58,7 @@ class BaseDocumentProcessor(ABC):
         pass
 
     def clean_metadata(self,metadata: dict) -> dict:
+        
         return {
             k: v if isinstance(v, (str, int, float, bool, type(None))) else str(v)
             for k, v in metadata.items()

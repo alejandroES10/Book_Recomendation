@@ -25,6 +25,11 @@ from src.agent.utils_for_agent import TOOLS, PROMPT_AGENT, LLM
 
 from langchain_core.chat_history import BaseChatMessageHistory
 
+# os.environ["LANGSMITH_API_KEY"] = (str(os.getenv("LANGSMITH_API_KEY")))
+# os.environ["LANGSMITH_TRACING"] = "true"
+
+# from langsmith import traceable
+
 
 class Agent(ABC):
     @abstractmethod
@@ -51,6 +56,7 @@ class AgentChatBot(Agent):
         return create_tool_calling_agent(self.llm, self.tools, self.prompt)
         
 
+    # @traceable
     async def get_answer(self, session_id: str, user_input: str, get_chat_history: GetSessionHistoryCallable):
         """Ejecuta el agente con historial de chat inyectado."""
 
