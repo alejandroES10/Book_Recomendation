@@ -21,15 +21,15 @@ class ThesisVectorizationController:
             if status and status.get("status") == ProcessStatus.RUNNING:
                 raise HTTPException(
                     status_code=409,
-                    detail="Thesis vectorization process is already running."
+                    detail="No se puede iniciar porque el proceso de vectorizar tesis ya está en estado RUNNING"
                 )
 
             background_tasks.add_task(self.thesis_vectorization_service.vectorize_theses)
-            return {"message": "Thesis vectorization process started."}
+            return {"message": "Proceso de vectorización de tesis iniciado"}
         except Exception as e:
             raise HTTPException(
                 status_code=500,
-                detail=f"Failed to start thesis vectorization process: {str(e)}"
+                detail=f"Fallo al iniciar el proceso de vectorización de tesis: {str(e)}"
             )
 
     async def get_vectorization_status(self):

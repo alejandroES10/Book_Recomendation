@@ -8,10 +8,7 @@ import os
 
 from langchain_core.runnables.history import RunnableWithMessageHistory, GetSessionHistoryCallable
 from langchain.agents import AgentExecutor, create_tool_calling_agent
-from langchain.agents import tool
-from langchain.tools.retriever import create_retriever_tool
-from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
-from langchain_openai import ChatOpenAI
+
 
 
 
@@ -25,10 +22,7 @@ from src.agent.utils_for_agent import TOOLS, PROMPT_AGENT, LLM
 
 from langchain_core.chat_history import BaseChatMessageHistory
 
-# os.environ["LANGSMITH_API_KEY"] = (str(os.getenv("LANGSMITH_API_KEY")))
-# os.environ["LANGSMITH_TRACING"] = "true"
 
-# from langsmith import traceable
 
 
 class Agent(ABC):
@@ -56,7 +50,6 @@ class AgentChatBot(Agent):
         return create_tool_calling_agent(self.llm, self.tools, self.prompt)
         
 
-    # @traceable
     async def get_answer(self, session_id: str, user_input: str, get_chat_history: GetSessionHistoryCallable):
         """Ejecuta el agente con historial de chat inyectado."""
 

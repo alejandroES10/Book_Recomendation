@@ -68,14 +68,14 @@ class ThesisImportController:
             if status and status.get("status") == ProcessStatus.RUNNING:
                 raise HTTPException(
                     status_code=409,
-                    detail="Thesis import process is already running."
+                    detail="El proceso de obtención de información de tesis está en estado RUNNING"
                 )
             background_tasks.add_task(self.thesis_import_service.upsert_theses)
-            return {"message": "Thesis import process started."}
+            return {"message": "Proceso de obtención de información de tesis iniciado"}
         except Exception as e:
             raise HTTPException(
                 status_code=500,
-                detail=f"Failed to start thesis import process: {str(e)}"
+                detail=f"Fallo al iniciar el proceso de obtención de información de tesis: {str(e)}"
             )
 
     async def get_import_status(self):
