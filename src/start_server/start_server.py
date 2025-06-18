@@ -98,7 +98,7 @@ class StartServer():
         load_dotenv()
         # Leer variables y convertirlas a enteros
         day = int(os.getenv("SCHEDULE_DAY", 1))       # valor por defecto 1 si no está definido
-        hour = int(os.getenv("SCHEDULE_HOUR", 0))     # valor por defecto 0
+        hour = int(os.getenv("SCHEDULE_HOUR", 10))     # valor por defecto 0
         minute = int(os.getenv("SCHEDULE_MINUTE", 0)) # valor por defecto 0
 
         scheduler = AsyncIOScheduler()
