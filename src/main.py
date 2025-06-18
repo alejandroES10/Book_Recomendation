@@ -17,6 +17,7 @@ async def lifespan(app: FastAPI):
     start_server.init_endpoints(app)
     await start_server.init_thesis_tables()
     await start_server.change_running_processes_to_failed()
+    start_server.start_scheduler()
 
     print("✅ Lifespan startup completado.")
     yield

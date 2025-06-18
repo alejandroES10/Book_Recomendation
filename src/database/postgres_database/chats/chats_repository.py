@@ -75,7 +75,7 @@ from langchain_core.chat_history import BaseChatMessageHistory
 
 
 DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/chats"
-from sqlalchemy.ext.asyncio import create_async_engine
+from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from langchain_community.chat_message_histories import SQLChatMessageHistory
 
 class ChatWithPostgres(BaseChatWithDatabase):
@@ -101,6 +101,20 @@ class ChatWithPostgres(BaseChatWithDatabase):
 
 
 
+from datetime import datetime, timedelta
+from sqlalchemy.orm import sessionmaker
+
+engine = create_async_engine(url= DATABASE_URL)
+async_session = sessionmaker(engine, expire_on_commit=False, class_=AsyncSession)
+
+async def delete_old_messages():
+    async with async_session() as session:
+        cutoff_date = datetime.now() - timedelta(days=60)
+        await session.execute(
+            sa.delete(CustomMessage).where(CustomMessage.created_at < cutoff_date)
+        )
+        await session.commit()
+        print(f"[{datetime.now()}] ✅ Messages older than {cutoff_date} have been deleted.")
 
 
 #********************* Con encriptación *********************

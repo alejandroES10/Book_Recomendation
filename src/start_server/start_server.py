@@ -1,10 +1,11 @@
+import asyncio
 from fastapi import FastAPI
 from src.controllers.chat_controller import ChatController
 from src.controllers.general_information_controller import GeneralInformationController
 from src.controllers.thesis_import_controller import ThesisImportController
 from src.controllers.thesis_vectorization_controller import ThesisVectorizationController
 from src.database.chroma_database.thesis_collection import ThesisCollection
-from src.database.postgres_database.chats.chats_repository import ChatWithPostgres
+from src.database.postgres_database.chats.chats_repository import ChatWithPostgres, delete_old_messages
 from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
 from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
 from src.database.postgres_database.thesis.thesis_repository import ThesisRepository
@@ -20,6 +21,10 @@ from src.services.thesis_vectorization_service_copy import ThesisVectorizationSe
 from src.services.book_metadata_service import BookMetadataService
 from src.controllers.book_metadata_controller import BookMetadataController
 from src.database.postgres_database.thesis.init_db import create_tables_async
+from apscheduler.schedulers.asyncio import AsyncIOScheduler
+import os
+from dotenv import load_dotenv
+
 
 
 class StartServer():
@@ -85,3 +90,23 @@ class StartServer():
         thesis_vectorization_service = ThesisVectorizationService(thesis_repository, process_status_repository)
         thesis_vectorization_controller = ThesisVectorizationController(thesis_vectorization_service)
         app.include_router(thesis_vectorization_controller.router, prefix="/thesis-vectorization", tags=["Thesis Vectorization"])
+
+
+
+    def start_scheduler(self):
+        # Carga variables del archivo .env al entorno
+        load_dotenv()
+        # Leer variables y convertirlas a enteros
+        day = int(os.getenv("SCHEDULE_DAY", 1))       # valor por defecto 1 si no está definido
+        hour = int(os.getenv("SCHEDULE_HOUR", 0))     # valor por defecto 0
+        minute = int(os.getenv("SCHEDULE_MINUTE", 0)) # valor por defecto 0
+
+        scheduler = AsyncIOScheduler()
+        scheduler.add_job(
+            delete_old_messages,  # directamente la función async
+            trigger='cron',
+            day=day,
+            hour=hour,
+            minute=minute
+        )
+        scheduler.start()
