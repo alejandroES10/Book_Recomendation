@@ -27,11 +27,6 @@ from typing import Callable, List
 
 LLM = OllamaClient().get_llm()
 
-# load_dotenv()
-# api_key = os.getenv("GROQ_API_KEY")
-
-# LLM = ChatGroq(temperature=0, model_name="llama-3.3-70b-versatile")
-
 
 @tool
 async def search_books(content_to_search: str):

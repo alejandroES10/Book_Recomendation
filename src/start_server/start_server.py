@@ -92,10 +92,23 @@ class StartServer():
         app.include_router(thesis_vectorization_controller.router, prefix="/thesis-vectorization", tags=["Thesis Vectorization"])
 
 
-
+    #Esta función permite que de ser ENABLE_SCHEDULER = true en el archivo .env, se inicie el scheduler
+    #para eliminar mensajes antiguos de la base de datos.
+    #El scheduler se ejecuta en el horario definido por las variables SCHEDULE_DAY, SCHEDULE_HOUR y SCHEDULE_MINUTE
+    #del archivo .env. Si no están definidas, se usan los valores por defecto: 1, 10 y 0 respectivamente.
+    #El scheduler se ejecuta una vez al día, a la hora y minuto especificados
+    #en el archivo .env.
+    #El scheduler utiliza la función delete_old_messages para eliminar mensajes antiguos de la base de datos
+    #de chats, que se define en ChatWithPostgres.
     def start_scheduler(self):
         # Carga variables del archivo .env al entorno
         load_dotenv()
+        # Verificar si se debe habilitar el scheduler
+        enable_scheduler = os.getenv("ENABLE_SCHEDULER", "false").lower() == "true"
+        if not enable_scheduler:
+            print(" Scheduler desactivado por configuración.")
+            return
+
         # Leer variables y convertirlas a enteros
         day = int(os.getenv("SCHEDULE_DAY", 1))       # valor por defecto 1 si no está definido
         hour = int(os.getenv("SCHEDULE_HOUR", 10))     # valor por defecto 0
