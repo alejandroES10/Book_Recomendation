@@ -152,6 +152,7 @@ class ThesisRepository:
         try:
             # Convierte a diccionarios (ideal para bulk)
             mappings = [t.model_dump() for t in theses]
+            print("Agregando tesis...")
             await session.execute(
                 ThesisModel.__table__.insert().values(mappings)
             )

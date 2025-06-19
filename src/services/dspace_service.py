@@ -15,8 +15,11 @@ from dspace_rest_client.client import DSpaceClient
 
 #     async def get_items_by_uuid_scope(self, scope_uuid: str, limit=None):
 #         items = []
+#         cont = 0
 #         for item in self.client.search_objects_iter(query="*:*", scope=scope_uuid, dso_type='item'):
 #             items.append(item)
+#             print(cont)
+#             cont += 1
 #             if limit and len(items) >= limit:
 #                 break
 #         return items
@@ -39,7 +42,9 @@ from dspace_rest_client.client import DSpaceClient
 
 #         items = await self.get_items_by_uuid_scope(top_community.uuid, limit)
 #         return items
-    
+
+
+#********    
 class DSpaceService:
     def __init__(self, base_url: str):
         self.client = DSpaceClient(base_url)
@@ -55,15 +60,19 @@ class DSpaceService:
     async def get_items_by_uuid_scope(self, scope_uuid: str, limit=None):
         def collect_items():
             items = []
+            cont = 0
             for item in self.client.search_objects_iter(query="*:*", scope=scope_uuid, dso_type='item'):
                 items.append(item)
+                cont += 1
+                print(cont)
                 if limit and len(items) >= limit:
                     break
             return items
-
+        print("HELLO")
         return await asyncio.to_thread(collect_items)
 
     async def get_bundles_by_item(self, item):
+        print("BUNDLES")
         return await asyncio.to_thread(self.client.get_bundles, parent=item)
 
     async def get_bitstreams_by_bundle(self, bundle):
@@ -81,31 +90,4 @@ class DSpaceService:
 
         return await self.get_items_by_uuid_scope(top_community.uuid, limit)
 
-# async def main():
-#     dspace_service = DSpaceService(base_url="https://repositorio.cujae.edu.cu//server/api")
-#     community_top_items = await dspace_service.get_items_by_top_community_name("Tesis de Diploma, Maestrías y Doctorados", limit=10)
-#     for item in community_top_items:
-#         print("ITEM METADATA", item.metadata)
-#         # print(f"Item Handle: {item.handle}, Name: {item.name}, UUID: {item.uuid}")
-#         bundles = await dspace_service.get_bundles_by_item(item)
-#         for bundle in bundles:
-#             print(f"  Bundle Name: {bundle.name}, UUID: {bundle.uuid}")
-#             bitstreams = await dspace_service.get_bitstreams_by_bundle(bundle)
-#             for bitstream in bitstreams:
-    
-#                 bitstream_uuid = bitstream.uuid 
-#                 url = f"https://repositorio.cujae.edu.cu/server/api/core/bitstreams/{bitstream_uuid}/content"
-#                 print("URL",url)
-#                 print("SIZE", bitstream.sizeBytes)
 
-#                 # print(f"    Bitstream Name: {bitstream.name}, UUID: {bitstream.uuid}")
-
-
-
-# if __name__ == "__main__":
-#     asyncio.run(main())
-
-
-    
-
-    

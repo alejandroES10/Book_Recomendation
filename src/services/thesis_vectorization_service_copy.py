@@ -40,7 +40,7 @@ class ThesisVectorizationService:
                 except Exception as e:
                     # Errores críticos de red o conexión
                     if isinstance(e, (aiohttp.ClientError, ConnectionError, socket.timeout, TimeoutError)):
-                        raise CriticalProcessError(f"Error crítico en {thesis.handle}: {e}")
+                        raise CriticalProcessError(f"Error de conexión {thesis.handle}: {e}")
                     errors.append(f"Tesis {thesis.handle}: {e}")
 
             await self._set_process_status(ProcessStatus.COMPLETED, errors)
