@@ -9,13 +9,17 @@ from sqlalchemy.ext.asyncio import (
     create_async_engine, AsyncSession, async_sessionmaker
 )
 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 DATABASE_CONFIG = {
     "DB_NAME": "dspace_db",
-    "DB_USER": "postgres",
-    "DB_PASSWORD": "postgres",
-    "DB_HOST": "localhost",
-    "DB_PORT": "5432",
+    "DB_USER": os.getenv("DB_USER", "postgres"),
+    "DB_PASSWORD": os.getenv("DB_PASSWORD", "postgres"),
+    "DB_HOST": os.getenv("DB_HOST", "localhost"),
+    "DB_PORT": os.getenv("DB_PORT", "5432"),
 }
 
 ASYNC_DB_URL = (

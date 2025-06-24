@@ -1,6 +1,8 @@
 from datetime import datetime
+import os
 from typing import Any
 
+from dotenv import load_dotenv
 import sqlalchemy as sa
 from sqlalchemy.orm import declarative_base
 from langchain_community.chat_message_histories.sql import BaseMessageConverter
@@ -72,9 +74,16 @@ import psycopg
 from langchain_postgres import PostgresChatMessageHistory
 from langchain_core.chat_history import BaseChatMessageHistory
 
+load_dotenv()
 
+DB_USER = os.getenv("DB_USER")
+DB_PASSWORD = os.getenv("DB_PASSWORD")
+DB_HOST = os.getenv("DB_HOST")
+DB_PORT = os.getenv("DB_PORT")
+DB_NAME = "chats"
 
-DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/chats"
+DATABASE_URL = f"postgresql+asyncpg://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
+# DATABASE_URL = "postgresql+asyncpg://postgres:postgres@localhost:5432/chats"
 from sqlalchemy.ext.asyncio import create_async_engine, AsyncSession
 from langchain_community.chat_message_histories import SQLChatMessageHistory
 
