@@ -15,8 +15,8 @@ from src.services.chat_service import ChatService
 from src.agent.agent import AgentChatBot
 from src.services.dspace_service import DSpaceService
 from src.services.general_information_service import GeneralInformationService
-# from src.services.thesis_data_importer_service import ThesisDataImporterService
-from src.services.thesis_data_importer_service_copy import ThesisDataImporterService
+from src.services.thesis_data_importer_service import ThesisDataImporterService
+# from src.services.thesis_data_importer_service_copy import ThesisDataImporterService
 from src.services.thesis_vectorization_service import ThesisVectorizationService
 from src.services.thesis_vectorization_service_copy import ThesisVectorizationService
 from src.services.book_metadata_service import BookMetadataService

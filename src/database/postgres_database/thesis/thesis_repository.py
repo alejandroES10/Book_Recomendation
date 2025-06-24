@@ -147,20 +147,20 @@ class ThesisRepository:
             print(f"❌ Error al eliminar todas las tesis: {e}")
             return False
 
-    @staticmethod
-    async def bulk_insert_theses(session: AsyncSession, theses: list[ThesisSchema]):
-        try:
-            # Convierte a diccionarios (ideal para bulk)
-            mappings = [t.model_dump() for t in theses]
-            print("Agregando tesis...")
-            await session.execute(
-                ThesisModel.__table__.insert().values(mappings)
-            )
-            await session.commit()
-            print(f"✅ Se insertaron {len(mappings)} tesis nuevas.")
-        except SQLAlchemyError as e:
-            await session.rollback()
-            print(f"❌ Error en inserción en bloque: {e}")
+    # @staticmethod
+    # async def bulk_insert_theses(session: AsyncSession, theses: list[ThesisSchema]):
+    #     try:
+    #         # Convierte a diccionarios (ideal para bulk)
+    #         mappings = [t.model_dump() for t in theses]
+    #         print("Agregando tesis...")
+    #         await session.execute(
+    #             ThesisModel.__table__.insert().values(mappings)
+    #         )
+    #         await session.commit()
+    #         print(f"✅ Se insertaron {len(mappings)} tesis nuevas.")
+    #     except SQLAlchemyError as e:
+    #         await session.rollback()
+    #         print(f"❌ Error en inserción en bloque: {e}")
 
 
 #*************************** Test ***************************

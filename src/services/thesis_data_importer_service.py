@@ -3,6 +3,7 @@
 
 
 import asyncio
+import traceback
 import requests
 from src.interfaces.ithesis_data_importer_service import IThesisDataImporterService
 from src.services.dspace_service import DSpaceService
@@ -44,7 +45,7 @@ class ThesisDataImporterService(IThesisDataImporterService):
             try:
                 await self.process_status_repository.set_status(session, process_name, ProcessStatus.RUNNING)
 
-                items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=3)
+                items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=20)
                 print(f"[INFO] Cantidad de ítems encontrados: {len(items)}")
 
                 if not items:
@@ -66,9 +67,21 @@ class ThesisDataImporterService(IThesisDataImporterService):
                 await self.process_status_repository.set_status(session, process_name, ProcessStatus.COMPLETED)
 
             except Exception as e:
-                await self.process_status_repository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
-                print(f"[ERROR] Proceso de importación fallido: {e}")
+                
+                error_message = repr(e) or "Error sin mensaje"
+                print(f"[ERROR] Proceso de importación fallido: {traceback.format_exc()}")
+                await self.process_status_repository.set_status(
+                    session,
+                    process_name,
+                    ProcessStatus.FAILED,
+                    error_messages=[error_message]
+                )
                 raise
+
+            # except Exception as e:
+            #     await self.process_status_repository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
+            #     print(f"[ERROR] Proceso de importación fallido: {e}")
+            #     raise
 
     async def get_import_status(self) -> dict:
         async with AsyncSessionLocal() as session:

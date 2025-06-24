@@ -51,7 +51,7 @@ class DSpaceService:
 
     async def get_top_community_by_name(self, name: str):
         print("************Comenzando Proceso de importar tesis*********")
-        top_communities = await asyncio.to_thread(self.client.get_communities, top=True)
+        top_communities = await asyncio.wait_for(asyncio.to_thread(self.client.get_communities, top=True),timeout=20)
         for top_community in top_communities:
             if top_community.name.strip().lower() == name.strip().lower():
                 return top_community
@@ -64,16 +64,15 @@ class DSpaceService:
             for item in self.client.search_objects_iter(query="*:*", scope=scope_uuid, dso_type='item'):
                 items.append(item)
                 cont += 1
-                print(cont)
+                print('Item',cont)
                 if limit and len(items) >= limit:
                     break
             return items
-        print("HELLO")
         return await asyncio.to_thread(collect_items)
 
     async def get_bundles_by_item(self, item):
-        print("BUNDLES")
-        return await asyncio.to_thread(self.client.get_bundles, parent=item)
+        # return await asyncio.to_thread(self.client.get_bundles, parent=item)
+        return await asyncio.wait_for(asyncio.to_thread(self.client.get_bundles, parent=item), timeout=15)
 
     async def get_bitstreams_by_bundle(self, bundle):
         return await asyncio.to_thread(self.client.get_bitstreams, bundle=bundle)

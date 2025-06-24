@@ -190,6 +190,7 @@ from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
 from src.schemas.thesis_schema import ThesisSchema
 from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
 from src.models.thesis_model import ProcessName, ProcessStatus
+import traceback
 
 TOP_COMMUNITY_NAME = "Tesis de Diploma, Maestrías y Doctorados"
 
@@ -220,8 +221,8 @@ class ThesisDataImporterService(IThesisDataImporterService):
             try:
                 await self.process_status_repository.set_status(session, process_name, ProcessStatus.RUNNING)
 
-                items = await self.dspace_service.get_items_by_top_community_name(TOP_COMMUNITY_NAME, limit= 1000)
-                print("HOLAAAAAAA")
+                items = await self.dspace_service.get_items_by_top_community_name(TOP_COMMUNITY_NAME,1000)
+                
                 if not items:
                     await self.process_status_repository.set_status(session, process_name, ProcessStatus.COMPLETED)
                     print("[INFO] No se encontraron ítems en la comunidad.")
@@ -236,21 +237,38 @@ class ThesisDataImporterService(IThesisDataImporterService):
                 updated_count = 0
                 already_vectorized = 0
 
+                cont = 0
                 for item in items:
-                    bundles = await self.dspace_service.get_bundles_by_item(item)
+                    cont +=1
+                    #no tenia try catch  
+                    try:
+                        bundles = await self.dspace_service.get_bundles_by_item(item)
+                    except asyncio.TimeoutError:
+                        print(f"[WARNING] Tiempo de espera agotado para obtener los bundles del ítem #{cont}")
+                        continue
+                    except Exception as e:
+                        print(f"[ERROR] Error inesperado en el ítem #{cont}: {e}")
+                        continue
                     if not bundles:
                         continue
 
                     original_bundle = next((b for b in bundles if getattr(b, "name", "").upper() == "ORIGINAL"), None)
+                    print("Original Bundle")
+                    print(original_bundle, cont)
+                    print("****************")
                     if not original_bundle:
                         continue
 
                     bitstreams = await self.dspace_service.get_bitstreams_by_bundle(original_bundle)
+
                     if not bitstreams or not isinstance(bitstreams, list):
                         continue
 
                     bitstream = bitstreams[0]
                     pdf_url = UrlFactory.create_https_repository_url(bitstream)
+                    print("PDF URL")
+                    print(pdf_url,cont)
+                    print("****************")
                     cleaned_metadata = self._clean_metadata(item.metadata)
                     thesis_schema = self._build_thesis_schema(item, bitstream, pdf_url, cleaned_metadata)
 
@@ -273,9 +291,20 @@ class ThesisDataImporterService(IThesisDataImporterService):
                 await self.process_status_repository.set_status(session, process_name, ProcessStatus.COMPLETED)
 
             except Exception as e:
-                await self.process_status_repository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
-                print(f"[ERROR] Proceso de importación fallido: {e}")
+                
+                error_message = repr(e) or "Error sin mensaje"
+                print(f"[ERROR] Proceso de importación fallido: {traceback.format_exc()}")
+                await self.process_status_repository.set_status(
+                    session,
+                    process_name,
+                    ProcessStatus.FAILED,
+                    error_messages=[error_message]
+                )
                 raise
+            # except Exception as e:
+            #     await self.process_status_repository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
+            #     print(f"[ERROR] Proceso de importación fallido: {e}")
+            #     raise
 
     def _clean_metadata(self, metadata: dict) -> dict:
         exclude_keys = {
@@ -343,6 +372,7 @@ class ThesisDataImporterService(IThesisDataImporterService):
         async with AsyncSessionLocal() as session:
             status = await self.process_status_repository.get_status(session, ProcessName.IMPORT_THESIS)
             return status or {}
+
 
 # async def main():
 #     dspace_service = DSpaceService("https://repositorio.cujae.edu.cu/server/api")
