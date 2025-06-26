@@ -1,11 +1,10 @@
 
-import asyncio
+
 import socket
-from typing import List
+
 
 import aiohttp
 from src.database.chroma_database.template_method import ThesisProcessor
-from src.database.chroma_database.thesis_collection import ThesisCollection
 from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
 from src.database.postgres_database.thesis.thesis_repository import ThesisRepository
 from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
@@ -22,7 +21,7 @@ class ThesisVectorizationService:
     def __init__(self, thesis_repository: ThesisRepository, process_status_repository: ProcessStatusRepository):
         self.thesis_repository = thesis_repository
         self.process_status_repository = process_status_repository
-        # self.thesis_processor = ThesisProcessor()
+
 
     async def vectorize_theses(self):
         success, errors = 0, []

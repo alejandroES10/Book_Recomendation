@@ -4,7 +4,6 @@ from src.controllers.chat_controller import ChatController
 from src.controllers.general_information_controller import GeneralInformationController
 from src.controllers.thesis_import_controller import ThesisImportController
 from src.controllers.thesis_vectorization_controller import ThesisVectorizationController
-from src.database.chroma_database.thesis_collection import ThesisCollection
 from src.database.postgres_database.chats.chats_repository import ChatWithPostgres, delete_old_messages
 from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
 from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
@@ -15,7 +14,6 @@ from src.agent.agent import AgentChatBot
 from src.services.dspace_service import DSpaceService
 from src.services.general_information_service import GeneralInformationService
 from src.services.thesis_data_importer_service import ThesisDataImporterService
-from src.services.thesis_vectorization_service import ThesisVectorizationService
 from src.services.thesis_vectorization_service import ThesisVectorizationService
 from src.services.book_metadata_service import BookMetadataService
 from src.controllers.book_metadata_controller import BookMetadataController
@@ -82,10 +80,9 @@ class StartServer():
         app.include_router(thesis_import_controller.router, prefix="/thesis-import", tags=["Thesis Import"])
 
     def init_thesis_vectorization(self, app: FastAPI):
-        thesis_collection = ThesisCollection()
+        
         thesis_repository = ThesisRepository()
         process_status_repository = ProcessStatusRepository()
-        # thesis_vectorization_service = ThesisVectorizationService(thesis_collection, thesis_repository, process_status_repository)
         thesis_vectorization_service = ThesisVectorizationService(thesis_repository, process_status_repository)
         thesis_vectorization_controller = ThesisVectorizationController(thesis_vectorization_service)
         app.include_router(thesis_vectorization_controller.router, prefix="/thesis-vectorization", tags=["Thesis Vectorization"])

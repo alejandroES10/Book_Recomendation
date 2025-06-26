@@ -1,18 +1,12 @@
 from abc import ABC, abstractmethod
 import os
-from typing import List
-from langchain.schema import Document
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain.document_loaders.base import BaseLoader
-import asyncio
 from src.database.chroma_database.general_information_collection import GeneralInformationCollection
 from src.database.chroma_database.thesis_collection import ThesisCollection
-from src.services.thesis_vectorization_service import TesisError
-from .chroma_collection import BaseDocumentCollection  # ajusta según tu estructura real
+from .chroma_collection import BaseDocumentCollection  
 from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader
-from langchain_community.vectorstores.utils import filter_complex_metadata
 import aiohttp
-import asyncio
 import tempfile
 import ssl
 

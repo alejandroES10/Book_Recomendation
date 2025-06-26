@@ -2,9 +2,7 @@
 
 
 
-import asyncio
 import traceback
-import requests
 from src.interfaces.ithesis_data_importer_service import IThesisDataImporterService
 from src.services.dspace_service import DSpaceService
 from src.database.postgres_database.thesis.thesis_repository import ThesisRepository
@@ -80,10 +78,6 @@ class ThesisDataImporterService(IThesisDataImporterService):
                 )
                 raise
 
-            # except Exception as e:
-            #     await self.process_status_repository.set_status(session, process_name, ProcessStatus.FAILED, error_messages=[str(e)])
-            #     print(f"[ERROR] Proceso de importación fallido: {e}")
-            #     raise
 
     async def get_import_status(self) -> dict:
         async with AsyncSessionLocal() as session:
@@ -150,10 +144,9 @@ class ThesisDataImporterService(IThesisDataImporterService):
         print("uuid Bitstream en 0:")
         print(bitstream.uuid)
 
-        #factory
+       
         pdf_url = CreateUrl.create_url_repository_https(bitstream)
 
-        # pdf_url = f"http://tesis.cujae.edu.cu/bitstream/handle/{item.handle}/{bitstream.name}?sequence=1&isAllowed=y"
 
         async with AsyncSessionLocal() as session:
             cleaned_metadata = self._clean_metadata(item.metadata)
