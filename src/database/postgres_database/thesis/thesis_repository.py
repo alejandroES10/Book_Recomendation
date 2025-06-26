@@ -5,38 +5,6 @@ from sqlalchemy.exc import SQLAlchemyError
 from ....models.thesis_model import ThesisModel
 from src.schemas.thesis_schema import ThesisSchema
 
-# from sqlalchemy.ext.asyncio import (
-#     create_async_engine, AsyncSession, async_sessionmaker
-# )
-
-# DATABASE_CONFIG = {
-#     "DB_NAME": "dspace_db",
-#     "DB_USER": "postgres",
-#     "DB_PASSWORD": "postgres",
-#     "DB_HOST": "localhost",
-#     "DB_PORT": "5432",
-# }
-
-# ASYNC_DB_URL = (
-#     f"postgresql+asyncpg://{DATABASE_CONFIG['DB_USER']}:{DATABASE_CONFIG['DB_PASSWORD']}"
-#     f"@{DATABASE_CONFIG['DB_HOST']}:{DATABASE_CONFIG['DB_PORT']}/{DATABASE_CONFIG['DB_NAME']}"
-# )
-
-# # Motor asíncrono con pool
-# engine = create_async_engine(
-#     ASYNC_DB_URL,
-#     echo=False,
-#     # pool_size=10,
-#     # max_overflow=20,
-# )
-
-# # Session async
-# AsyncSessionLocal = async_sessionmaker(
-#     bind=engine, class_=AsyncSession, expire_on_commit=False
-# )
-
-# from .init_db import create_tables_async
-
 
 class ThesisRepository:
 

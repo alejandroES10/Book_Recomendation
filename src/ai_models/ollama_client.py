@@ -1,26 +1,3 @@
-# import os
-# from langchain_ollama import OllamaEmbeddings, ChatOllama
-
-# class OllamaClientSingleton:
-#     _instance = None
-
-#     def __new__(cls, embedding_model: str = "nomic-embed-text", llm_model: str = "llama3.1", temperature: float = 0.0):
-#         if cls._instance is None:
-#             cls._instance = super(OllamaClientSingleton, cls).__new__(cls)
-#             base_url = os.environ["OLLAMA_BASE_URL"]
-#             cls._instance._embedding_function = OllamaEmbeddings(
-#                 model=embedding_model, temperature=temperature, base_url=base_url
-#             )
-#             cls._instance._llm = ChatOllama(
-#                 model=llm_model, temperature=temperature, base_url=base_url, cache=True
-#             )
-#         return cls._instance
-
-#     def get_embedding_function(self):
-#         return self._embedding_function
-
-#     def get_llm(self):
-#         return self._llm
 
 import os
 from langchain_ollama import OllamaEmbeddings, ChatOllama
@@ -46,23 +23,12 @@ class OllamaClient:
             base_url=base_url
         )
 
-        # self._llm = ChatOllama(
-        #     model="llama3.1",  # Modelo de 70B parámetros
-        #     temperature=0.7,     # Balance creatividad/precisión
-        #            # Contexto amplio
-        #     top_p=0.9
-        #     # top_k=40
-        #     # repeat_penalty=1.1,
-        #     # stop=["\n", "###"],  # Secuencias de parada
-        #            # Usar GPU si está disponible
-        #      # URL de tu servidor Ollama
-        # )
         
         self._llm = ChatOllama(
             model=llm_model, 
             temperature=temperature, 
             base_url=base_url, 
-            # cache=True
+            
         )
     
     def get_embedding_function(self):

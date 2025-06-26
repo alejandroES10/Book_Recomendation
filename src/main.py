@@ -5,10 +5,6 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.start_server.start_server import StartServer
 
 
-# import logging
-
-# logger = logging.getLogger(__name__)
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     print("🌱 Lifespan startup comenzando...")

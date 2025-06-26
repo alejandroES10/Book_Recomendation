@@ -21,16 +21,7 @@ collection_of_books = Chroma(
     collection_name="collection_of_books",
     embedding_function=ollama_client.get_embedding_function(),
 )
-# async def c():
-#     client = await chromadb.AsyncHttpClient(host=os.environ["CHROMA_SERVER_HOST"], port=int(os.environ["CHROMA_SERVER_PORT"]), settings=chromadb.config.Settings(anonymized_telemetry=False))
-#     print("Conectando al cliente Chroma...")
-#     print(client)
-#     collection_of_books = Chroma(
-#         client= client,
-#         collection_name="collection_of_aceite",
-#         embedding_function=ollama_client.get_embedding_function(),
-#     )
-#     return collection_of_books
+
 
 collection_of_general_information = Chroma(
     client=chroma_client,
@@ -69,31 +60,3 @@ def addTesis(rute: str, metadata: dict) -> None:
     # Agregar los fragmentos a la colección de tesis
     collection__of__thesis.add_documents(splits)
 
-# addTesis(
-#     rute="/Users/alejandroestrada/Documents/Universidad/Tercer Año/Tesis Descargadas/2014_cepero_perez_nayma.pdf",
-#     metadata={
-#         "id": 1,
-#         "titulo": "Componente de aprendizaje para agentes JADE",
-#         "autor": "Nayma Cepero Pérez",
-#         "fecha": "2022-11-01",
-#         "enlace_url": "https://universidadeuropea.com/blog/agentes-inteligentes/#:~:text=Los%20agentes%20inteligentes%20comparten%20una,su%20comportamiento%20seg%C3%BAn%20sus%20vivencias."
-#     }
-# )
-
-
-
-
-# from langchain_community.document_loaders import PyPDFDirectoryLoader
-
-# loader = PyPDFDirectoryLoader( "/Users/alejandroestrada/Documents/Universidad/Tercer Año/tesis chatbot" ) 
-# documents = loader.load()
-# print(documents)
-# text_splitter = RecursiveCharacterTextSplitter(
-#             chunk_size=1000,
-#             chunk_overlap=100
-#         )
-        
-# splits = text_splitter.split_documents(documents)
-# collection__of__thesis.add_documents(
-#     documents=splits
-# )

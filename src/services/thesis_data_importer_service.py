@@ -45,7 +45,9 @@ class ThesisDataImporterService(IThesisDataImporterService):
             try:
                 await self.process_status_repository.set_status(session, process_name, ProcessStatus.RUNNING)
 
-                items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=5)
+                #Para de desarrollo y pruebas se pasa limit = un valor para que traiga esa cantidad de ítems
+                #Para producción no hay que pasar parámetro limit, ya que se traen todos los ítems de la comunidad
+                items = await self.dspace_service.get_items_by_top_community_name(COMMUNITY_NAME, limit=20)
                 print(f"[INFO] Cantidad de ítems encontrados: {len(items)}")
 
                 if not items:

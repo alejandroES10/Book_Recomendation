@@ -10,15 +10,13 @@ from src.database.postgres_database.thesis.init_db import AsyncSessionLocal
 from src.database.postgres_database.thesis.process_status_repository import ProcessStatusRepository
 from src.database.postgres_database.thesis.thesis_repository import ThesisRepository
 from src.models.thesis_model import ProcessStatus
-from src.security.auth import validate_api_key
 from src.services.chat_service import ChatService
 from src.agent.agent import AgentChatBot
 from src.services.dspace_service import DSpaceService
 from src.services.general_information_service import GeneralInformationService
 from src.services.thesis_data_importer_service import ThesisDataImporterService
-# from src.services.thesis_data_importer_service_copy import ThesisDataImporterService
 from src.services.thesis_vectorization_service import ThesisVectorizationService
-from src.services.thesis_vectorization_service_copy import ThesisVectorizationService
+from src.services.thesis_vectorization_service import ThesisVectorizationService
 from src.services.book_metadata_service import BookMetadataService
 from src.controllers.book_metadata_controller import BookMetadataController
 from src.database.postgres_database.thesis.init_db import create_tables_async

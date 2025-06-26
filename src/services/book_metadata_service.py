@@ -33,43 +33,6 @@ class BookMetadataService(IBookMetadataService):
     
 
     
-    #**********************************
-
-    # def _build_chroma_documents(self, models: List[BookCreateSchema] ) -> Tuple[List[Document], List[str]]:
-    #     documents = []
-    #     ids = []
-    #     for model in models:
-    #         metadata_text = ". ".join([f"{k.capitalize()}: {v}" for k, v in model.metadata.items()]) + "."
-    #         documents.append(Document(
-    #             page_content=metadata_text,
-    #             metadata={"fuente": "biblioteca_universitaria"},
-    #             id=str(model.id)
-    #         ))
-    #         ids.append(str(model.id))
-    #     return documents, ids
-
-   
-    # def _build_chroma_documents(self, models: List[BookCreateSchema]) -> Tuple[List[Document], List[str]]:
-    #         documents = []
-    #         ids = []
-    #         for model in models:
-    #             metadata_text = ". ".join([
-    #                 f"{k.capitalize()}: {', '.join(v) if isinstance(v, list) else v}"
-    #                 for k, v in model.metadata.items()
-    #             ]) + "."
-    #             # metadata_text = "|||".join([
-    #             # f"{k.lower()}::{', '.join(v) if isinstance(v, list) else v}"
-    #             # for k, v in model.metadata.items()
-    #             # ])
-    #             documents.append(Document(
-    #                 page_content=metadata_text,
-    #                 metadata={"fuente": "biblioteca_universitaria"},
-    #                 id=str(model.id)
-    #             ))
-    #             ids.append(str(model.id))
-    #         return documents, ids
-
-    
 
     def _build_chroma_documents(self, models: List[BookCreateSchema]) -> Tuple[List[Document], List[str]]:
         documents = []
