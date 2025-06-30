@@ -9,7 +9,7 @@ from src.schemas.book_metadata_schema import BookCreateSchema
 class IBookMetadataService(ABC):
 
     @abstractmethod
-    async def add_books(self, models: List[BookCreateSchema]) -> List[str]:
+    async def add_books(self, books: List[BookCreateSchema]) -> List[str]:
         pass
 
     @abstractmethod
@@ -21,7 +21,7 @@ class IBookMetadataService(ABC):
         pass
 
     @abstractmethod
-    async def update_book(self, models: BookCreateSchema) -> None:
+    async def update_book(self, book: BookCreateSchema) -> None:
         pass    
 
 

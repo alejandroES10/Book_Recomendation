@@ -9,8 +9,8 @@ class BookMetadataService(IBookMetadataService):
     def __init__(self):
         self.collection = BookMetadataCollection()
     
-    async def add_books(self, models: List[BookCreateSchema]) -> List[str]:
-        documents, ids = self._build_chroma_documents(models)
+    async def add_books(self, books: List[BookCreateSchema]) -> List[str]:
+        documents, ids = self._build_chroma_documents(books)
         return await self.collection.add_documents(documents, ids)
 
     async def get_book(self, id: str) -> dict:
@@ -19,8 +19,8 @@ class BookMetadataService(IBookMetadataService):
     async def delete_book(self, id: str) -> None:
         return await self.collection.delete_documents(id)
 
-    async def update_book(self, models: BookCreateSchema) -> None:
-        list_of_models = models if isinstance(models, list) else [models]
+    async def update_book(self, book: BookCreateSchema) -> None:
+        list_of_models = book if isinstance(book, list) else [book]
         
         documents, ids = self._build_chroma_documents(list_of_models)
         print(documents)
