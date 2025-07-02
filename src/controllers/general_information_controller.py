@@ -23,13 +23,13 @@ class GeneralInformationController:
         self._add_routes()
 
     def _add_routes(self):
-        self.router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])(self.create_documents_from_pdf)
+        self.router.post("/", status_code=201, dependencies=[Depends(validate_api_key)])(self.create_documents_from_file)
         self.router.delete("/{file_id}", dependencies=[Depends(validate_api_key)])(self.delete_document_by_file_id)
         self.router.get("/{file_id}", dependencies=[Depends(validate_api_key)])(self.get_document)
         self.router.get("/",dependencies=[Depends(validate_api_key)])(self.get_documents)
 
    
-    async def create_documents_from_pdf(self, 
+    async def create_documents_from_file(self, 
                                         file:Annotated[UploadFile,File()],
                                         file_id:Annotated[str,Form()]):
         if not file_id or not file_id.strip():
