@@ -1,7 +1,6 @@
+# 🤖 API de un Asistente Virtual de tipo Chatbot para el Sistema de Gestión de una Biblioteca Universitaria
 
-# 🤖 API del Asistente Virtual de tipo Chatbot para el Sistema de Gestión de la Biblioteca de la CUJAE
-
-Este proyecto consiste en el desarrollo de una **API para un asistente virtual tipo chatbot**, diseñado específicamente para el **Sistema de Gestión Bibliotecaria** de la **Universidad Tecnológica de La Habana "José Antonio Echeverría" (CUJAE)**. El asistente está integrado por un agente inteligente capaz de responder preguntas relacionadas con información bibliográfica y servicios de la biblioteca, utilizando procesamiento de lenguaje natural (NLP) y modelos de lenguaje avanzados.
+Este proyecto consiste en el desarrollo de una **API para un asistente virtual tipo chatbot**, diseñado específicamente para el **Sistema de Gestión Bibliotecaria** de una **Biblioteca Universitaria**. El asistente está integrado por un agente inteligente capaz de responder preguntas relacionadas con información bibliográfica y servicios de la biblioteca, utilizando procesamiento de lenguaje natural (NLP) y modelos de lenguaje avanzados.
 
 ## 📚 Descripción
 
@@ -15,19 +14,19 @@ A esto se suman los **agentes inteligentes**, componentes de software autónomos
 
 El proyecto se apoya en tecnologías modernas de IA, backend y bases de datos:
 
-* FastAPI – Framework para construir APIs web de alto rendimiento.
+- FastAPI – Framework para construir APIs web de alto rendimiento.
 
-* LangChain – Marco para construir aplicaciones LLM con componentes reutilizables como agentes y cadenas.
+- LangChain – Marco para construir aplicaciones LLM con componentes reutilizables como agentes y cadenas.
 
-* Ollama – Plataforma para ejecutar modelos de lenguaje localmente.
+- Ollama – Plataforma para ejecutar modelos de lenguaje localmente.
 
-* Llama 3.1 8B – LLM utilizado a través de Ollama.
+- Llama 3.1 8B – LLM utilizado a través de Ollama.
 
-* nomic-embed-text – Modelo de generación de embeddings.
+- nomic-embed-text – Modelo de generación de embeddings.
 
-* Chroma DB – Base de datos vectorial para búsquedas semánticas.
+- Chroma DB – Base de datos vectorial para búsquedas semánticas.
 
-* PostgreSQL – Sistema de gestión de bases de datos relacional (Para almacenar chats y retroalimentación de obtención de tesis).
+- PostgreSQL – Sistema de gestión de bases de datos relacional (Para almacenar chats y retroalimentación de obtención de tesis).
 
 ## 🚀 Cómo ejecutar el proyecto
 
@@ -46,5 +45,3 @@ El proyecto se apoya en tecnologías modernas de IA, backend y bases de datos:
    ```
 
 > Asegúrate de tener configurados y corriendo los servicios necesarios (como Ollama con el modelo LLaMA 3.1 8B y nomic-embed-text, así como Chroma DB) antes de iniciar la API.
-
-
